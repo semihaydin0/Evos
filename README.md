@@ -10,7 +10,7 @@ Image
 * Discord.py
 * Lavalink
 * Requests
-* GoogleTrans
+* Googletrans
 * BeautifulSoup
 * Matplotlib
 * Humanize
