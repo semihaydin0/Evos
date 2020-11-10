@@ -4,7 +4,7 @@ Discord bot with mostly basic and moderation functions
 
 ## Commands
 
-Image
+![Commands](./images/commands.png)
 
 ## Used Libraries
 * Discord.py
