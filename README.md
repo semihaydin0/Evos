@@ -1,4 +1,4 @@
-# Evos ![Evos](./images/evos.ico)
+# ![Evos](./images/evos.ico) Evos
 
 Discord bot with mostly basic and moderation functions
 
@@ -14,6 +14,10 @@ Discord bot with mostly basic and moderation functions
 * BeautifulSoup
 * Matplotlib
 * Humanize
+
+## Technologies
+Project is created with:
+* Python : 3.8.2
 
 ## Installation
 
