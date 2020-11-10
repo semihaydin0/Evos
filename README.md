@@ -1,4 +1,4 @@
-# ![Evos](./images/evos.ico) Evos
+# Evos ![Evos](./images/evos.ico)
 
 Discord bot with mostly basic and moderation functions
 
