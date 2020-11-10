@@ -7,9 +7,13 @@ Discord bot with mostly basic and moderation functions
 Image
 
 ## Used Libraries
-* [General info](www.google.com)
-* [Technologies](www.google.com)
-* [Setup](www.google.com)
+* Discord.py
+* Lavalink
+* Requests
+* GoogleTrans
+* BeautifulSoup
+* Matplotlib
+* Humanize
 
 ## Installation
 
