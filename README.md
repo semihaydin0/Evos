@@ -2,16 +2,20 @@
 
 🤖 Discord bot with many useful commands inside.
 
-## Sample Command
+## Sample Commands
 
+![Rate](./images/rate.png)
 ![Covid](./images/covid.png)
 
 ## Commands
 
 ![Commands](./images/commands.png)
 
-## Language
-Project is created with:
+## Invite
+
+[Here](https://discord.com/api/oauth2/authorize?client_id=675459603420545056&permissions=8&scope=bot) you can invite the bot to your server.
+
+## Build With
 * Python : 3.8.2
 > :warning: **Your python version must be 3.8>**: to use this project
 
@@ -28,12 +32,13 @@ Project is created with:
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install libraries.
 
-## Invite
-
-[Here](https://discord.com/api/oauth2/authorize?client_id=675459603420545056&permissions=8&scope=bot) you can invite the bot to your server.
-
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## Contact
+For any problems, you can contact me at the addresses below.
+* E-Mail : semihaydin034@gmail.com
+* Discord : PHOENIX#0001
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
