@@ -2,8 +2,6 @@
 *** Semih Aydın 2020
 -->
 
-[![MIT License][license-shield]][license-url]
-
 ## ![Evos](./images/evos.png)
 
 🤖 Discord bot with many useful commands inside.
@@ -23,9 +21,9 @@
 
 ## Build With
 * Python : 3.8.2
-> :warning: **Your python version must be 3.8>**: to use this project
+> :warning: **Your python version must be 3.8>** to use this project
 
-## Used Libraries
+## Libraries
 * [Discord.py](https://github.com/Rapptz/discord.py)
 * [Lavalink](https://github.com/Frederikam/Lavalink)
 * [Requests](https://github.com/psf/requests)
@@ -43,8 +41,8 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## Contact
 For any problems, you can contact me at the addresses below.
-* E-Mail : semihaydn034@gmail.com
 * Discord : PHOENIX#0001
+* E-Mail : semihaydn034@gmail.com
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
