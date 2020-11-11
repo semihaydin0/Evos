@@ -1,3 +1,9 @@
+<!--
+*** Semih Aydın 2020
+-->
+
+[![MIT License][license-shield]][license-url]
+
 ## ![Evos](./images/evos.png)
 
 🤖 Discord bot with many useful commands inside.
