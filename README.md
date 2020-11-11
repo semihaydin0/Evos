@@ -10,18 +10,19 @@
 
 ![Commands](./images/commands.png)
 
-## Technologies
+## Language
 Project is created with:
 * Python : 3.8.2
+> :warning: **Your python version must be 3.8>**: to use this project
 
 ## Used Libraries
 * [Discord.py](https://github.com/Rapptz/discord.py)
-* Lavalink
-* Requests
-* Googletrans
-* BeautifulSoup
-* Matplotlib
-* Humanize
+* [Lavalink](https://github.com/Frederikam/Lavalink)
+* [Requests](https://github.com/psf/requests)
+* [Googletrans](https://github.com/ssut/py-googletrans)
+* [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
+* [Matplotlib](https://github.com/matplotlib/matplotlib)
+* [Humanize](https://github.com/jmoiron/humanize)
 
 ## Installation
 
