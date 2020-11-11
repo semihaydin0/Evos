@@ -1,6 +1,6 @@
 ## ![Evos](./images/evos.png)
 
-Discord bot with mostly basic and moderation functions
+🤖 Discord bot with many useful commands inside.
 
 ## Sample Command
 
@@ -15,7 +15,7 @@ Project is created with:
 * Python : 3.8.2
 
 ## Used Libraries
-* Discord.py
+* [Discord.py](https://github.com/Rapptz/discord.py)
 * Lavalink
 * Requests
 * Googletrans
