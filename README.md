@@ -37,7 +37,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## Contact
 For any problems, you can contact me at the addresses below.
-* E-Mail : semihaydin034@gmail.com
+* E-Mail : semihaydn034@gmail.com
 * Discord : PHOENIX#0001
 
 ## License
