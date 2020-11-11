@@ -10,6 +10,10 @@ Discord bot with mostly basic and moderation functions
 
 ![Commands](./images/commands.png)
 
+## Technologies
+Project is created with:
+* Python : 3.8.2
+
 ## Used Libraries
 * Discord.py
 * Lavalink
@@ -18,10 +22,6 @@ Discord bot with mostly basic and moderation functions
 * BeautifulSoup
 * Matplotlib
 * Humanize
-
-## Technologies
-Project is created with:
-* Python : 3.8.2
 
 ## Installation
 
