@@ -17,12 +17,14 @@
 
 ## Invite
 
-[Here](https://discord.com/api/oauth2/authorize?client_id=675459603420545056&permissions=8&scope=bot) you can invite the bot to your server.\n
+[Here](https://discord.com/api/oauth2/authorize?client_id=675459603420545056&permissions=8&scope=bot) you can invite the bot to your server.
+
 Evos is currently active on Google Cloud's European servers.
 
 ## Build With
 * Python : 3.8.2
-> :warning: **Your python version must be 3.8>** to use this project\n
+> :warning: **Your python version must be 3.8>** to use this project
+
 > :warning: Remember to run it with **java -jar Lavalink.jar**
 
 ## Libraries
