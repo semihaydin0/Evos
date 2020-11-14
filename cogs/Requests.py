@@ -72,7 +72,7 @@ class Requests(commands.Cog):
             Stats.add_field(name="Ağır Hasta", value=critical, inline=True)
             Stats.add_field(name="Aktif Vaka", value=active, inline=True)
             Stats.add_field(name="Bir Milyon Başına Vaka", value=casesPerOneMillion, inline=True)
-            labels = ['İyileşen', 'Ölüm','Aktif']
+            labels = ['İyileşen', 'Ölen','Aktif']
             quantity = [Recover/Cases, Deaths/Cases,(Cases-Deaths-Recover)/Cases]
             colors = ['green', 'orangered','coral']
             explode = (0.1, 0.1, 0.1)
@@ -98,7 +98,7 @@ class Requests(commands.Cog):
             Currency = requests.get('http://bigpara.hurriyet.com.tr/doviz/')
             BSoup = BeautifulSoup(Currency.content,'html.parser')
             ForeignCur = BSoup.find_all("span",{"class" :"value"})
-            ForeignC = discord.Embed(title="Döviz Kuru",colour = 0xffd500,timestamp = ctx.message.created_at)
+            ForeignC = discord.Embed(title="Canlı Döviz Kurları",colour = 0xffd500,timestamp = ctx.message.created_at)
             file = discord.File("images/dollar.png", filename="dollar.png")
             ForeignC.set_thumbnail(url="attachment://dollar.png")
             USD = ForeignCur[2].text.replace(",",".")
