@@ -91,9 +91,13 @@ class Admin(commands.Cog):
     @commands.is_owner()
     @commands.command(name="activity",aliases=['aktivite'],hidden=True)
     async def activity_command(self, ctx,name):
+        activity = ".yardım | "
         if name == "default" :
-            name = ".yardım | 🎵 NEW HIGH QUALITY MUSIC"
-        await self.client.change_presence(status=discord.Status.online , activity=discord.Game(f"{name}"))           
+            activity+="🎵 NEW HIGH QUALITY MUSIC"
+        else :
+            name = name.replace("."," ")
+            activity += name
+        await self.client.change_presence(status=discord.Status.online , activity=discord.Game(f"{activity}"))           
         activity_embed=discord.Embed(title="Aktivite değişikliği başarılı.",colour=0xffd500)
         await ctx.send(embed=activity_embed)
         logger.info(f"Admin | Aktivite Değişikliği : {name} | Tarafından : {ctx.author}")
@@ -101,8 +105,8 @@ class Admin(commands.Cog):
     @commands.is_owner()
     @commands.command(name="off",aliases=['kapat'],hidden=True)
     async def off_command(self, ctx):
-        off_embed=discord.Embed(title="Evos kapanıyor.",colour=0xffd500)
-        await ctx.send(embed=reload_embed)
+        off_embed=discord.Embed(title=f"{self.client.user.name} kapatılıyor.",colour=0xffd500)
+        await ctx.send(embed=off_embed)
         logger.info(f"Admin | Kapatma Talebi | Tarafından : {ctx.author}")
         await self.client.logout()
 
