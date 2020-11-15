@@ -13,8 +13,8 @@ class Error(commands.Cog):
     
     @commands.Cog.listener()
     async def on_command_error(self,ctx,error):
-        """CommandNotFound"""
         if isinstance(error , commands.CommandNotFound):
+            """CommandNotFound"""
             pass
 
             logger.info(f"Error | Komut Bulunamadı : {ctx.message.content} | Tarafından : {ctx.author}")
