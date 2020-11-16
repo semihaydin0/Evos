@@ -8,8 +8,7 @@
 
 ## Sample Commands
 
-![Rate](./images/rate.png)
-![Covid](./images/covid.png)
+![Example](./images/example_commands.png)
 
 ## Commands
 
