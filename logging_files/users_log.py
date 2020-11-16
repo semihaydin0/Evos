@@ -1,5 +1,8 @@
-import logging
+#MIT License
+#Copyright (c) 2020 Semih Aydın
+#UTF-8
 
+import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
