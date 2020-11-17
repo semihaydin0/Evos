@@ -1,3 +1,7 @@
+#MIT License
+#Copyright (c) 2020 Semih Aydın
+#UTF-8
+
 import asyncio
 import datetime as dt
 import random
@@ -254,12 +258,18 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Çık", brief = " Bot bulunduğu ses kanalından çıkar.",aliases=["Leave","leave","çık"])
     async def disconnect_command(self, ctx):
+        """Leave
+        Use of : leave
+        """
         player = self.get_player(ctx)
         await player.teardown()
         logger.info(f"Music | Odadan Ayrılma | Tarafından : {ctx.author}")
 
     @commands.command(name="Çal", brief = "YouTube URL yada arama yaparak ses dosyasını çalar.",aliases=["çal","play","Play"])
     async def play_command(self, ctx, *, query: t.Optional[str]):
+        """Play
+        Use of : play {url/query}
+        """
         player = self.get_player(ctx)
         if not player.is_connected:
             await player.connect(ctx)
@@ -286,6 +296,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Duraklat", brief = "Sesi duraklatır.",aliases=["Pause","duraklat","pause"])
     async def pause_command(self, ctx):
+        """Pause
+        Use of : pause
+        """
         player = self.get_player(ctx)
         if player.is_paused:
             raise PlayerIsAlreadyPaused
@@ -302,6 +315,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Dur", brief = "Sesi durdurur ve listeyi temizler.",aliases=["Stop","stop","dur"])
     async def stop_command(self, ctx):
+        """Stop
+        Use of : stop
+        """
         player = self.get_player(ctx)
         player.queue.empty()
         await player.stop()
@@ -311,6 +327,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Sıradaki", brief = " Listeden bir sonraki şarkıyı çalmaya başlar.",aliases=["skip","Skip","Next","sıradaki","next"])
     async def next_command(self, ctx):
+        """Next
+        Use of : next
+        """
         player = self.get_player(ctx)
         if not player.queue.upcoming:
             raise NoMoreTracks
@@ -330,6 +349,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Önceki", brief = "Listeden bir önceki şarkıyı çalmaya başlar.",aliases=["Previous","previous","önceki"])
     async def previous_command(self, ctx):
+        """Previous
+        Use of : previous
+        """
         player = self.get_player(ctx)
         if not player.queue.history:
             raise NoPreviousTracks
@@ -350,6 +372,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Karıştır", brief = "  Listeyi karıştırır.",aliases=["Shuffle","shuffle","karıştır"])
     async def shuffle_command(self, ctx):
+        """Shuffle
+        Use of : shuffle
+        """
         player = self.get_player(ctx)
         player.queue.shuffle()
         shuffle_embed=discord.Embed(title="Liste karıştırıldı.",colour=0xffd500)
@@ -364,6 +389,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Tekrarla", brief = "Listeyi tekrarlar.",aliases=["Repeat","repeat","tekrarla"])
     async def repeat_command(self, ctx, mode: str):
+        """Repeat
+        Use of : repeat {none/1/all}
+        """
         if mode not in ("none", "1", "all"):
             raise InvalidRepeatMode
         player = self.get_player(ctx)
@@ -374,6 +402,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Liste", brief = "Güncel listenin durumunu görüntüler.",aliases=["Queue","queue","liste"])
     async def queue_command(self, ctx, show: t.Optional[int] = 10):
+        """Queue
+        Use of : queue
+        """
         player = self.get_player(ctx)
         if player.queue.is_empty:
             raise QueueIsEmpty
@@ -400,4 +431,4 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send(embed=queueer_embed)
 
 def setup(bot):
-    bot.add_cog(Music(bot))                                             
+    bot.add_cog(Music(bot))
