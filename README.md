@@ -20,11 +20,15 @@
 
 Evos is currently active on Google Cloud's European servers.
 
-## Build With
-* Python : 3.8.2
+## Important
+> :warning: **Some commands will not work properly if your bot is not verified.**
+
 > :warning: **Your python version must be 3.8>** to use this project
 
 > :warning: Don't forget to run it with **java -jar Lavalink.jar**
+
+## Build With
+* Python : 3.8.2
 
 ## Libraries
 * [Discord.py](https://github.com/Rapptz/discord.py)
