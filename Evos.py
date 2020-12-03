@@ -1,5 +1,11 @@
+#MIT License
+#Copyright (c) 2020 Semih Aydın
+#UTF-8
+
+#EVOS
 import discord
 from discord.ext import commands
+import asyncio
 import json
 import os
 
@@ -27,7 +33,7 @@ client = commands.Bot(command_prefix=get_prefix)
 async def on_ready():
     print(f'{client.user.name} hazır.')
     print(f"{len(client.guilds)} serverda çalışıyor.")
-    await client.change_presence(status=discord.Status.online , activity=discord.Game(f".yardım | 🎵 NEW HIGH QUALITY MUSIC"))
+    await client.change_presence(status=discord.Status.online , activity=discord.Game(f".yardım | 🎵 HIGH QUALITY MUSIC"))
 
 print("Modüller yükleniyor...")
 for filename in os.listdir('./cogs'):
