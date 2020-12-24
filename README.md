@@ -27,7 +27,7 @@ Evos is currently active on Google Cloud's European servers.
 
 > :warning: Don't forget to run it with **java -jar Lavalink.jar**
 
-## Build With
+## Made With
 * Python : 3.9.0
 
 ## Libraries
