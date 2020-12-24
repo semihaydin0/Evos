@@ -28,7 +28,7 @@ Evos is currently active on Google Cloud's European servers.
 > :warning: Don't forget to run it with **java -jar Lavalink.jar**
 
 ## Build With
-* Python : 3.8.2
+* Python : 3.9.0
 
 ## Libraries
 * [Discord.py](https://github.com/Rapptz/discord.py)
@@ -38,9 +38,11 @@ Evos is currently active on Google Cloud's European servers.
 * [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
 * [Matplotlib](https://github.com/matplotlib/matplotlib)
 * [Humanize](https://github.com/jmoiron/humanize)
+* [Cpuinfo](https://github.com/workhorsy/py-cpuinfo)
+* [Uptime](https://github.com/Cairnarvon/uptime)
+* [Psutil](https://github.com/giampaolo/psutil)
 
 ## Installation
-
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install libraries.
 
 ## Contributing
@@ -48,7 +50,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## Contact
 For any problems, you can contact me at the addresses below.
-* Discord : PHOENIX#0001
+* Discord : PHOENIX#7103
 * E-Mail : semihaydn034@gmail.com
 
 ## License
