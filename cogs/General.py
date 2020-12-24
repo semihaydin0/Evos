@@ -5,8 +5,19 @@
 import discord
 from discord.utils import get
 from discord.ext import commands
+import platform
+from cpuinfo import get_cpu_info
+from uptime import uptime
+import psutil
 
 from logging_files.general_log import logger
+
+def get_size(bytes, suffix="B"):
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f}{unit}{suffix}"
+        bytes /= factor
 
 class General(commands.Cog):
     def __init__(self,client):
@@ -104,6 +115,26 @@ class General(commands.Cog):
         await ctx.send(file=file,embed=helpEmbed)
 
         logger.info(f"General | Yardım | Tarafından : {ctx.author}")
+
+    @commands.command(name="Evosinfo",brief="Evos'un istatistiklerini gösterir.",aliases=["evosinfo"])
+    async def info_command(self,ctx):
+        """Stats
+        Use of : stats
+        """
+        svmem = psutil.virtual_memory()
+        day = int(uptime()/3600/24)
+        hours = int(uptime()/3600-day*24)
+        minute = int(uptime()/60)-day*24*60-hours*60
+        second = int(uptime())-day*24*3600-hours*3600-minute*60
+        statsEmbed=discord.Embed(title="📃 Bot Hakkında",color=0xd8f500,timestamp=ctx.message.created_at)
+        statsEmbed.add_field(name="Evos",value=f"Python Sürümü : **{platform.python_version()}**\nDiscord.PY Sürümü : **{discord.__version__}**\nÇalışma Zamanı : **{day} Gün, {hours} Saat, {minute} Dakika, {second} Saniye**\nCPU(İşlemci) : **{get_cpu_info()['brand_raw']}**\nFiziksel Çekirdekler : **{psutil.cpu_count(logical=False)}**\nToplam Çekirdek : **{psutil.cpu_count(logical=True)}**\nOS(İşletim Sistemi) : **{platform.platform()}**\nToplam Bellek : **{get_size(svmem.total)}**\nKullanılabilir Bellek : **{get_size(svmem.available)}**\nKullanılan Bellek : **{get_size(svmem.used)}**\nKullanımdaki Bellek Yüzdesi : **%{svmem.percent}**\nBarındırılan Sunucu : **Google Cloud - Frankfurt(Almanya)**")
+        statsEmbed.set_footer(text=f"Talep Sahibi : {ctx.author.name}",icon_url=ctx.author.avatar_url)
+        file = discord.File("images/evos.png", filename="evos.png")
+        statsEmbed.set_thumbnail(url="attachment://evos.png")
+        
+        await ctx.send(file=file,embed=statsEmbed)
+
+        logger.info(f"General | BotInfo | Tarafından : {ctx.author}")
 
 def setup(client):
     client.add_cog(General(client))
