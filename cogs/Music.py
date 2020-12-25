@@ -396,7 +396,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             raise InvalidRepeatMode
         player = self.get_player(ctx)
         player.queue.set_repeat_mode(mode)
-        repeat_embed=discord.Embed(title="Tekrarlama modu {mode} olarak ayarlandı.",colour=0xffd500)
+        repeat_embed=discord.Embed(title=f"Tekrarlama modu {mode} olarak ayarlandı.",colour=0xffd500)
         await ctx.send(embed=repeat_embed)
         logger.info(f"Music | Tekrarla | Tarafından : {ctx.author}")
 
@@ -410,7 +410,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             raise QueueIsEmpty
         embed = discord.Embed(
             title="Liste",
-            colour=ctx.author.colour,
+            colour=0xffd500,
             timestamp=dt.datetime.utcnow()
         )
         embed.set_footer(text=f"İstek Sahibi : {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
@@ -421,7 +421,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 value="\n".join(t.title for t in upcoming[:show]),
                 inline=False
             )
-        msg = await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
         logger.info(f"Music | Liste | Tarafından : {ctx.author}")
 
     @queue_command.error
@@ -429,6 +429,21 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         if isinstance(exc, QueueIsEmpty):
             queueer_embed=discord.Embed(title="Liste şu anda boş.",colour=0xffd500)
             await ctx.send(embed=queueer_embed)
+
+    @commands.command(name="Volume", brief = "Ses düzeyini ayarlar.",aliases=["volume"])
+    async def volume_command(self,ctx,value:int):
+        """Volume
+        Use of : volume {value}
+        """
+        player = self.get_player(ctx)
+        await player.set_volume(value)
+        volume_embed=discord.Embed(title=f"Ses düzeyi {value} olarak ayarlandı.",description="Varsayılan ses düzeyi 100'dür.",colour=0xffd500)
+        await ctx.send(embed=volume_embed)
+
+    @volume_command.error
+    async def volume_command_error(self,ctx):
+        volumeer_embed=discord.Embed(title=f"Lütfen 0 - 1000 aralığında bir tamsayı giriniz.",colour=0xffd500)
+        await ctx.send(embed=volumeer_embed)
 
 def setup(bot):
     bot.add_cog(Music(bot))
