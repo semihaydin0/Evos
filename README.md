@@ -9,6 +9,7 @@
 ## Sample Commands
 
 ![Example](./images/example_commands.png)
+![Example2](./images/sample2.png)
 
 ## Commands
 
