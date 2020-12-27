@@ -4,7 +4,7 @@
 
 ## ![Evos](./images/evos.png)
 
-🤖 Discord bot with many useful commands inside.
+🤖 A discord bot with many features.
 
 ## Sample Commands
 
