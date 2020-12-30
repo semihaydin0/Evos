@@ -7,7 +7,7 @@ from discord.utils import get
 from discord.ext import commands
 import requests
 from bs4 import BeautifulSoup
-from googletrans import Translator
+from googletrans import Translator """Use new version"""
 import matplotlib.pyplot as coronaplt
 import humanize
 import os
