@@ -25,19 +25,24 @@ class Requests(commands.Cog):
         Use of : corona {country}
         """
 
-        try :
+        try : 
             if CountryName is None :
                 CountryName = "dünya"
+
             translator = Translator()
             translation = translator.translate(CountryName)
             Country = translation.text.title()
+            
             DataUrl = f"https://coronavirus-19-api.herokuapp.com/countries/{Country}"
             
             if Country == "World" :
                 CountryFlag = "https://i.ibb.co/fVJyrgP/world.png"
             else :
-                CountryFlag = f"https://www.countries-ofthe-world.com/flags-normal/flag-of-{Country}.png"
-            
+                try :
+                    CountryFlag = f"https://www.countries-ofthe-world.com/flags-normal/flag-of-{Country}.png"
+                except :
+                    pass
+
             stats = requests.get(DataUrl)
             json_stats = stats.json()
             Cases = json_stats["cases"]
