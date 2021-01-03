@@ -126,7 +126,7 @@ class Admin(commands.Cog):
         activity = ".yardım | "
 
         if name == "default" :
-            activity+="🎵 NEW HIGH QUALITY MUSIC"
+            activity+="🎵 HIGH QUALITY MUSIC"
         else :
             name = name.replace("."," ")
             activity += name

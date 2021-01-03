@@ -2,9 +2,6 @@
 #Copyright (c) 2020 Semih Aydın
 #UTF-8
 
-#Warning: Most of these commands will not work if your bot is an unverified bot.
-#More Information : https://blog.discord.com/the-future-of-bots-on-discord-4e6e050ab52e
-
 import discord
 from discord.utils import get
 from discord.ext import commands

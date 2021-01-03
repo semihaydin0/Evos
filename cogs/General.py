@@ -3,7 +3,6 @@
 #UTF-8
 
 import discord
-from discord.utils import get
 from discord.ext import commands
 import platform
 from cpuinfo import get_cpu_info
@@ -104,7 +103,7 @@ class General(commands.Cog):
         helpEmbed=discord.Embed(title="🤖 Komutlar",description="Komutların kullanımlarını ve işlevlerini görmek için **.help** yazabilirsin.", color=0xd8f500,timestamp=ctx.message.created_at)
         helpEmbed.add_field(name="📜 Temel",value="`Avatar`\n`Bot`\n`Evos`\n`Hesapla`\n`Ping`\n`Profil`\n`Sunucu`\n`Yardım`",inline=True)
         helpEmbed.add_field(name="🛡️ Moderasyon",value="`At`\n`Rename`\n`Sil`\n`Sustur`\n`Unban`\n`Unmute`\n`Yasakla`",inline=True)
-        helpEmbed.add_field(name="🎵 Müzik",value="`Çal`\n`Çık`\n`Dur`\n`Duraklat`\n`Karıştır`\n`Liste`\n`Önceki`\n`Sıradaki`\n`Tekrarla`",inline=True)
+        helpEmbed.add_field(name="🎵 Müzik",value="`Çal`\n`Çık`\n`Dur`\n`Duraklat`\n`Karıştır`\n`Liste`\n`Önceki`\n`Sıradaki`\n`Tekrarla`\n`Volume`",inline=True)
         helpEmbed.add_field(name="⚙️ Sunucu",value="`ChangePrefix`\n`Lvmesaj`\n`ResetConfig`\n`SetAutorole`\n`Wlmesaj`",inline=True)
         helpEmbed.add_field(name="🦾 Gelişmiş",value="`Korona`\n`Kur`",inline=True)
         helpEmbed.set_footer(text=f"Talep Sahibi : {ctx.author.name}",icon_url=ctx.author.avatar_url)
@@ -127,7 +126,7 @@ class General(commands.Cog):
         minute = int(uptime()/60)-day*24*60-hours*60
         second = int(uptime())-day*24*3600-hours*3600-minute*60
         statsEmbed=discord.Embed(title="📃 Bot Hakkında",color=0xd8f500,timestamp=ctx.message.created_at)
-        statsEmbed.add_field(name="Evos",value=f"Python Sürümü : **{platform.python_version()}**\nDiscord.PY Sürümü : **{discord.__version__}**\nÇalışma Zamanı : **{day} Gün, {hours} Saat, {minute} Dakika, {second} Saniye**\nCPU(İşlemci) : **{get_cpu_info()['brand_raw']}**\nFiziksel Çekirdekler : **{psutil.cpu_count(logical=False)}**\nToplam Çekirdek : **{psutil.cpu_count(logical=True)}**\nOS(İşletim Sistemi) : **{platform.platform()}**\nToplam Bellek : **{get_size(svmem.total)}**\nKullanılabilir Bellek : **{get_size(svmem.available)}**\nKullanılan Bellek : **{get_size(svmem.used)}**\nKullanımdaki Bellek Yüzdesi : **%{svmem.percent}**\nBarındırılan Sunucu : **Google Cloud - Frankfurt(Almanya)**")
+        statsEmbed.add_field(name="Evos",value=f"Python Sürümü : **{platform.python_version()}**\nDiscord.PY Sürümü : **{discord.__version__}**\nÇalışma Zamanı : **{day} Gün, {hours} Saat, {minute} Dakika, {second} Saniye**\nCPU(İşlemci) : **{get_cpu_info()['brand_raw']}**\nFiziksel Çekirdekler : **{psutil.cpu_count(logical=False)}**\nToplam Çekirdek : **{psutil.cpu_count(logical=True)}**\nOS(İşletim Sistemi) : **{platform.platform()}**\nToplam Bellek : **{get_size(svmem.total)}**\nKullanılabilir Bellek : **{get_size(svmem.available)}**\nKullanılan Bellek : **{get_size(svmem.used)}**\nKullanımdaki Bellek Yüzdesi : **%{svmem.percent}**\nBarındırılan Sunucu : **Google Cloud - EU WEST**")
         statsEmbed.set_footer(text=f"Talep Sahibi : {ctx.author.name}",icon_url=ctx.author.avatar_url)
         file = discord.File("images/evos.png", filename="evos.png")
         statsEmbed.set_thumbnail(url="attachment://evos.png")

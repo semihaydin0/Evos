@@ -2,16 +2,16 @@
 #Copyright (c) 2020 Semih Aydın
 #UTF-8
 
-#EVOS
 import discord
 from discord.ext import commands
-import asyncio
 import json
 import os
 
+intents = discord.Intents.default()
+intents.members = True
 modules = 0
 loaded = 0
-default_prefix = '.' 
+default_prefix = '.'
 
 def get_prefix(client,message):
     try :
@@ -27,22 +27,23 @@ def get_token():
         token = Data["token"]
     return token
 
-client = commands.Bot(command_prefix=get_prefix)
+client = commands.Bot(command_prefix=get_prefix,intents=intents)
 
 @client.event
 async def on_ready():
     print(f'{client.user.name} hazır.')
-    print(f"{len(client.guilds)} serverda çalışıyor.")
-    await client.change_presence(status=discord.Status.online , activity=discord.Game(f".yardım | 🎵 HIGH QUALITY MUSIC"))
+    print(f"{len(client.guilds)} sunucuda aktif.")
+    await client.change_presence(status=discord.Status.online , 
+        activity=discord.Game(f".yardım | 🎵 HIGH QUALITY MUSIC"))
 
-print("Modüller yükleniyor...")
+print("Modül yükleme işlemi başladı.")
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
-        modules+=1
+        modules += 1
         try :
             client.load_extension(f'cogs.{filename[:-3]}')
             print(f"\t{filename[:-3]} yüklendi.")
-            loaded+=1
+            loaded += 1
         except :
             print(f"\t{filename[:-3]} yüklenemedi.")
 print(f"\t-------------------\n\tToplam Eklenti : \t{modules}\n\tYüklenen Eklenti : \t{loaded}\n\tYüklenemeyen Eklenti : \t{modules-loaded}\n\t-------------------")
