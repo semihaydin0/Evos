@@ -420,7 +420,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         queue_embed = discord.Embed(title="Güncel Liste",colour=0xffd500,timestamp=ctx.message.created_at)
         queue_embed.add_field(name="Mevcut Parça", value=player.queue.current_track.title, inline=False)
         if upcoming := player.queue.upcoming:
-            queue_embed.add_field(name="Sıradaki Parçalar",value="\n".join(t.title for t in upcoming[:20]),inline=False)
+            queue_embed.add_field(name="Sıradaki Parçalar",value="\n".join(t.title for t in upcoming[:100]),inline=False)
         queue_embed.set_footer(text=f"Tarafından : {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
         await ctx.send(embed=queue_embed)
         
