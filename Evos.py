@@ -22,7 +22,7 @@ def get_prefix(client,message):
         return default_prefix
 
 def get_token():
-    with open("./data/token.json", "r") as tokenjsonFile:
+    with open("./data/Token.json", "r") as tokenjsonFile:
         Data = json.load(tokenjsonFile)
         token = Data["token"]
     return token
