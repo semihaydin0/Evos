@@ -11,6 +11,7 @@ import asyncio
 from logging_files.guild_log import logger
 
 dataSource = "./data/ServerData.json"
+dataSource_2 = "./data/ServerConfig.json"
 
 def check_channel(author,channel):
     def inner_check(message):
@@ -29,6 +30,12 @@ def check_prefix(author,channel):
         return len(message.content) <= 3 and message.author == author and message.channel.id == channel
     
     return inner_check
+
+def check_message(author,channel):
+    def inner_check(message):
+        return message.author == author and message.channel.id == channel
+
+    return inner_check    
     
 class Guild(commands.Cog):
     def __init__(self,client):
@@ -168,6 +175,48 @@ class Guild(commands.Cog):
                 await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
                 
                 logger.info(f"Guild | Svreset | Error : {error}")
+
+    @commands.command(name = "Automessage",brief = "İstediğiniz kanalde istediğiniz mesajı otomatik gönderir.",aliases = ["automessage",'otomesaj'])
+    @commands.has_permissions(administrator=True)
+    async def auto_message_scheduler_command(self,ctx):
+        """Auto Message Scheduler
+        Use of : automessage
+        """
+        await ctx.send(f"Selam {ctx.author.mention} !\nBu komut için ilk önce istediğin duyurmak istediğin mesajı belirleyelim.\n`Mesajının maksimum 512 karakter olmasını öneriyoruz.`")
+        
+        try:
+            messageSelection = await self.client.wait_for('message',check = check_message(ctx.author,ctx.message.channel.id) ,timeout=240)
+        except asyncio.TimeoutError:
+            await ctx.send(f"zZ:sleeping:Zz {ctx.author.mention} Maalesef senden herhangi bir yanıt alamadık.")     
+        else :
+            await ctx.send(f"Harika :partying_face: ! Şimdi ise bu mesajın kaç saatte bir yayınlanmasını gerektiğini belirleyelim.\n`Sadece tam sayı girişi yapman gerektiğini unutma. Aksi taktirde bu sistem çalışmayacaktır.`")
+            
+            try:
+                timeSelection = await self.client.wait_for('message',check = check_message(ctx.author,ctx.message.channel.id) ,timeout=30)
+            except asyncio.TimeoutError:
+                await ctx.send(f"zZ:sleeping:Zz {ctx.author.mention} Maalesef senden herhangi bir yanıt alamadık.")
+            else :
+            
+                try :
+                    jsonFile = open(dataSource_2, "r")
+                    ServerConfig = json.load(jsonFile)
+                    jsonFile.close()
+                    
+                    ServerConfig[str(ctx.message.channel.id)] = {}
+                    ServerConfig[str(ctx.message.channel.id)]["auto_message_text"] = messageSelection.content
+                    ServerConfig[str(ctx.message.channel.id)]["auto_message_timer"] = int(timeSelection.content)
+                    ServerConfig[str(ctx.message.channel.id)]["default_time"] = int(timeSelection.content)
+                    
+                    with open (dataSource_2, 'w+') as f:
+                        json.dump(ServerConfig, f,indent=4)
+                    
+                    await ctx.send(f"Harika :partying_face: ! Artık bu kanalda her {timeSelection.content} saatte bir otomatik mesaj yayınlanacak.")
+                    
+                    logger.info(f"Guild | AutoMessage | Sunucu : {ctx.guild.name} | Tarafından : {ctx.author}")
+                except Exception as error:
+                    await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
+                
+                    logger.info(f"Guild | AutoMessage | Error : {error}")
 
     @commands.Cog.listener()
     async def on_member_join(self,member):
