@@ -5,8 +5,11 @@
 import discord
 from discord.utils import get
 from discord.ext import commands
+import json
 
 from logging_files.moderation_log import logger
+
+dataSource = "./data/server/MuteList.json"
 
 class Moderation(commands.Cog):
     def __init__(self,client):
@@ -135,37 +138,59 @@ class Moderation(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    @commands.command(pass_context=True ,name="Sustur", brief = "Üyeyi susturur.",aliases=["sustur","mute"])
-    async def mute_command(self,ctx,member : discord.Member = None):
+    @commands.command(pass_context=True ,name="Sustur", brief = "Üyeyi belirlediğiniz süreye kadar susturur.",aliases=["sustur","mute"])
+    async def mute_command(self,ctx,member : discord.Member = None, minute : int = None):
         """Mute
-        Use of : mute {member}
+        Use of : mute {member} minute
+        Minute <= 0 : Permanent
         """
-        role = discord.utils.get(ctx.guild.roles,name = "Susturulmuş")
+        role = discord.utils.get(ctx.guild.roles,name = "Muted")
         
         if member != ctx.author :
             
             if member in ctx.guild.members :
                 
-                if role in member.roles :
-                    
+                if role in member.roles :  
                     await ctx.send("**Belirtilen üye zaten susturulmuş.**")
+                
                 else :
-                    
                     if role == None :
-                        role = await ctx.guild.create_role(name="Susturulmuş")
+                        role = await ctx.guild.create_role(name="Muted")
                         
                         for channel in ctx.guild.channels:
-                            await channel.set_permissions(role,send_messages = False)
+                            await channel.set_permissions(role,send_messages = False,speak = False)
+
+                    if minute > 0 :
+                        try :
+                            jsonFile = open(dataSource, "r")
+                            muteList = json.load(jsonFile)
+                            jsonFile.close()
                             
+                            muteList[str(member.id)] = {}
+                            muteList[str(member.id)]["TIME_LEFT"] = minute
+                            
+                            with open (dataSource, 'w+') as f:
+                                json.dump(muteList, f,indent=4)
+
                             await member.add_roles(role)
+
+                            mute_embed=discord.Embed(title=f"{member.name} adlı kullanıcı {minute} dakika susturuldu !",colour=0xffd500,timestamp=ctx.message.created_at)
+                            mute_embed.set_footer(text=f"Tarafından : {ctx.author.display_name}",icon_url=ctx.author.avatar_url)    
+                            
+                            await ctx.send(embed=mute_embed)
+
+                            logger.info(f"Moderation | Sustur : {member} Sunucu : {ctx.guild.name}  | Tarafından : {ctx.author}")
+                        except Exception as error:
+                            await ctx.send(":thinking: Görünüşe göre şu anda susturulmuş kullanıcı kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
+                
+                            logger.info(f"Moderation | Mute | Error : {error}")
                     else :
                         await member.add_roles(role)
-                        mute_embed=discord.Embed(title=f"{member.name} adlı kullanıcı susturuldu !",colour=0xffd500,timestamp=ctx.message.created_at)
-                        mute_embed.set_footer(text=f"İstek Sahibi : {ctx.author.display_name}",icon_url=ctx.author.avatar_url)
                         
-                        await ctx.send(embed=mute_embed)
+                        mute2_embed=discord.Embed(title=f"{member.name} adlı kullanıcı süresiz susturuldu !",colour=0xffd500,timestamp=ctx.message.created_at)
+                        mute2_embed.set_footer(text=f"Tarafından : {ctx.author.display_name}",icon_url=ctx.author.avatar_url)    
                         
-                        logger.info(f"Moderation | Susturma : {member} Sunucu : {ctx.guild.name}  | Tarafından : {ctx.author}")
+                        await ctx.send(embed=mute2_embed)         
             else :
                 muteer1_embed=discord.Embed(title=f"{member.name} adlı kullanıcı bu sunucunun bir üyesi değil.",colour=0xffd500)
                 
@@ -178,25 +203,40 @@ class Moderation(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    @commands.command(pass_context=True ,name = "Unmute" ,brief = "Susturulmuş üyenin yasağını kaldırır.",aliases=["unmute"])
+    @commands.command(pass_context=True ,name = "Unmute" ,brief = "Üyenin konuşma yasağını kaldırır.",aliases=["unmute"])
     async def unmute_command(self,ctx,member : discord.Member = None):
         """Unmute
         Use of : unmute {member}
         """
-        role = discord.utils.get(ctx.guild.roles,name = "Susturulmuş")
+        role = discord.utils.get(ctx.guild.roles,name = "Muted")
         
         if member in ctx.guild.members :
             
             if role != None :
                 
                 if role in member.roles:
-                    await member.remove_roles(role)
-                    unmute_embed=discord.Embed(title=f"{member.name} adlı kullanıcının susturulma cezası kaldırıldı !",colour=0xffd500,timestamp=ctx.message.created_at)
-                    unmute_embed.set_footer(text=f"İstek Sahibi : {ctx.author.display_name}",icon_url=ctx.author.avatar_url)
+                    try :
+                        with open(dataSource, 'rb') as fp:
+                            jsondata = json.load(fp)
+                        
+                        jsondata[str(member.id)] = {}
+                        jsondata[str(member.id)]["TIME_LEFT"] = -1
+                        
+                        with open (dataSource, 'w+') as f:
+                            json.dump(jsondata, f,indent=4)
+                        
+                        await member.remove_roles(role)
+                        
+                        unmute_embed=discord.Embed(title=f"{member.name} adlı kullanıcının susturulma cezası kaldırıldı !",colour=0xffd500,timestamp=ctx.message.created_at)
+                        unmute_embed.set_footer(text=f"İstek Sahibi : {ctx.author.display_name}",icon_url=ctx.author.avatar_url)
                     
-                    await ctx.send(embed=unmute_embed)
+                        await ctx.send(embed=unmute_embed)
                     
-                    logger.info(f"Moderation | Susturma Kaldırma : {member} Sunucu : {ctx.guild.name}  | Tarafından : {ctx.author}")
+                        logger.info(f"Moderation | Unmute : {member} Sunucu : {ctx.guild.name}  | Tarafından : {ctx.author}")
+                    except Exception as error:
+                        await ctx.send(":thinking: Görünüşe göre şu anda susturulmuş kullanıcı kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
+                
+                        logger.info(f"Moderation | Unmute | Error : {error}")
                 else :
                     unmuteer1_embed=discord.Embed(title=f"{member.name} adlı kullanıcının susturma cezası bulunamadı.",colour=0xffd500)
                     await ctx.send(embed=unmuteer1_embed)
