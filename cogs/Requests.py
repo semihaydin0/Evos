@@ -89,16 +89,16 @@ class Requests(commands.Cog):
             CountryNameTR = translator.translate(CountryName,dest="tr")
             TRCountry = CountryNameTR.text.title()
 
-            Stats = discord.Embed(title=f"{TRCountry} COVID-19 İstatistikleri", colour=0xffd500, timestamp=ctx.message.created_at)
-            Stats.add_field(name="Bugünkü Vaka", value=todayCases, inline=True)
-            Stats.add_field(name="Bugünkü Ölüm", value=todayDeaths, inline=True)
-            Stats.add_field(name="Toplam Vaka", value=totalCases, inline=True)
-            Stats.add_field(name="Toplam Ölüm", value=totalDeaths, inline=True)
-            Stats.add_field(name="Toplam Test", value=totalTests, inline=True)
-            Stats.add_field(name="Toplam İyileşen", value=recovered, inline=True)
-            Stats.add_field(name="Ağır Hasta", value=critical, inline=True)
-            Stats.add_field(name="Aktif Vaka", value=active, inline=True)
-            Stats.add_field(name="Bir Milyon Başına Vaka", value=casesPerOneMillion, inline=True)
+            coronaStatsEmbed = discord.Embed(title=f"{TRCountry} COVID-19 İstatistikleri", colour=0xffd500, timestamp=ctx.message.created_at)
+            coronaStatsEmbed.add_field(name="Bugünkü Vaka", value=todayCases, inline=True)
+            coronaStatsEmbed.add_field(name="Bugünkü Ölüm", value=todayDeaths, inline=True)
+            coronaStatsEmbed.add_field(name="Toplam Vaka", value=totalCases, inline=True)
+            coronaStatsEmbed.add_field(name="Toplam Ölüm", value=totalDeaths, inline=True)
+            coronaStatsEmbed.add_field(name="Toplam Test", value=totalTests, inline=True)
+            coronaStatsEmbed.add_field(name="Toplam İyileşen", value=recovered, inline=True)
+            coronaStatsEmbed.add_field(name="Ağır Hasta", value=critical, inline=True)
+            coronaStatsEmbed.add_field(name="Aktif Vaka", value=active, inline=True)
+            coronaStatsEmbed.add_field(name="Bir Milyon Başına Vaka", value=casesPerOneMillion, inline=True)
 
             labels = ['İyileşen', 'Ölen','Aktif']
             quantity = [Recover/Cases, Deaths/Cases,(Cases-Deaths-Recover)/Cases]
@@ -113,21 +113,22 @@ class Requests(commands.Cog):
 
             file = discord.File("chart.png", filename="image.png")
 
-            Stats.set_image(url="attachment://image.png")
-            Stats.set_thumbnail(url=CountryFlag)
-            Stats.set_footer(text=f"İstek Sahibi : {ctx.author.name}",icon_url=ctx.author.avatar_url)
+            coronaStatsEmbed.set_image(url="attachment://image.png")
+            coronaStatsEmbed.set_thumbnail(url=CountryFlag)
+            coronaStatsEmbed.set_footer(text=f"Tarafından : {ctx.author.name}",icon_url=ctx.author.avatar_url)
 
-            await ctx.send(file=file,embed=Stats)
+            await ctx.send(file=file,embed=coronaStatsEmbed)
 
             os.remove("chart.png")
 
             logger.info(f"Requests | COVID-19 | Tarafından : {ctx.author}")
         except :
-            await ctx.send("Bilinmeyen ülke adı ya da veri alınan sunucu yanıt vermiyor.Daha sonra tekrar deneyebilirsin.")
+            coronaStatsErrorEmbed = discord.Embed(title="Hata",description ="Bilinmeyen ülke adı ya da veri sunucusu yanıt vermiyor.",colour = 0xffd500)
+            await ctx.send(embed=coronaStatsErrorEmbed)
 
-    @commands.command(pass_context=True ,name="Döviz", brief = "Anlık döviz bilgilerini getirir.",aliases = ['döviz','Kur','kur'])
+    @commands.command(pass_context=True ,name="Kur", brief = "Anlık döviz bilgilerini getirir.",aliases = ['döviz','Döviz','kur'])
     async def currency_command(self,ctx):
-        """Value of love turkish lira against other currencies
+        """The value of the Turkish lira against other currencies and cryptocurrencies
         Use of : kur
         """
 
@@ -153,28 +154,45 @@ class Requests(commands.Cog):
             if GBPPer.startswith('-') == False:
                 GBPPer = f"+{GBPPer}"
 
-            exUSD = 1/float(USD)
-            exUSD=round(exUSD,4)
-            exEUR = 1/float(EUR)
-            exEUR=round(exEUR,4)
-            exGBP = 1/float(GBP)
-            exGBP=round(exGBP,4)
+            exUSD=round(1/float(USD),4)
+            exEUR=round(1/float(EUR),4)
+            exGBP=round(1/float(GBP),4)
 
-            ForeignC = discord.Embed(title="Canlı Döviz Kurları",colour = 0xffd500,timestamp = ctx.message.created_at)
+            CryptoBTC = requests.get('https://bitcoin.tlkur.com/')
+            BSoup = BeautifulSoup(CryptoBTC.content,'html.parser')
+            BTCCur = BSoup.find("span",{"id" :"BTCTL_rate"})
+            
+            CryptoETH = requests.get('https://ethereum.tlkur.com/')
+            BSoup = BeautifulSoup(CryptoETH.content,'html.parser')
+            ETHCur = BSoup.find("span",{"id" :"ETHTL_rate"})
+            
+            CryptoXRP = requests.get('https://ripple.tlkur.com/')
+            BSoup = BeautifulSoup(CryptoXRP.content,'html.parser')
+            XRPCur = BSoup.find("span",{"id" :"XRPTL_rate"})
+
+            BTC = round(float(BTCCur.text),2)
+            ETH = round(float(ETHCur.text),2)
+            XRP = round(float(XRPCur.text),2)
+
+            currencyEmbed = discord.Embed(title="Canlı Döviz Kuru ve Kripto Paralar",colour = 0xffd500,timestamp = ctx.message.created_at)
             
             file = discord.File("images/dollar.png", filename="dollar.png")
             
-            ForeignC.set_thumbnail(url="attachment://dollar.png")
-            ForeignC.add_field(name=f":flag_us:    {USDPer}",value = f'1 $ = **{USD}** ₺\n1 ₺ = **{exUSD}** $')
-            ForeignC.add_field(name=f":flag_eu:    {EURPer}",value = f'1 € = **{EUR}** ₺\n1 ₺ = **{exEUR}** €')
-            ForeignC.add_field(name=f":flag_gb:    {GBPPer}",value = f'1 £ = **{GBP}** ₺\n1 ₺ = **{exGBP}** £')
-            ForeignC.set_footer(text=f"İstek Sahibi : {ctx.author.name}",icon_url=ctx.author.avatar_url)
+            currencyEmbed.set_thumbnail(url="attachment://dollar.png")
+            currencyEmbed.add_field(name=f":flag_us:    {USDPer}",value = f'1 $ = **{USD}** ₺\n1 ₺ = **{exUSD}** $')
+            currencyEmbed.add_field(name=f":flag_eu:    {EURPer}",value = f'1 € = **{EUR}** ₺\n1 ₺ = **{exEUR}** €')
+            currencyEmbed.add_field(name=f":flag_gb:    {GBPPer}",value = f'1 £ = **{GBP}** ₺\n1 ₺ = **{exGBP}** £')
+            currencyEmbed.add_field(name=f"Bitcoin",value = f'1 ₿ = **{BTC}** ₺\n1 ₺ = **{round(1/float(BTC),7)}** ₿')
+            currencyEmbed.add_field(name=f"Ethereum",value = f'1 Ξ = **{ETH}** ₺\n1 ₺ = **{round(1/float(ETH),6)}** Ξ')
+            currencyEmbed.add_field(name=f"Ripple",value = f'1 X = **{XRP}** ₺\n1 ₺ = **{round(1/float(XRP),2)}** X')
+            currencyEmbed.set_footer(text=f"Tarafından : {ctx.author.name}",icon_url=ctx.author.avatar_url)
             
-            await ctx.send(file=file,embed=ForeignC)
+            await ctx.send(file=file,embed=currencyEmbed)
             
             logger.info(f"Requests | Kur | Tarafından : {ctx.author}")
         except :
-            await ctx.send("Veri alınan sunucu yanıt vermiyor.Daha sonra tekrar deneyebilirsin.")
+            currencyErrorEmbed = discord.Embed(title="Hata",description ="Veri sunucusu yanıt vermiyor.",colour = 0xffd500)
+            await ctx.send(embed=currencyErrorEmbed)
         
 def setup(client):
     client.add_cog(Requests(client))
