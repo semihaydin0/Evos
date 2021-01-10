@@ -43,16 +43,15 @@ class Events(commands.Cog):
                     
                     try :
                         currentTimeLeft = svConfig[str(channel.id)]['auto_message_timer']
-                        
+                        defaultTime = svConfig[str(channel.id)]['default_time']
                         if currentTimeLeft > 0 :
                             
                             if currentTimeLeft - 1 == 0 :
                                 svConfig[str(channel.id)]['auto_message_timer'] = svConfig[str(channel.id)]['default_time']
                             else :
                                 svConfig[str(channel.id)]['auto_message_timer'] = currentTimeLeft - 1
-                        else :
+                        elif defaultTime > 0:
                             svConfig[str(channel.id)]['auto_message_timer'] = svConfig[str(channel.id)]['default_time']
-                        
                         with open (dataSource, 'w+') as f:
                             json.dump(svConfig, f,indent=4)    
                     except :

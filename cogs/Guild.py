@@ -10,8 +10,8 @@ import asyncio
 
 from logging_files.guild_log import logger
 
-dataSource = "./data/ServerData.json"
-dataSource_2 = "./data/ServerConfig.json"
+dataSource = "./data/server/ServerData.json"
+dataSource_2 = "./data/server/ServerConfig.json"
 
 def check_channel(author,channel):
     def inner_check(message):
@@ -158,8 +158,8 @@ class Guild(commands.Cog):
 
     @commands.command(name = "ResetConfig",brief = "Sunucu için ayarlanmış olan tüm bilgileri siler.",aliases = ["resetconfig"])
     @commands.has_permissions(administrator=True)
-    async def serverdata_reset_command(self,ctx):
-        """Reset Server Data
+    async def serverconfig_reset_command(self,ctx):
+        """Reset Server Config
         Use of : resetconfig
         """
         try :
@@ -170,7 +170,23 @@ class Guild(commands.Cog):
             data[str(ctx.author.guild.id)]["custom_prefix"] = "."
             with open (dataSource, 'w+') as f:
                 json.dump(data, f,indent=4)
-            await ctx.send(f"Harika :partying_face: ! Bu sunucunun tüm ayarları sıfırlandı.Evos'un komut ön eki varsayılan(**.(nokta)**) olarak ayarlandı.")
+            
+            jsonFile = open(dataSource_2, "r")
+            ServerConfig = json.load(jsonFile)
+            jsonFile.close()
+            for channel in ctx.message.guild.channels :
+                try :
+                    temp = ServerConfig[str(channel.id)]['auto_message_text']
+                    ServerConfig[str(channel.id)] = {}
+                    ServerConfig[str(channel.id)]["auto_message_text"] = "DELETED CONTENT"
+                    ServerConfig[str(channel.id)]["auto_message_timer"] = 0
+                    ServerConfig[str(channel.id)]["default_time"] = -1
+                except :
+                    pass
+            with open (dataSource_2, 'w+') as f:
+                json.dump(ServerConfig, f,indent=4)
+            
+            await ctx.send(f"Harika :partying_face: ! Bu sunucuya ait tüm ayarları sıfırlandı.Evos'un komut ön eki varsayılan(**.(nokta)**) olarak ayarlandı.")
         except Exception as error:
                 await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
                 
