@@ -4,7 +4,6 @@
 
 import discord
 from discord.ext import commands
-
 from logging_files.error_log import logger
 
 class Error(commands.Cog):
@@ -17,25 +16,31 @@ class Error(commands.Cog):
             """CommandNotFound"""
             pass
 
-            logger.info(f"Error | Komut Bulunamadı : {ctx.message.content} | Tarafından : {ctx.author}")
+            logger.info(f"Error | CommandNotFound : {ctx.message.content} | Tarafından : {ctx.author}")
 
         if isinstance(error , commands.MissingRequiredArgument):
             """MissingRequiredArgument"""
-            await ctx.send(f"{ctx.author.mention} Eksik argüman girişi. **.help <komut>** yazıp komut için gerekli olan argümana ulaşabilirsin.")
+            commandErrorEmbed = discord.Embed(title="Eksik Argüman Girişi",description="Gerekli argümanlara **.help** komutu ile ulaşabilirsin.",colour = 0xffd500)
+            
+            await ctx.send(embed = commandErrorEmbed)
 
-            logger.info(f"Error | Komut : {ctx.message.content} | Eksik Argüman Tespiti : {ctx.author}")
+            logger.info(f"Error | Komut : {ctx.message.content} | MissingRequiredArgument : {ctx.author}")
 
         if isinstance(error , commands.MissingPermissions):
             """MissingPermissions"""
-            await ctx.send(f"{ctx.author.mention} Bu komut için yeterli yetkiye sahip değilsin. **.yardım** yazarak diğer komutlara göz atabilirsin.")
+            commandErrorEmbed_2 = discord.Embed(title="Yetersiz Yetki",description="Diğer komutlara **.yardım** komutu ile ulaşabilirsin.",colour = 0xffd500)
+            
+            await ctx.send(embed = commandErrorEmbed_2)
 
-            logger.info(f"Error | Komut : {ctx.message.content} | Eksik Yetki : {ctx.author}")
+            logger.info(f"Error | Komut : {ctx.message.content} | MissingPermissions : {ctx.author}")
 
         if isinstance(error, commands.BotMissingPermissions):
             """BotMissingPermissions"""
-            await ctx.send(f"{ctx.author.mention} Bu komut için Evos'un **yönetici** rolüne ihtiyacı var. Roller kısmından Evos rolüne yönetici izni vermeni öneriyoruz.")
+            commandErrorEmbed_3 = discord.Embed(title="Yetersiz Yetki",description=f"{self.client.user.name} bu komutu gerekli izinlere sahip olmadan uygulayamaz.",colour = 0xffd500)
+            
+            await ctx.send(embed = commandErrorEmbed_3)
 
-            logger.info(f"Error | Komut : {ctx.message.content} | Evos yeterli yetkiye sahip değil : {ctx.guild.name}")
+            logger.info(f"Error | Komut : {ctx.message.content} | BotMissingPermissions : {ctx.guild.name}")
 
 def setup(client):
     client.add_cog(Error(client))
