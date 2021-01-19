@@ -7,6 +7,9 @@ from discord.utils import get
 from discord.ext import commands
 import json
 import asyncio
+from PIL import Image,ImageFont,ImageDraw
+import io
+import os
 from logging_files.guild_log import logger
 
 dataSource = "./data/server/ServerData.json"
@@ -285,13 +288,41 @@ class Guild(commands.Cog):
                 channel = discord.utils.get(member.guild.text_channels, id=int(channelID))
                 
                 if channel != None :
-                    welcomeEmbed = discord.Embed(title = "Bir yeni üye daha !",description = f"Aramıza hoşgeldin {member.mention} !",colour=0xd8f500)
-                    welcomeEmbed.set_author(name=member.guild.name,icon_url=member.guild.icon_url)
-                    welcomeEmbed.set_thumbnail(url=member.avatar_url)
-                    file = discord.File("images/evos.png", filename="evos.png")
-                    welcomeEmbed.set_footer(text=f"{len(member.guild.members)}.Üye",icon_url="attachment://evos.png")                  
+                    welcomeImg = Image.open("./images/info-background.jpg")
+                    draw = ImageDraw.Draw(welcomeImg)
+                    W = 1920
+                    defaultSize = 80
+                    if len(member.guild.name)>50 :
+                        defaultSize -= len(member.guild.name) - 25
+ 
+                    headerFont = ImageFont.truetype("./assets/fonts/SansitaSwashed-VariableFont_wght.ttf", 150)
+                    defaultFont = ImageFont.truetype("./assets/fonts/Oxanium-Regular.ttf", defaultSize)
                     
-                    await channel.send(file=file,embed=welcomeEmbed)         
+                    headerMessage = "HOŞGELDİN"
+                    countMemberMessage = f"{member.guild.name} | {len(member.guild.members)}.ÜYE"
+
+                    w,h = draw.textsize(headerMessage,font=headerFont)
+
+                    draw.text(((W-w)/2,50), headerMessage, (255, 255, 255), font=headerFont)
+                    w,h = draw.textsize(countMemberMessage,font=defaultFont)
+                    draw.text(((W-w)/2,900), countMemberMessage, (255, 255, 255), font=defaultFont)
+
+                    member_avatar_asset = member.avatar_url_as(format='jpg', size=512)
+                    member_buffer_avatar = io.BytesIO(await member_avatar_asset.read())
+
+                    member_image = Image.open(member_buffer_avatar)
+                    member_image = member_image.resize((512, 512))
+
+                    circle_image = Image.new('L', (512, 512))
+                    circle_draw = ImageDraw.Draw(circle_image)
+                    circle_draw.ellipse((0, 0, 512, 512), fill=255)
+
+                    welcomeImg.paste(member_image, (704, 300), circle_image)
+                    welcomeImg.save(f"{member.id}.png")
+                    
+                    await channel.send(f"Hoşgeldin, {member.mention}!",file=discord.File(f"{member.id}.png"))
+
+                    os.remove(f"{member.id}.png")
         except Exception as error:
             logger.info(f"Guild | Data | Error : {error}")
             pass
@@ -308,13 +339,41 @@ class Guild(commands.Cog):
                 channel = discord.utils.get(member.guild.text_channels, id=int(channelID))
                 
                 if channel != None :
-                    leaveEmbed = discord.Embed(title = "Aramızdan birisi eksildi !",description = f"{member.mention} Aramızdan ayrıldı !",colour=0xd8f500)
-                    leaveEmbed.set_author(name=member.guild.name,icon_url=member.guild.icon_url)
-                    leaveEmbed.set_thumbnail(url=member.avatar_url)
-                    file = discord.File("images/evos.png", filename="evos.png")
-                    leaveEmbed.set_footer(text=f"{len(member.guild.members)} Üye",icon_url="attachment://evos.png")      
+                    leaveImg = Image.open("./images/info-background.jpg")
+                    draw = ImageDraw.Draw(leaveImg)
+                    W = 1920
+                    defaultSize = 80
+                    if len(member.guild.name)>50 :
+                        defaultSize -= len(member.guild.name) - 25
+ 
+                    headerFont = ImageFont.truetype("./assets/fonts/SansitaSwashed-VariableFont_wght.ttf", 150)
+                    defaultFont = ImageFont.truetype("./assets/fonts/Oxanium-Regular.ttf", defaultSize)
                     
-                    await channel.send(file=file,embed=leaveEmbed)
+                    headerMessage = "GÜLE GÜLE"
+                    countMemberMessage = f"{member.guild.name} | {len(member.guild.members)} ÜYE"
+
+                    w,h = draw.textsize(headerMessage,font=headerFont)
+
+                    draw.text(((W-w)/2,50), headerMessage, (255, 255, 255), font=headerFont)
+                    w,h = draw.textsize(countMemberMessage,font=defaultFont)
+                    draw.text(((W-w)/2,900), countMemberMessage, (255, 255, 255), font=defaultFont)
+
+                    member_avatar_asset = member.avatar_url_as(format='jpg', size=512)
+                    member_buffer_avatar = io.BytesIO(await member_avatar_asset.read())
+
+                    member_image = Image.open(member_buffer_avatar)
+                    member_image = member_image.resize((512, 512))
+
+                    circle_image = Image.new('L', (512, 512))
+                    circle_draw = ImageDraw.Draw(circle_image)
+                    circle_draw.ellipse((0, 0, 512, 512), fill=255)
+
+                    leaveImg.paste(member_image, (704, 300), circle_image)
+                    leaveImg.save(f"{member.id}.png")
+                    
+                    await channel.send(f"{member.mention}, aramızdan ayrıldı!",file=discord.File(f"{member.id}.png"))
+
+                    os.remove(f"{member.id}.png")
                 else :
                     pass
             except :
@@ -338,7 +397,7 @@ class Guild(commands.Cog):
                 infoEmbed.add_field(name="Komut Listesi",value="Komutları görmek için **.yardım** yazabirsin.",inline=False)
                 infoEmbed.add_field(name="Geliştirici misin ?",value="[Buradan](https://github.com/semihaydin0/Evos) kaynak kodlarını inceleyebilirsin.",inline=False)
                 file = discord.File("images/evos.png", filename="evos.png")
-                infoEmbed.set_thumbnail(url="attachment://evos.png")          
+                infoEmbed.set_thumbnail(url="attachment://evos.png")
                 
                 await guild.text_channels[0].send(file=file,embed=infoEmbed)
             except :
