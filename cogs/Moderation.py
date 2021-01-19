@@ -216,15 +216,18 @@ class Moderation(commands.Cog):
             if role in member.roles:
                 
                 try :
-                    with open(dataSource, 'rb') as fp:
-                        jsondata = json.load(fp)
+                    try :
+                        with open(dataSource, 'rb') as fp:
+                            jsondata = json.load(fp)
                         
-                    jsondata[str(member.id)] = {}
-                    jsondata[str(member.id)]["TIME_LEFT"] = -1
+                        jsondata[str(member.id)] = {}
+                        jsondata[str(member.id)]["TIME_LEFT"] = -1
                         
-                    with open (dataSource, 'w+') as f:
-                        json.dump(jsondata, f,indent=4)
-                        
+                        with open (dataSource, 'w+') as f:
+                            json.dump(jsondata, f,indent=4)
+                    except :
+                        await ctx.send(":thinking: Görünüşe göre şu anda susturulmuş kullanıcı kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
+                    
                     await member.remove_roles(role)
                         
                     unmuteEmbed=discord.Embed(title=f"{member} adlı kullanıcının susturulma cezası kaldırıldı!",colour=0xffd500,timestamp=ctx.message.created_at)
@@ -234,15 +237,17 @@ class Moderation(commands.Cog):
                     
                     logger.info(f"Moderation | Unmute | Tarafından: {ctx.author}")
                 except :
-                    await ctx.send(":thinking: Görünüşe göre şu anda susturulmuş kullanıcı kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
+                    unmuteEmbed_2=discord.Embed(title="Hata",description=f"Bu işlem için Muted rolünün kademesi {self.client.user.name} rolünden en az 1 kademe altında olması gerekir.",colour=0xffd500)
+            
+                    await ctx.send(embed = unmuteEmbed_2)
             else :
-                unmuteEmbed_2=discord.Embed(title="Hata",description=f"{member} adlı kullanıcının susturma cezası bulunamadı.",colour=0xffd500)
+                unmuteEmbed_3=discord.Embed(title="Hata",description=f"{member} adlı kullanıcının susturma cezası bulunamadı.",colour=0xffd500)
 
-                await ctx.send(embed=unmuteEmbed_2)
+                await ctx.send(embed=unmuteEmbed_3)
         else :
-            unmuteEmbed_3=discord.Embed(title="Hata",description="Daha önceden kimse susturulmamış ya da rol silinmiş olabilir.",colour=0xffd500)
+            unmuteEmbed_4=discord.Embed(title="Hata",description="Daha önceden kimse susturulmamış ya da rol silinmiş olabilir.",colour=0xffd500)
 
-            await ctx.send(embed=unmuteEmbed_3)
+            await ctx.send(embed=unmuteEmbed_4)
 
     @commands.guild_only()
     @commands.has_permissions(change_nickname=True)
