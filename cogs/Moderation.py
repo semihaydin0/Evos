@@ -6,7 +6,6 @@ import discord
 from discord.utils import get
 from discord.ext import commands
 import json
-
 from logging_files.moderation_log import logger
 
 dataSource = "./data/server/MuteList.json"
@@ -18,85 +17,85 @@ class Moderation(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
-    @commands.command(pass_context=True ,name= "Sil", brief = "Metin kanalından mesaj siler.",aliases=["sil","purge"])
-    async def purge_command(self,ctx,amount : int):
+    @commands.command(name= "Sil", brief = "Metin kanalından mesaj siler.",aliases=['sil','Purge','purge'])
+    async def purge_command(self,ctx,amount: int):
         """Purge
         Use of : purge {amount}
         """
-        channel = ctx.message.channel
-        cleaned = await channel.purge(limit=amount + 1)
-        purge_embed=discord.Embed(title=f"Bu kanaldan {len(cleaned)-1} mesaj silindi.",colour=0xffd500)
-        purge_embed.set_footer(text=f"Talep sahibi : {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
+        if amount <= 100 :
+            cleaned = await ctx.message.channel.purge(limit=amount + 1)
+            purgeEmbed=discord.Embed(title=f"Bu kanaldan {len(cleaned)-1} mesaj silindi.",colour=0xffd500)
+            purgeEmbed.set_footer(text=f"Tarafından: {ctx.author}", icon_url=ctx.author.avatar_url)
         
-        await ctx.send(embed=purge_embed, delete_after=5.0)
+            await ctx.send(embed=purgeEmbed, delete_after=3)
         
-        logger.info(f"Moderation | Mesaj Silme : {len(cleaned)-1}  | Tarafından : {ctx.author}")
+            logger.info(f"Moderation | Purge | Tarafından: {ctx.author}")
+        else:
+            purgeEmbed_2=discord.Embed(title="Hata",description="Tek seferde 100'den fazla mesaj silemezsiniz.",colour=0xffd500)
+            
+            await ctx.send(embed = purgeEmbed_2)
 
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(kick_members=True)
-    @commands.command(pass_context=True , name = "At",brief = "Sunucudan üye atar.",aliases=["at","kick"])
-    async def kick_command(self,ctx,member : discord.Member,reason=None):
+    @commands.command(name = "At",brief = "Sunucudan üye atar.",aliases=['at','Kick','kick'])
+    async def kick_command(self,ctx,member: discord.Member, *,reason: str=None):
         """Kick
         Use of : kick {member} (reason)
         """
         if member != ctx.author :
-
-            if member in ctx.guild.members :
-
-                if reason==None :
-                    reason = "Belirtilmemiş"
+            
+            if reason==None :
+                reason = "Belirtilmemiş"
                 
-                await member.kick(reason=reason)
-                file = discord.File("./images/kick.gif", filename="kick.gif")
+            await member.kick(reason=reason)
+            file = discord.File("./images/kick.gif", filename="kick.gif")
 
-                kick_embed=discord.Embed(title=f"{member.display_name} adlı kullanıcı sunucudan atıldı!",description=f"Sebep : {reason}",colour=0xffd500,timestamp=ctx.message.created_at)
-                kick_embed.set_image(url="attachment://kick.gif")
-                kick_embed.set_footer(text=f"İstek Sahibi : {ctx.author.display_name}",icon_url=ctx.author.avatar_url)
+            kickEmbed=discord.Embed(title=f"{member} sunucudan atıldı!",description=f"Sebep: {reason}",colour=0xffd500,timestamp=ctx.message.created_at)
+            kickEmbed.set_image(url="attachment://kick.gif")
+            kickEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
 
-                await ctx.send(file=file,embed=kick_embed)
+            await ctx.send(file=file,embed=kickEmbed)
 
-                logger.info(f"Moderation | Üye Atma : {member} Sunucu : {ctx.guild.name}  | Tarafından : {ctx.author}")
-            else :
-                await ctx.send(f"**{member.mention} adlı kullanıcı bu sunucunun bir üyesi değil.**")
+            logger.info(f"Moderation | Kick | Tarafından: {ctx.author}")
         else :
-            await ctx.send(f"**Belirtilen kullanıcı ile istek sahibi aynı olamaz.**")
+            kickEmbed_2=discord.Embed(title="Hata",description="Hatalı argüman kullanımı.",colour=0xffd500)
+            
+            await ctx.send(embed = kickEmbed_2)
 
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
-    @commands.command(pass_context=True ,name="Yasakla" ,brief = "Sunucudan üye yasaklar.",aliases=["yasakla","ban"])
-    async def ban_command(self,ctx,member : discord.Member,reason=None):
+    @commands.command(name="Yasakla" ,brief = "Sunucudan üye yasaklar.",aliases=['yasakla','Ban','ban'])
+    async def ban_command(self,ctx,member: discord.Member, *,reason: str=None):
         """Ban
         Use of : ban {member} (reason)
         """
-        if member != ctx.author :
+        if member != ctx.author :              
             
-            if ctx.guild.get_member(member.id) is not None :
+            if reason == None :
+                reason = "Belirtilmemiş"
                 
-                if reason == None :
-                    reason = "Belirtilmemiş"
+            await member.ban(reason=reason)
+            file = discord.File("./images/banned.gif", filename="banned.gif")
                 
-                await member.ban(reason=reason)
-                file = discord.File("./images/banned.gif", filename="banned.gif")
+            banEmbed=discord.Embed(title=f"{member} sunucudan yasaklandı!",description=f"Sebep: {reason}",colour=0xffd500,timestamp=ctx.message.created_at)    
+            banEmbed.set_image(url="attachment://banned.gif")
+            banEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
                 
-                ban_embed=discord.Embed(title=f"{member.display_name} adlı kullanıcı sunucudan yasaklandı!",description=f"Sebep : {reason}",colour=0xffd500,timestamp=ctx.message.created_at)    
-                ban_embed.set_image(url="attachment://banned.gif")
-                ban_embed.set_footer(text=f"İstek Sahibi : {ctx.author.display_name}",icon_url=ctx.author.avatar_url)
+            await ctx.send(file=file,embed=banEmbed)
                 
-                await ctx.send(file=file,embed=ban_embed)
-                
-                logger.info(f"Moderation | Yasaklama : {member} Sunucu : {ctx.guild.name}  | Tarafından : {ctx.author}")
-            else :
-                await ctx.send(f"**{member.mention} adlı kullanıcı bu sunucunun bir üyesi değil.**")
+            logger.info(f"Moderation | Ban | Tarafından: {ctx.author}")
         else :
-            await ctx.send(f"**Belirtilen kullanıcı ile istek sahibi aynı olamaz.**")
+            banEmbed_2=discord.Embed(title="Hata",description="Hatalı argüman kullanımı.",colour=0xffd500)
+            
+            await ctx.send(embed = banEmbed_2)
 
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
-    @commands.command(pass_context=True , name ="Unban",brief = "Yasaklanan üyenin yasağını kaldırır.",aliases=["unban"])
-    async def unban_command(self,ctx,member):
+    @commands.command(name ="Unban",brief = "Yasaklanan üyenin yasağını kaldırır.",aliases=["unban"])
+    async def unban_command(self,ctx,member: str):
         """Unban
         Use of : unban {member}
         """
@@ -118,28 +117,28 @@ class Moderation(commands.Cog):
                 if (user.name,user.discriminator) == (member_name,member_discriminator) :
                     
                     await ctx.guild.unban(user)
-                    unban_embed=discord.Embed(title=f"{user} adlı kullanıcının yasaklanması kaldırıldı !",colour=0xffd500,timestamp=ctx.message.created_at)
-                    unban_embed.set_footer(text=f"İstek Sahibi : {ctx.author.display_name}",icon_url=ctx.author.avatar_url)
+                    unbanEmbed=discord.Embed(title=f"{user} adlı kullanıcının yasaklanması kaldırıldı!",colour=0xffd500,timestamp=ctx.message.created_at)
+                    unbanEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
                     
-                    await ctx.send(embed=unban_embed)
+                    await ctx.send(embed=unbanEmbed)
                     status = True
                     
-                    logger.info(f"Moderation | Yasaklama Kaldırma : {member} Sunucu : {ctx.guild.name}  | Tarafından : {ctx.author}")
+                    logger.info(f"Moderation | Unban | Tarafından: {ctx.author}")
             
             if status == False :
-                unbaner1_embed=discord.Embed(title="Belirtilen kullanıcı yasaklananlar listesinde bulunamadı.",colour=0xffd500)
-                
-                await ctx.send(embed=unbaner1_embed)
+                unbanEmbed_2=discord.Embed(title="Hata",description="Belirtilen kullanıcı yasaklananlar listesinde bulunamadı.",colour=0xffd500)
+
+                await ctx.send(embed=unbanEmbed_2)
         else :
-            unbaner2_embed=discord.Embed(title="Üyenin tam adınını giriniz.",description="Örnek : USER#0001",colour=0xffd500)
+            unbanEmbed_3=discord.Embed(title="Hata",description="Üyenin tam adını giriniz.",colour=0xffd500)
             
-            await ctx.send(embed=unbaner2_embed)
+            await ctx.send(embed = unbanEmbed_3)
 
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    @commands.command(pass_context=True ,name="Sustur", brief = "Üyeyi belirlediğiniz süreye kadar susturur.",aliases=["sustur","mute"])
-    async def mute_command(self,ctx,member : discord.Member = None, minute : int = None):
+    @commands.command(name="Sustur", brief = "Üyeyi belirlediğiniz süreye kadar susturur.",aliases=["sustur","mute"])
+    async def mute_command(self,ctx,member: discord.Member, minute: int):
         """Mute
         Use of : mute {member} minute
         Minute <= 0 : Permanent
@@ -147,130 +146,125 @@ class Moderation(commands.Cog):
         role = discord.utils.get(ctx.guild.roles,name = "Muted")
         
         if member != ctx.author :
-            
-            if member in ctx.guild.members :
                 
-                if role in member.roles :  
-                    await ctx.send("**Belirtilen üye zaten susturulmuş.**")
+            if role in member.roles :
+                muteEmbed=discord.Embed(title="Hata",description="Belirtilen kullanıcı zaten susturulmuş.",colour=0xffd500)
+
+                await ctx.send(embed=muteEmbed)
+
+            else :
                 
-                else :
-                    if role == None :
-                        role = await ctx.guild.create_role(name="Muted")
+                if role == None :
+                    role = await ctx.guild.create_role(name="Muted")
                         
-                        for channel in ctx.guild.channels:
-                            await channel.set_permissions(role,send_messages = False,speak = False)
-
+                    for channel in ctx.guild.channels:
+                        await channel.set_permissions(role,send_messages = False,speak = False)
+                
+                try :
+                    
                     if minute > 0 :
-                        try :
-                            jsonFile = open(dataSource, "r")
-                            muteList = json.load(jsonFile)
-                            jsonFile.close()
-                            
-                            muteList[str(member.id)] = {}
-                            muteList[str(member.id)]["TIME_LEFT"] = minute
-                            
-                            with open (dataSource, 'w+') as f:
-                                json.dump(muteList, f,indent=4)
-
+                    
                             await member.add_roles(role)
 
-                            mute_embed=discord.Embed(title=f"{member.name} adlı kullanıcı {minute} dakika susturuldu !",colour=0xffd500,timestamp=ctx.message.created_at)
-                            mute_embed.set_footer(text=f"Tarafından : {ctx.author.display_name}",icon_url=ctx.author.avatar_url)    
+                            try :
+                                jsonFile = open(dataSource, "r")
+                                muteList = json.load(jsonFile)
+                                jsonFile.close()
                             
-                            await ctx.send(embed=mute_embed)
+                                muteList[str(member.id)] = {}
+                                muteList[str(member.id)]["TIME_LEFT"] = minute
+                            
+                                with open (dataSource, 'w+') as f:
+                                    json.dump(muteList, f,indent=4)
+                            except :
+                                await ctx.send(":thinking: Görünüşe göre şu anda susturulmuş kullanıcı kayıtlarına ulaşamıyoruz. Belirtilen kullanıcı susturuldu ancak yasağını manuel kaldırman gerekir.")
+                            
+                            muteEmbed_2=discord.Embed(title=f"{member} {minute} dakika susturuldu !",colour=0xffd500,timestamp=ctx.message.created_at)
+                            muteEmbed_2.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)    
+                            
+                            await ctx.send(embed=muteEmbed_2)
 
-                            logger.info(f"Moderation | Sustur : {member} Sunucu : {ctx.guild.name}  | Tarafından : {ctx.author}")
-                        except Exception as error:
-                            await ctx.send(":thinking: Görünüşe göre şu anda susturulmuş kullanıcı kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
-                
-                            logger.info(f"Moderation | Mute | Error : {error}")
+                            logger.info(f"Moderation | Mute | Tarafından: {ctx.author}")
                     else :
                         await member.add_roles(role)
                         
-                        mute2_embed=discord.Embed(title=f"{member.name} adlı kullanıcı süresiz susturuldu !",colour=0xffd500,timestamp=ctx.message.created_at)
-                        mute2_embed.set_footer(text=f"Tarafından : {ctx.author.display_name}",icon_url=ctx.author.avatar_url)    
+                        muteEmbed_3=discord.Embed(title=f"{member} süresiz susturuldu !",colour=0xffd500,timestamp=ctx.message.created_at)
+                        muteEmbed_3.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
                         
-                        await ctx.send(embed=mute2_embed)         
-            else :
-                muteer1_embed=discord.Embed(title=f"{member.name} adlı kullanıcı bu sunucunun bir üyesi değil.",colour=0xffd500)
-                
-                await ctx.send(embed=muteer1_embed)
-        else :
-            muteer2_embed=discord.Embed(title="Belirtilen kullanıcı ile istek sahibi aynı olamaz.",colour=0xffd500)
+                        await ctx.send(embed=muteEmbed_3)
+                except :
+                    muteEmbed_4=discord.Embed(title="Hata",description=f"Bu işlem için Muted rolünün kademesi {self.client.user.name} rolünden en az 1 kademe altında olması gerekir.",colour=0xffd500)
             
-            await ctx.send(embed=muteer2_embed)
+                    await ctx.send(embed = muteEmbed_4)
+        else :
+            muteEmbed_5=discord.Embed(title="Hata",description="Hatalı argüman kullanımı.",colour=0xffd500)
+            
+            await ctx.send(embed=muteEmbed_5)
 
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    @commands.command(pass_context=True ,name = "Unmute" ,brief = "Üyenin konuşma yasağını kaldırır.",aliases=["unmute"])
-    async def unmute_command(self,ctx,member : discord.Member = None):
+    @commands.command(name = "Unmute",brief = "Üyenin konuşma yasağını kaldırır.",aliases=["unmute"])
+    async def unmute_command(self,ctx,member: discord.Member):
         """Unmute
         Use of : unmute {member}
         """
         role = discord.utils.get(ctx.guild.roles,name = "Muted")
-        
-        if member in ctx.guild.members :
             
-            if role != None :
+        if role != None :
                 
-                if role in member.roles:
-                    try :
-                        with open(dataSource, 'rb') as fp:
-                            jsondata = json.load(fp)
-                        
-                        jsondata[str(member.id)] = {}
-                        jsondata[str(member.id)]["TIME_LEFT"] = -1
-                        
-                        with open (dataSource, 'w+') as f:
-                            json.dump(jsondata, f,indent=4)
-                        
-                        await member.remove_roles(role)
-                        
-                        unmute_embed=discord.Embed(title=f"{member.name} adlı kullanıcının susturulma cezası kaldırıldı !",colour=0xffd500,timestamp=ctx.message.created_at)
-                        unmute_embed.set_footer(text=f"İstek Sahibi : {ctx.author.display_name}",icon_url=ctx.author.avatar_url)
-                    
-                        await ctx.send(embed=unmute_embed)
-                    
-                        logger.info(f"Moderation | Unmute : {member} Sunucu : {ctx.guild.name}  | Tarafından : {ctx.author}")
-                    except Exception as error:
-                        await ctx.send(":thinking: Görünüşe göre şu anda susturulmuş kullanıcı kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
+            if role in member.roles:
                 
-                        logger.info(f"Moderation | Unmute | Error : {error}")
-                else :
-                    unmuteer1_embed=discord.Embed(title=f"{member.name} adlı kullanıcının susturma cezası bulunamadı.",colour=0xffd500)
-                    await ctx.send(embed=unmuteer1_embed)
+                try :
+                    with open(dataSource, 'rb') as fp:
+                        jsondata = json.load(fp)
+                        
+                    jsondata[str(member.id)] = {}
+                    jsondata[str(member.id)]["TIME_LEFT"] = -1
+                        
+                    with open (dataSource, 'w+') as f:
+                        json.dump(jsondata, f,indent=4)
+                        
+                    await member.remove_roles(role)
+                        
+                    unmuteEmbed=discord.Embed(title=f"{member} adlı kullanıcının susturulma cezası kaldırıldı!",colour=0xffd500,timestamp=ctx.message.created_at)
+                    unmuteEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
+                    
+                    await ctx.send(embed=unmuteEmbed)
+                    
+                    logger.info(f"Moderation | Unmute | Tarafından: {ctx.author}")
+                except :
+                    await ctx.send(":thinking: Görünüşe göre şu anda susturulmuş kullanıcı kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
             else :
-                unmuteer2_embed=discord.Embed(title="Daha önceden kimse susturulmamış ya da rol silinmiş olabilir.",colour=0xffd500)
-                
-                await ctx.send(embed=unmuteer2_embed)
+                unmuteEmbed_2=discord.Embed(title="Hata",description=f"{member} adlı kullanıcının susturma cezası bulunamadı.",colour=0xffd500)
+
+                await ctx.send(embed=unmuteEmbed_2)
         else :
-            unmuteer3_embed=discord.Embed(title=f"{member.name} adlı kullanıcı bu sunucunun bir üyesi değil.",colour=0xffd500)
-            
-            await ctx.send(embed=unmuteer3_embed)
+            unmuteEmbed_3=discord.Embed(title="Hata",description="Daha önceden kimse susturulmamış ya da rol silinmiş olabilir.",colour=0xffd500)
+
+            await ctx.send(embed=unmuteEmbed_3)
 
     @commands.guild_only()
     @commands.has_permissions(change_nickname=True)
     @commands.bot_has_permissions(change_nickname=True)
-    @commands.command(pass_context=True ,name="Rename" ,brief = "Üyenin sunucu içindeki takma adını değiştirir.",aliases=["rename"])
-    async def rename_command(self,ctx,member : discord.Member,nick):
+    @commands.command(name="Rename" ,brief = "Üyenin sunucu içindeki takma adını değiştirir.",aliases=["rename"])
+    async def rename_command(self,ctx,member : discord.Member,nick: str):
         """Rename
         Use of : rename {member} {nick}
         """
         if member != ctx.author :
-            
-            if member in ctx.guild.members :
-                await member.edit(nick=nick)
+            await member.edit(nick=nick)
                 
-                await ctx.message.add_reaction("\u2705")
-            else :
-                renameer1_embed=discord.Embed(title=f"{member.name} adlı kullanıcı bu sunucunun bir üyesi değil.",colour=0xffd500)
-                
-                await ctx.send(embed=renameer1_embed)
+            renameEmbed=discord.Embed(title=f"{member} adlı kullanıcının ismi değiştirildi.",colour=0xffd500,timestamp=ctx.message.created_at)
+            renameEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
+                    
+            await ctx.send(embed=renameEmbed)
+
+            logger.info(f"Moderation | Rename | Tarafından: {ctx.author}")
         else :
-            renameer2_embed=discord.Embed(title="Belirtilen kullanıcı ile istek sahibi aynı olamaz.",colour=0xffd500)
+            renameEmbed_2=discord.Embed(title="Hata",description="Hatalı argüman kullanımı.",colour=0xffd500)
             
-            await ctx.send(embed=renameer2_embed)
+            await ctx.send(embed=renameEmbed_2)
 
 def setup(client):
     client.add_cog(Moderation(client))
