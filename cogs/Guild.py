@@ -5,9 +5,9 @@
 import discord
 from discord.utils import get
 from discord.ext import commands
+from PIL import Image,ImageFont,ImageDraw
 import json
 import asyncio
-from PIL import Image,ImageFont,ImageDraw
 import io
 import os
 from logging_files.guild_log import logger
@@ -70,10 +70,11 @@ class Guild(commands.Cog):
                 await ctx.send(f"Harika! :partying_face: Artık {channelSelection.channel_mentions[0].mention} kanalında yeni üyeler için bilgilendirme mesajı gönderilecek.")
                 
                 logger.info(f"Guild | Wlmessage | Sunucu : {ctx.guild.name} | Tarafından : {ctx.author}")
-            except Exception as error:
+            except Exception as e:
                 await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")         
                 
-                logger.info(f"Guild | Wlmessage | Error : {error}")
+                logger.error(f"Guild | Wlmessage | Error: {e}")
+                pass
 
     @commands.command(name = "Lvmessage",brief = "Sunucundan ayrılan üyeler için ayrılma mesajı gönderir.",aliases = ["lvmessage"])
     @commands.has_permissions(administrator=True)
@@ -102,10 +103,10 @@ class Guild(commands.Cog):
                 await ctx.send(f"Harika! :partying_face: Artık {channelSelection.channel_mentions[0].mention} kanalında ayrılan üyeler için bilgilendirme mesajı gönderilecek.")
                 
                 logger.info(f"Guild | Lvmessage | Sunucu : {ctx.guild.name} | Tarafından : {ctx.author}")
-            except Exception as error:
+            except Exception as e:
                 await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
                 
-                logger.info(f"Guild | Lvmessage | Error : {error}")
+                logger.error(f"Guild | Lvmessage | Error: {e}")
                 pass
 
     @commands.command(name = "Setautorole",brief = "Sunucundan gelen üyeler için otomatik rol verir.",aliases = ["setautorole"])
@@ -134,10 +135,10 @@ class Guild(commands.Cog):
                 await ctx.send(f"Harika! :partying_face: Artık yeni gelen üyelere {roleSelection.role_mentions[0].mention} rolü verilecek.\n`Uyarı: Evos'un bu işlevi tam olarak yerine getirebilmesi için roller kısmından Evos'un rolünü {roleSelection.role_mentions[0]} rolünden en az 1 kademe üstüne taşıman gerekli.`")
                 
                 logger.info(f"Guild | Autorole | Sunucu : {ctx.guild.name} | Tarafından : {ctx.author}")
-            except Exception as error:
-                await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")             
+            except Exception as e:
+                await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
                 
-                logger.info(f"Guild | Autorole | Error : {error}")
+                logger.error(f"Guild | Autorole | Error: {e}")
                 pass
 
     @commands.command(name = "ChangePrefix",brief = "Evos'un komut ön ekini değiştirir.",aliases = ["changeprefix"])
@@ -165,10 +166,10 @@ class Guild(commands.Cog):
                 await ctx.send(f"Harika! :partying_face: Bu sunucu için komut ön eki **{prefixSelection.content}** olarak ayarlandı.")
                 
                 logger.info(f"Guild | Prefix | Sunucu : {ctx.guild.name} | Tarafından : {ctx.author}")
-            except Exception as error:
-                await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")            
+            except Exception as e:
+                await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
                 
-                logger.info(f"Guild | Prefix | Error : {error}")
+                logger.error(f"Guild | ChangePrefix | Error: {e}")
                 pass
 
     @commands.command(name = "ResetConfig",brief = "Sunucu ayarlarını sıfırlar.",aliases = ["resetconfig"])
@@ -204,11 +205,11 @@ class Guild(commands.Cog):
                 json.dump(ServerConfig, f,indent=4)
             
             await ctx.send(f"Harika! :partying_face: Bu sunucunun tüm ayarları sıfırlandı. Prefix(komut ön eki) varsayılan **.(nokta)** olarak ayarlandı.")
-        except Exception as error:
-                await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")               
+        except Exception as e:
+            await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
                 
-                logger.info(f"Guild | ResetServerConfig | Error : {error}")
-                pass
+            logger.error(f"Guild | ResetServerConfig | Error: {e}")
+            pass
 
     @commands.command(name = "Automessage",brief = "İstediğiniz kanalde istediğiniz mesajı otomatik gönderir.",aliases = ["automessage",'otomesaj'])
     @commands.has_permissions(administrator=True)
@@ -247,10 +248,10 @@ class Guild(commands.Cog):
                     await ctx.send(f"Harika! :partying_face: Artık bu kanalda her **{timeSelection.content}** saatte bir mesajın yayınlanacak.")             
                     
                     logger.info(f"Guild | AutoMessage | Sunucu : {ctx.guild.name} | Mesaj : {messageSelection.content} |Tarafından : {ctx.author}")
-                except Exception as error:
-                    await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")              
-                    
-                    logger.info(f"Guild | AutoMessage | Error : {error}")
+                except Exception as e:
+                    await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
+                
+                    logger.error(f"Guild | AutoMessage | Error: {e}")
                     pass
 
     @commands.Cog.listener()
@@ -323,8 +324,9 @@ class Guild(commands.Cog):
                     await channel.send(f"Hoşgeldin, {member.mention}!",file=discord.File(f"{member.id}.png"))
 
                     os.remove(f"{member.id}.png")
-        except Exception as error:
-            logger.info(f"Guild | Data | Error : {error}")
+        except Exception as e:
+
+            logger.error(f"Guild | Data | Error: {e}")
             pass
 
     @commands.Cog.listener()
@@ -376,7 +378,9 @@ class Guild(commands.Cog):
                     os.remove(f"{member.id}.png")
                 else :
                     pass
-            except :
+            except Exception as e:
+
+                logger.error(f"Guild | Data | Error: {e}")
                 pass
   
     @commands.Cog.listener()
@@ -393,17 +397,19 @@ class Guild(commands.Cog):
             
             try :
                 infoEmbed = discord.Embed(title = "Evos'u sunucuna eklediğin için teşekkürler!",colour=0xd8f500)
-                infoEmbed.add_field(name="Prefix(Özelleştirilebilir)",value="Varsayılan: **.**(Nokta)",inline=False)
+                infoEmbed.add_field(name="Prefix (Özelleştirilebilir)",value="Varsayılan: **.**(Nokta)",inline=False)
                 infoEmbed.add_field(name="Komut Listesi",value="Komutları görmek için **.yardım** yazabirsin.",inline=False)
                 infoEmbed.add_field(name="Geliştirici misin ?",value="[Buradan](https://github.com/semihaydin0/Evos) kaynak kodlarını inceleyebilirsin.",inline=False)
+                infoEmbed.set_footer(text="PHOENIX#7103 tarafından 💖 ile geliştirildi!",icon_url=guild.icon_url)
                 file = discord.File("images/evos.png", filename="evos.png")
                 infoEmbed.set_thumbnail(url="attachment://evos.png")
                 
                 await guild.text_channels[0].send(file=file,embed=infoEmbed)
             except :
                 pass
-        except Exception as error:
-            logger.info(f"Guild | OnGuildJoin | Error : {error}")
+        except Exception as e:
+
+            logger.error(f"Guild | Data | Error: {e}")
             pass
 
 def setup(client):
