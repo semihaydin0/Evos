@@ -4,26 +4,23 @@
 
 import discord
 from discord.ext import commands
-import requests
 from bs4 import BeautifulSoup
 from googletrans import Translator
 import matplotlib.pyplot as coronaplt
+import requests
 import humanize
 import os
-
 from logging_files.requests_log import logger
 
 class Requests(commands.Cog):
     def __init__(self,client):
         self.client = client
 
-    @commands.command(pass_context=True ,name="Korona", brief = "COVID-19 İstatistikleri",aliases = ['korona','corona','Corona'])
+    @commands.command(name="Korona", brief = "COVID-19 İstatistikleri",aliases = ['korona','corona','Corona'])
     async def corona_command(self,ctx,CountryName = None):
-        # Info : The country argument of this command supports all languages.The display language is Turkish.
         """COVID-19 Statistics
         Use of : corona {country}
         """
-
         try : 
             if CountryName is None :
                 CountryName = "dünya"
@@ -37,10 +34,7 @@ class Requests(commands.Cog):
             if Country == "World" :
                 CountryFlag = "https://i.ibb.co/fVJyrgP/world.png"
             else :
-                try :
-                    CountryFlag = f"https://www.countries-ofthe-world.com/flags-normal/flag-of-{Country}.png"
-                except :
-                    pass
+                CountryFlag = f"https://www.countries-ofthe-world.com/flags-normal/flag-of-{Country}.png"
 
             stats = requests.get(DataUrl)
             json_stats = stats.json()
@@ -90,48 +84,50 @@ class Requests(commands.Cog):
             TRCountry = CountryNameTR.text.title()
 
             coronaStatsEmbed = discord.Embed(title=f"{TRCountry} COVID-19 İstatistikleri", colour=0xffd500, timestamp=ctx.message.created_at)
-            coronaStatsEmbed.add_field(name="Bugünkü Vaka", value=todayCases, inline=True)
-            coronaStatsEmbed.add_field(name="Bugünkü Ölüm", value=todayDeaths, inline=True)
-            coronaStatsEmbed.add_field(name="Toplam Vaka", value=totalCases, inline=True)
-            coronaStatsEmbed.add_field(name="Toplam Ölüm", value=totalDeaths, inline=True)
-            coronaStatsEmbed.add_field(name="Toplam Test", value=totalTests, inline=True)
-            coronaStatsEmbed.add_field(name="Toplam İyileşen", value=recovered, inline=True)
-            coronaStatsEmbed.add_field(name="Ağır Hasta", value=critical, inline=True)
-            coronaStatsEmbed.add_field(name="Aktif Vaka", value=active, inline=True)
-            coronaStatsEmbed.add_field(name="Bir Milyon Başına Vaka", value=casesPerOneMillion, inline=True)
+            coronaStatsEmbed.add_field(name="Bugünkü Vaka", value=todayCases)
+            coronaStatsEmbed.add_field(name="Bugünkü Ölüm", value=todayDeaths)
+            coronaStatsEmbed.add_field(name="Toplam Vaka", value=totalCases)
+            coronaStatsEmbed.add_field(name="Toplam Ölüm", value=totalDeaths)
+            coronaStatsEmbed.add_field(name="Toplam Test", value=totalTests)
+            coronaStatsEmbed.add_field(name="Toplam İyileşen", value=recovered)
+            coronaStatsEmbed.add_field(name="Ağır Hasta", value=critical)
+            coronaStatsEmbed.add_field(name="Aktif Vaka", value=active)
+            coronaStatsEmbed.add_field(name="Bir Milyon Başına Vaka", value=casesPerOneMillion)
 
             labels = ['İyileşen', 'Ölen','Aktif']
             quantity = [Recover/Cases, Deaths/Cases,(Cases-Deaths-Recover)/Cases]
             colors = ['green', 'orangered','coral']
-            explode = (0.1, 0.1, 0.1)
+            explode = (0.2, 0.2, 0.2)
+            
             coronaplt.clf()
             coronaplt.figure(figsize=(6,4),facecolor="lightgray")
             coronaplt.pie(quantity,colors=colors, explode=explode, labels=labels, autopct='%1.1f%%',shadow=True, startangle=90)
             coronaplt.axis('equal')
-            coronaplt.title("Vakaların Durumlara Göre Oranı")
-            coronaplt.savefig("chart.png")
+            coronaplt.title("VAKALARIN DURUMLARI")
+            coronaplt.savefig(f"{ctx.author.id}.png")
 
-            file = discord.File("chart.png", filename="image.png")
+            file = discord.File(f"{ctx.author.id}.png", filename="COVID-19.png")
 
-            coronaStatsEmbed.set_image(url="attachment://image.png")
+            coronaStatsEmbed.set_image(url="attachment://COVID-19.png")
             coronaStatsEmbed.set_thumbnail(url=CountryFlag)
-            coronaStatsEmbed.set_footer(text=f"Tarafından : {ctx.author.name}",icon_url=ctx.author.avatar_url)
+            coronaStatsEmbed.set_footer(text=f"Tarafından: {ctx.author.name}",icon_url=ctx.author.avatar_url)
 
             await ctx.send(file=file,embed=coronaStatsEmbed)
 
-            os.remove("chart.png")
+            os.remove(f"{ctx.author.id}.png")
 
-            logger.info(f"Requests | COVID-19 | Tarafından : {ctx.author}")
-        except :
-            coronaStatsErrorEmbed = discord.Embed(title="Hata",description ="Bilinmeyen ülke adı ya da veri sunucusu yanıt vermiyor.",colour = 0xffd500)
-            await ctx.send(embed=coronaStatsErrorEmbed)
+            logger.info(f"Requests | COVID-19 | Tarafından: {ctx.author}")
+        except Exception as e:
+            coronaStatsEmbed_2 = discord.Embed(title="Hata",description ="Bilinmeyen ülke adı ya da veri sunucusu yanıt vermiyor.",colour = 0xffd500)
+            await ctx.send(embed=coronaStatsEmbed_2)
+            
+            logger.error(f"Requests | COVID-19 | Error: {e}")
 
-    @commands.command(pass_context=True ,name="Kur", brief = "Anlık döviz bilgilerini getirir.",aliases = ['döviz','Döviz','kur'])
+    @commands.command(name="Kur", brief = "Canlı Döviz Kuru ve Kripto Paralar",aliases = ['döviz','Döviz','kur'])
     async def currency_command(self,ctx):
         """The value of the Turkish lira against other currencies and cryptocurrencies
         Use of : kur
         """
-
         try :
             Currency = requests.get('http://bigpara.hurriyet.com.tr/doviz/')
             BSoup = BeautifulSoup(Currency.content,'html.parser')
@@ -174,10 +170,9 @@ class Requests(commands.Cog):
             ETH = round(float(ETHCur.text),2)
             XRP = round(float(XRPCur.text),2)
 
-            currencyEmbed = discord.Embed(title="Canlı Döviz Kuru ve Kripto Paralar",colour = 0xffd500,timestamp = ctx.message.created_at)
-            
             file = discord.File("images/dollar.png", filename="dollar.png")
-            
+
+            currencyEmbed = discord.Embed(title="Canlı Döviz Kuru ve Kripto Paralar",colour = 0xffd500,timestamp = ctx.message.created_at)
             currencyEmbed.set_thumbnail(url="attachment://dollar.png")
             currencyEmbed.add_field(name=f":flag_us:    {USDPer}",value = f'1 $ = **{USD}** ₺\n1 ₺ = **{exUSD}** $')
             currencyEmbed.add_field(name=f":flag_eu:    {EURPer}",value = f'1 € = **{EUR}** ₺\n1 ₺ = **{exEUR}** €')
@@ -185,14 +180,16 @@ class Requests(commands.Cog):
             currencyEmbed.add_field(name=f"Bitcoin",value = f'1 ₿ = **{BTC}** ₺\n1 ₺ = **{round(1/float(BTC),7)}** ₿')
             currencyEmbed.add_field(name=f"Ethereum",value = f'1 Ξ = **{ETH}** ₺\n1 ₺ = **{round(1/float(ETH),6)}** Ξ')
             currencyEmbed.add_field(name=f"Ripple",value = f'1 X = **{XRP}** ₺\n1 ₺ = **{round(1/float(XRP),2)}** X')
-            currencyEmbed.set_footer(text=f"Tarafından : {ctx.author.name}",icon_url=ctx.author.avatar_url)
+            currencyEmbed.set_footer(text=f"Tarafından: {ctx.author.name}",icon_url=ctx.author.avatar_url)
             
             await ctx.send(file=file,embed=currencyEmbed)
             
-            logger.info(f"Requests | Kur | Tarafından : {ctx.author}")
-        except :
-            currencyErrorEmbed = discord.Embed(title="Hata",description ="Veri sunucusu yanıt vermiyor.",colour = 0xffd500)
-            await ctx.send(embed=currencyErrorEmbed)
+            logger.info(f"Requests | Kur | Tarafından: {ctx.author}")
+        except Exception as e:
+            currencyEmbed_2 = discord.Embed(title="Hata",description =f"{e}",colour = 0xffd500)
+            await ctx.send(embed=currencyEmbed_2)
+
+            logger.error(f"Requests | Kur | Error: {e}")
         
 def setup(client):
     client.add_cog(Requests(client))
