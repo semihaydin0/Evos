@@ -2,16 +2,15 @@
 #Copyright (c) 2020 Semih Aydın
 #UTF-8
 
-import asyncio
+import discord
+from discord.ext import commands
+from enum import Enum
 import datetime as dt
+import typing as t
+import wavelink
+import asyncio
 import random
 import re
-import typing as t
-from enum import Enum
-import discord
-import wavelink
-from discord.ext import commands
-
 from logging_files.music_log import logger
 
 URL_REGEX = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
@@ -111,11 +110,11 @@ class Queue:
         self._queue.extend(upcoming)
 
     def set_repeat_mode(self, mode):
-        if mode == "yok":
+        if mode == "Yok":
             self.repeat_mode = RepeatMode.NONE
         elif mode == "1":
             self.repeat_mode = RepeatMode.ONE
-        elif mode == "tümü":
+        elif mode == "Tümü":
             self.repeat_mode = RepeatMode.ALL
 
     def empty(self):
@@ -148,19 +147,22 @@ class Player(wavelink.Player):
             self.queue.add(*tracks.tracks)
         elif len(tracks) == 1:
             self.queue.add(tracks[0])
-            playEmbed1 = discord.Embed(title="Parça Listeye Eklendi",description = f"{tracks[0].title}",colour=0xffd500, timestamp=ctx.message.created_at)
-            playEmbed1.set_footer(text=f"Tarafından : {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
-            await ctx.send(embed=playEmbed1)
+            playEmbed = discord.Embed(title="Parça Listeye Eklendi",description = f"Parça: **{tracks[0].title}**\nUzunluk: **({tracks[0].length//60000}:{str(tracks[0].length%60).zfill(2)})**",colour=0xffd500, timestamp=ctx.message.created_at)
+            playEmbed.set_footer(text=f"Tarafından: {ctx.author}", icon_url=ctx.author.avatar_url)
             
-            logger.info(f"Music | Parça Ekleme | Tarafından : {ctx.author}")
+            await ctx.send(embed=playEmbed)
+            
+            logger.info(f"Music | Add Tracks | Tarafından: {ctx.author}")
         else:
             if (track := await self.choose_track(ctx, tracks)) is not None:
                 self.queue.add(track)
-                playEmbed2 = discord.Embed(title="Parça Listeye Eklendi",description = f"{track.title}",colour=0xffd500, timestamp=ctx.message.created_at)
-                playEmbed2.set_footer(text=f"Tarafından : {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
-                await ctx.send(embed=playEmbed2)
+                playEmbed_2 = discord.Embed(title="Parça Listeye Eklendi",description = f"Parça: **{track.title}**\nUzunluk: **({track.length//60000}:{str(track.length%60).zfill(2)})**",colour=0xffd500, timestamp=ctx.message.created_at)
+                playEmbed_2.set_footer(text=f"Tarafından: {ctx.author}", icon_url=ctx.author.avatar_url)
+                await ctx.message.delete()
                 
-                logger.info(f"Music | Parça Ekleme | Tarafından : {ctx.author}")
+                await ctx.send(embed=playEmbed_2)
+                
+                logger.info(f"Music | Add Tracks | Tarafından: {ctx.author}")
         if not self.is_playing and not self.queue.is_empty:
             await self.start_playback()
 
@@ -171,10 +173,11 @@ class Player(wavelink.Player):
                 and u == ctx.author
                 and r.message.id == msg.id
             )
-        embed = discord.Embed(description=("\n".join(f"**{i+1}.** {t.title} ({t.length//60000}:{str(t.length%60).zfill(2)})"for i, t in enumerate(tracks[:5]))),colour=0xffd500,timestamp=ctx.message.created_at)
-        embed.set_author(name="Arama Sonuçları")
-        embed.set_footer(text=f"Tarafından : {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
-        msg = await ctx.send(embed=embed)
+        chooseTrackEmbed = discord.Embed(description=("\n".join(f"**{i+1}.** {t.title} ({t.length//60000}:{str(t.length%60).zfill(2)})"for i, t in enumerate(tracks[:5]))),colour=0xffd500,timestamp=ctx.message.created_at)
+        chooseTrackEmbed.set_author(name="Arama Sonuçları")
+        chooseTrackEmbed.set_footer(text=f"Tarafından: {ctx.author}", icon_url=ctx.author.avatar_url)
+        
+        msg = await ctx.send(embed=chooseTrackEmbed)
         for emoji in list(OPTIONS.keys())[:min(len(tracks), len(OPTIONS))]:
             await msg.add_reaction(emoji)
         try:
@@ -222,8 +225,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     async def cog_check(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
-            dm_embed=discord.Embed(title="Müzik komutları DM üzerinde çalışmamaktadır.",colour=0xffd500)
-            await ctx.send(embed=dm_embed)
+            dmChannelEmbed=discord.Embed(title="Müzik komutlarını sadece sunucu üzerinde kullanabilirsin.",colour=0xffd500)
+            
+            await ctx.send(embed=dmChannelEmbed)
             return False
         return True
 
@@ -256,28 +260,33 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         player = self.get_player(ctx)
         await player.teardown()
         
-        logger.info(f"Music | Odadan Ayrılma | Tarafından : {ctx.author}")
+        logger.info(f"Music | Leave | Tarafından: {ctx.author}")
 
-    @commands.command(name="Çal", brief = "YouTube URL yada arama yaparak ses dosyasını çalar.",aliases=["çal","play","Play"])
+    @commands.command(name="Çal", brief = "YouTube URL yada arama yaparak ses dosyasını çalar.",aliases=["çal","Play","play"])
     async def play_command(self, ctx, *, query: t.Optional[str]):
         """Play
         Use of : play {url/query}
         """
         player = self.get_player(ctx)
+        
         if not player.is_connected:
             await player.connect(ctx)
+        
         if query is None:
+            
             if player.queue.is_empty:
                 raise QueueIsEmpty
             elif player.is_paused :
                 await player.set_pause(False)
-                ply_embed=discord.Embed(title="Çalmaya devam ettiriliyor.",colour=0xffd500,timestamp=ctx.message.created_at)
-                ply_embed.set_footer(text=f"Tarafından : {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
-                await ctx.send(embed=ply_embed)
+                playEmbed=discord.Embed(title="Çalmaya devam ettiriliyor.",colour=0xffd500)
+                playEmbed.set_footer(text=f"Tarafından: {ctx.author}", icon_url=ctx.author.avatar_url)
+                
+                await ctx.send(embed=playEmbed)
             else:
                 raise PlayerIsAlreadyPlaying    
         else:
             query = query.strip("<>")
+            
             if not re.match(URL_REGEX, query):
                 query = f"ytsearch:{query}"
             await player.add_tracks(ctx, await self.wavelink.get_tracks(query))
@@ -285,34 +294,39 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
     @play_command.error
     async def play_command_error(self, ctx, exc):
         if isinstance(exc, PlayerIsAlreadyPlaying):
-            plyer1_embed=discord.Embed(title="Halihazırda çalan bir parça var.",colour=0xffd500)
-            await ctx.send(embed=plyer1_embed)
+            playEmbed_2=discord.Embed(title="Halihazırda çalan bir parça var.",colour=0xffd500)
+            
+            await ctx.send(embed=playEmbed_2)
         elif isinstance(exc, QueueIsEmpty):
-            plyer2_embed=discord.Embed(title="Liste boş olduğundan çalınacak bir şarkı yok.",colour=0xffd500)
-            await ctx.send(embed=plyer2_embed)
+            playEmbed_3=discord.Embed(title="Liste boş olduğundan çalınacak bir şarkı yok.",colour=0xffd500)
+            
+            await ctx.send(embed=playEmbed_3)
 
-    @commands.command(name="Duraklat", brief = "Sesi duraklatır.",aliases=["Pause","duraklat","pause"])
+    @commands.command(name="Duraklat", brief = "Sesi duraklatır.",aliases=["duraklat","Pause","pause"])
     async def pause_command(self, ctx):
         """Pause
         Use of : pause
         """
         player = self.get_player(ctx)
+        
         if player.is_paused:
             raise PlayerIsAlreadyPaused
         await player.set_pause(True)
-        pause_embed=discord.Embed(title="Parça duraklatıldı.",colour=0xffd500,timestamp=ctx.message.created_at)
-        pause_embed.set_footer(text=f"Tarafından : {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=pause_embed)
+        pauseEmbed=discord.Embed(title="Parça duraklatıldı.",colour=0xffd500)
+        pauseEmbed.set_footer(text=f"Tarafından: {ctx.author}", icon_url=ctx.author.avatar_url)
         
-        logger.info(f"Music | Duraklatma | Tarafından : {ctx.author}")
+        await ctx.send(embed=pauseEmbed)
+        
+        logger.info(f"Music | Pause | Tarafından: {ctx.author}")
 
     @pause_command.error
     async def pause_command_error(self, ctx, exc):
         if isinstance(exc, PlayerIsAlreadyPaused):
             pauseer_embed=discord.Embed(title="Halihazırda duraklatılan bir şarkı var.",colour=0xffd500)
+            
             await ctx.send(embed=pauseer_embed)
 
-    @commands.command(name="Dur", brief = "Sesi durdurur ve listeyi temizler.",aliases=["Stop","stop","dur"])
+    @commands.command(name="Dur", brief = "Sesi durdurur ve listeyi temizler.",aliases=["dur","Stop","stop"])
     async def stop_command(self, ctx):
         """Stop
         Use of : stop
@@ -320,134 +334,177 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         player = self.get_player(ctx)
         player.queue.empty()
         await player.stop()
-        stop_embed=discord.Embed(title="Oynatıcı durduruldu ve liste temizlendi.",colour=0xffd500,timestamp=ctx.message.created_at)
-        stop_embed.set_footer(text=f"Tarafından : {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=stop_embed)
+        stopEmbed=discord.Embed(title="Oynatıcı durduruldu ve liste temizlendi.",colour=0xffd500)
+        stopEmbed.set_footer(text=f"Tarafından: {ctx.author}", icon_url=ctx.author.avatar_url)
         
-        logger.info(f"Music | Durdurma | Tarafından : {ctx.author}")
+        await ctx.send(embed=stopEmbed)
+        
+        logger.info(f"Music | Stop | Tarafından: {ctx.author}")
 
-    @commands.command(name="Sıradaki", brief = " Listeden bir sonraki şarkıyı çalmaya başlar.",aliases=["skip","Skip","Next","sıradaki","next"])
+    @commands.command(name="Sıradaki", brief = " Listeden bir sonraki şarkıyı çalmaya başlar.",aliases=["sıradaki","Skip","skip","Next","next"])
     async def next_command(self, ctx):
         """Next
         Use of : next
         """
         player = self.get_player(ctx)
+        
         if not player.queue.upcoming:
             raise NoMoreTracks
         await player.stop()
-        next_embed=discord.Embed(title="Listedeki mevcut sıradan bir sonraki parça çalınıyor.",colour=0xffd500,timestamp=ctx.message.created_at)
-        next_embed.set_footer(text=f"Tarafından : {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=next_embed)
+        nextEmbed=discord.Embed(title="Listedeki mevcut sıradan bir sonraki parça çalınıyor.",colour=0xffd500)
+        nextEmbed.set_footer(text=f"Tarafından: {ctx.author}", icon_url=ctx.author.avatar_url)
         
-        logger.info(f"Music | Sıradaki | Tarafından : {ctx.author}")
+        await ctx.send(embed=nextEmbed)
+        
+        logger.info(f"Music | Next | Tarafından: {ctx.author}")
 
     @next_command.error
     async def next_command_error(self, ctx, exc):
         if isinstance(exc, QueueIsEmpty):
-            nexter1_embed=discord.Embed(title="Liste boş.",colour=0xffd500)
-            await ctx.send(embed=nexter1_embed)
+            nextEmbed_2=discord.Embed(title="Liste boş.",colour=0xffd500)
+            
+            await ctx.send(embed=nextEmbed_2)
         elif isinstance(exc, NoMoreTracks):
-            nexter2_embed=discord.Embed(title="Listede başka parça yok.",colour=0xffd500)
-            await ctx.send(embed=nexter2_embed)
+            nextEmbed_3=discord.Embed(title="Listede başka parça yok.",colour=0xffd500)
+            
+            await ctx.send(embed=nextEmbed_3)
 
-    @commands.command(name="Önceki", brief = "Listeden bir önceki şarkıyı çalmaya başlar.",aliases=["Previous","previous","önceki"])
+    @commands.command(name="Önceki", brief = "Listeden bir önceki şarkıyı çalmaya başlar.",aliases=["önceki","Previous","previous"])
     async def previous_command(self, ctx):
         """Previous
         Use of : previous
         """
         player = self.get_player(ctx)
+        
         if not player.queue.history:
             raise NoPreviousTracks
         player.queue.position -= 2
         await player.stop()
-        previous_embed=discord.Embed(title="Listedeki mevcut sıradan bir önceki parça çalınıyor.",colour=0xffd500,timestamp=ctx.message.created_at)
-        previous_embed.set_footer(text=f"Tarafından : {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=previous_embed)
+        previousEmbed=discord.Embed(title="Listedeki mevcut sıradan bir önceki parça çalınıyor.",colour=0xffd500)
+        previousEmbed.set_footer(text=f"Tarafından: {ctx.author}", icon_url=ctx.author.avatar_url)
         
-        logger.info(f"Music | Önceki Parça | Tarafından : {ctx.author}")
+        await ctx.send(embed=previousEmbed)
+        
+        logger.info(f"Music | Previous | Tarafından: {ctx.author}")
 
     @previous_command.error
     async def previous_command_error(self, ctx, exc):
         if isinstance(exc, QueueIsEmpty):
-            previouser1_embed=discord.Embed(title="Liste boş.",colour=0xffd500)
-            await ctx.send(embed=previouser1_embed)
+            previousEmbed_2=discord.Embed(title="Liste boş.",colour=0xffd500)
+            
+            await ctx.send(embed=previousEmbed_2)
         elif isinstance(exc, NoPreviousTracks):
-            previouser2_embed=discord.Embed(title="Listede başka parça yok.",colour=0xffd500)
-            await ctx.send(embed=previouser2_embed)
+            previousEmbed_3=discord.Embed(title="Listede başka parça yok.",colour=0xffd500)
+            
+            await ctx.send(embed=previousEmbed_3)
 
-    @commands.command(name="Karıştır", brief = "  Listeyi karıştırır.",aliases=["Shuffle","shuffle","karıştır"])
+    @commands.command(name="Karıştır", brief = "  Listeyi karıştırır.",aliases=["karıştır","Shuffle","shuffle"])
     async def shuffle_command(self, ctx):
         """Shuffle
         Use of : shuffle
         """
         player = self.get_player(ctx)
         player.queue.shuffle()
-        shuffle_embed=discord.Embed(title="Liste karıştırıldı.",colour=0xffd500,timestamp=ctx.message.created_at)
-        shuffle_embed.set_footer(text=f"Tarafından : {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=shuffle_embed)
+        shuffleEmbed=discord.Embed(title="Liste karıştırıldı.",colour=0xffd500)
+        shuffleEmbed.set_footer(text=f"Tarafından: {ctx.author}", icon_url=ctx.author.avatar_url)
         
-        logger.info(f"Music | Karıştır | Tarafından : {ctx.author}")
+        await ctx.send(embed=shuffleEmbed)
+        
+        logger.info(f"Music | Shuffle | Tarafından: {ctx.author}")
 
     @shuffle_command.error
     async def shuffle_command_error(self, ctx, exc):
         if isinstance(exc, QueueIsEmpty):
-            shuffleer_embed=discord.Embed(title="Liste şu anda boş.",colour=0xffd500)
-            await ctx.send(embed=shuffleer_embed)
+            shuffleEmbed_2=discord.Embed(title="Liste şu anda boş.",colour=0xffd500)
+            
+            await ctx.send(embed=shuffleEmbed_2)
 
-    @commands.command(name="Tekrarla", brief = "Listeyi tekrarlar.",aliases=["Repeat","repeat","tekrarla"])
+    @commands.command(name="Tekrarla", brief = "Listeyi tekrarlar.",aliases=["tekrarla","Repeat","repeat"])
     async def repeat_command(self, ctx, mode: str):
         """Repeat
         Use of : repeat {none/1/all}
         """
-        if mode not in ("yok", "1", "tümü"):
+        mode = mode.title()
+        if mode not in ("Yok", "1", "Tümü"):
             raise InvalidRepeatMode
         player = self.get_player(ctx)
-        player.queue.set_repeat_mode(mode)
-        repeat_embed=discord.Embed(title=f"Tekrarlama modu {mode} olarak ayarlandı.",colour=0xffd500,timestamp=ctx.message.created_at)
-        repeat_embed.set_footer(text=f"Tarafından : {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=repeat_embed)
         
-        logger.info(f"Music | Tekrarla | Tarafından : {ctx.author}")
+        if player.queue.is_empty:
+            raise QueueIsEmpty
+        player.queue.set_repeat_mode(mode)
+        repeatEmbed=discord.Embed(title=f"Tekrarlama modu {mode} olarak ayarlandı.",colour=0xffd500)
+        repeatEmbed.set_footer(text=f"Tarafından: {ctx.author}", icon_url=ctx.author.avatar_url)
+        
+        await ctx.send(embed=repeatEmbed)
+        
+        logger.info(f"Music | Repeat | Tarafından: {ctx.author}")
 
-    @commands.command(name="Liste", brief = "Güncel listenin durumunu görüntüler.",aliases=["Queue","queue","liste"])
+    @repeat_command.error
+    async def repeat_command_error(self, ctx, exc):
+        if isinstance(exc, InvalidRepeatMode):
+            repeatEmbed_2=discord.Embed(title="Hatalı Tekrarlama Modu",description="Tekrarlama Modları\n1-Yok\n2-1 (Mevcut Parça)\n3-Tümü",colour=0xffd500)
+            
+            await ctx.send(embed=repeatEmbed_2)
+        elif isinstance(exc, QueueIsEmpty):
+            repeatEmbed_3=discord.Embed(title="Liste boş.",colour=0xffd500)
+            
+            await ctx.send(embed=repeatEmbed_3)
+
+    @commands.command(name="Liste", brief = "Güncel listenin durumunu görüntüler.",aliases=["liste","Queue","queue"])
     async def queue_command(self, ctx):
         """Queue
         Use of : queue
         """
         player = self.get_player(ctx)
+        
         if player.queue.is_empty:
             raise QueueIsEmpty
-        queue_embed = discord.Embed(title="Güncel Liste",colour=0xffd500,timestamp=ctx.message.created_at)
-        queue_embed.add_field(name="Mevcut Parça", value=player.queue.current_track.title, inline=False)
+        queueEmbed = discord.Embed(title="Güncel Liste",colour=0xffd500)
+        queueEmbed.add_field(name="Mevcut Parça", value=player.queue.current_track.title, inline=False)
+        
         if upcoming := player.queue.upcoming:
-            queue_embed.add_field(name="Sıradaki Parçalar",value=("\n".join(f"**{i+2}.** {t.title}"for i, t in enumerate(upcoming[:19]))),inline=False)
-        queue_embed.set_footer(text=f"Tarafından : {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=queue_embed)
-        logger.info(f"Music | Liste | Tarafından : {ctx.author}")
+            queueEmbed.add_field(name="Sıradaki Parçalar",value=("\n".join(f"**{i+2}.** {t.title}"for i, t in enumerate(upcoming[:19]))),inline=False)
+        queueEmbed.set_footer(text=f"Tarafından: {ctx.author}", icon_url=ctx.author.avatar_url)
+        
+        await ctx.send(embed=queueEmbed)
+        
+        logger.info(f"Music | Queue | Tarafından: {ctx.author}")
 
     @queue_command.error
     async def queue_command_error(self, ctx, exc):
         if isinstance(exc, QueueIsEmpty):
-            queueer_embed=discord.Embed(title="Liste şu anda boş.",colour=0xffd500)
-            await ctx.send(embed=queueer_embed)
+            queueEmbed_2=discord.Embed(title="Liste şu anda boş.",colour=0xffd500)
+            
+            await ctx.send(embed=queueEmbed_2)
 
-    @commands.command(name="Volume", brief = "Ses düzeyini ayarlar.",aliases=["volume"])
+    @commands.command(name="Düzey", brief = "Ses düzeyini ayarlar.",aliases=["düzey","Volume","volume"])
     async def volume_command(self,ctx,value:int):
         """Volume
         Use of : volume {value}
         """
         player = self.get_player(ctx)
-        await player.set_volume(value)
-        volume_embed=discord.Embed(title=f"Ses düzeyi {value} olarak ayarlandı.",description="Varsayılan ses düzeyi 100'dür.",colour=0xffd500,timestamp=ctx.message.created_at)
-        volume_embed.set_footer(text=f"Tarafından : {ctx.author.name}",icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=volume_embed)
         
-        logger.info(f"Music | Volume | Tarafından : {ctx.author}")
+        if player.queue.is_empty:
+            raise QueueIsEmpty
+        
+        await player.set_volume(value)
+        volumeEmbed=discord.Embed(title=f"Ses düzeyi {value} olarak ayarlandı.",description="Varsayılan ses düzeyi **100**'dür.",colour=0xffd500)
+        volumeEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
+        
+        await ctx.send(embed=volumeEmbed)
+        
+        logger.info(f"Music | Volume | Tarafından: {ctx.author}")
 
     @volume_command.error
-    async def volume_command_error(self,ctx):
-        volumeer_embed=discord.Embed(title=f"Lütfen 0 - 1000 aralığında bir tamsayı giriniz.",colour=0xffd500)
-        await ctx.send(embed=volumeer_embed)
+    async def volume_command_error(self,ctx,exc):
+        if isinstance(exc, QueueIsEmpty):
+            volumeEmbed_2=discord.Embed(title="Liste şu anda boş.",colour=0xffd500)
+            
+            await ctx.send(embed=volumeEmbed_2)
+        else :    
+            volumeEmbed_3=discord.Embed(title=f"Lütfen 0 - 1000 aralığında bir tamsayı giriniz.",colour=0xffd500)
+            
+            await ctx.send(embed=volumeEmbed_3)
 
 def setup(bot):
     bot.add_cog(Music(bot))
