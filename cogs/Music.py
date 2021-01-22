@@ -252,7 +252,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         elif isinstance(obj, discord.Guild):
             return self.wavelink.get_player(obj.id, cls=Player)
 
-    @commands.command(name="Çık", brief = " Bot bulunduğu ses kanalından çıkar.",aliases=["Leave","leave","çık"])
+    @commands.command(name="Çık", brief = "Bot bulunduğu ses kanalından çıkar.",aliases=["Leave","leave","çık"])
     async def disconnect_command(self, ctx):
         """Leave
         Use of : leave
@@ -262,7 +262,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         
         logger.info(f"Music | Leave | Tarafından: {ctx.author}")
 
-    @commands.command(name="Çal", brief = "YouTube URL yada arama yaparak ses dosyasını çalar.",aliases=["çal","Play","play"])
+    @commands.command(name="Çal", brief = "İstediğiniz ses dosyasını çalar.",aliases=["çal","Play","play"])
     async def play_command(self, ctx, *, query: t.Optional[str]):
         """Play
         Use of : play {url/query}
@@ -341,7 +341,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         
         logger.info(f"Music | Stop | Tarafından: {ctx.author}")
 
-    @commands.command(name="Sıradaki", brief = " Listeden bir sonraki şarkıyı çalmaya başlar.",aliases=["sıradaki","Skip","skip","Next","next"])
+    @commands.command(name="Sıradaki", brief = "Listedeki bir sonraki şarkıya atlar.",aliases=["sıradaki","Skip","skip","Next","next"])
     async def next_command(self, ctx):
         """Next
         Use of : next
@@ -369,7 +369,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             
             await ctx.send(embed=nextEmbed_3)
 
-    @commands.command(name="Önceki", brief = "Listeden bir önceki şarkıyı çalmaya başlar.",aliases=["önceki","Previous","previous"])
+    @commands.command(name="Önceki", brief = "Listedeki bir önceki şarkıya döner.",aliases=["önceki","Previous","previous"])
     async def previous_command(self, ctx):
         """Previous
         Use of : previous
@@ -398,7 +398,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             
             await ctx.send(embed=previousEmbed_3)
 
-    @commands.command(name="Karıştır", brief = "  Listeyi karıştırır.",aliases=["karıştır","Shuffle","shuffle"])
+    @commands.command(name="Karıştır", brief = "Listeyi karıştırır.",aliases=["karıştır","Shuffle","shuffle"])
     async def shuffle_command(self, ctx):
         """Shuffle
         Use of : shuffle
@@ -419,7 +419,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             
             await ctx.send(embed=shuffleEmbed_2)
 
-    @commands.command(name="Tekrarla", brief = "Listeyi tekrarlar.",aliases=["tekrarla","Repeat","repeat"])
+    @commands.command(name="Tekrarla", brief = "Mevcut parçayı veya listeyi tekrarlar.",aliases=["tekrarla","Repeat","repeat"])
     async def repeat_command(self, ctx, mode: str):
         """Repeat
         Use of : repeat {none/1/all}
@@ -450,7 +450,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             
             await ctx.send(embed=repeatEmbed_3)
 
-    @commands.command(name="Liste", brief = "Güncel listenin durumunu görüntüler.",aliases=["liste","Queue","queue"])
+    @commands.command(name="Liste", brief = "Listenin güncel durumunu görüntüler.",aliases=["liste","Queue","queue"])
     async def queue_command(self, ctx):
         """Queue
         Use of : queue

@@ -16,7 +16,7 @@ class Requests(commands.Cog):
     def __init__(self,client):
         self.client = client
 
-    @commands.command(name="Korona", brief = "COVID-19 İstatistikleri",aliases = ['korona','corona','Corona'])
+    @commands.command(name="Korona", brief = "Detaylı COVID-19 istatistiklerini görüntüler.",aliases = ['korona','corona','Corona'])
     async def corona_command(self,ctx,CountryName = None):
         """COVID-19 Statistics
         Use of : corona {country}
@@ -123,7 +123,7 @@ class Requests(commands.Cog):
             
             logger.error(f"Requests | COVID-19 | Error: {e}")
 
-    @commands.command(name="Kur", brief = "Canlı Döviz Kuru ve Kripto Paralar",aliases = ['döviz','Döviz','kur'])
+    @commands.command(name="Kur", brief = "Canlı Döviz Kurunu ve Kripto Paraları görüntüler.",aliases = ['döviz','Döviz','kur'])
     async def currency_command(self,ctx):
         """The value of the Turkish lira against other currencies and cryptocurrencies
         Use of : kur

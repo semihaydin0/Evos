@@ -43,7 +43,7 @@ class Guild(commands.Cog):
     def __init__(self,client):
         self.client = client
 
-    @commands.command(name = "Wlmessage",brief = "Sunucuna gelen yeni üyeler için karşılama mesajı gönderir.",aliases = ["wlmessage"])
+    @commands.command(name = "Wlmessage",brief = "Yeni gelen üyeler için karşılama mesajı gönderir.",aliases = ["wlmessage"])
     @commands.has_permissions(administrator=True)
     async def member_welcome_command(self,ctx):
         """Welcome message for newcomers
@@ -76,7 +76,7 @@ class Guild(commands.Cog):
                 logger.error(f"Guild | Wlmessage | Error: {e}")
                 pass
 
-    @commands.command(name = "Lvmessage",brief = "Sunucundan ayrılan üyeler için ayrılma mesajı gönderir.",aliases = ["lvmessage"])
+    @commands.command(name = "Lvmessage",brief = "Ayrılan üyeler için bilgilendirme mesajı gönderir.",aliases = ["lvmessage"])
     @commands.has_permissions(administrator=True)
     async def member_leave_command(self,ctx):
         """Information message for leaving members
@@ -109,7 +109,7 @@ class Guild(commands.Cog):
                 logger.error(f"Guild | Lvmessage | Error: {e}")
                 pass
 
-    @commands.command(name = "Setautorole",brief = "Sunucundan gelen üyeler için otomatik rol verir.",aliases = ["setautorole"])
+    @commands.command(name = "Setautorole",brief = "Yeni gelen üyeler için otomatik rol verir.",aliases = ["setautorole"])
     @commands.has_permissions(administrator=True)
     async def autorole_command(self,ctx):
         """Automatic role for newcomers
@@ -211,7 +211,7 @@ class Guild(commands.Cog):
             logger.error(f"Guild | ResetServerConfig | Error: {e}")
             pass
 
-    @commands.command(name = "Automessage",brief = "İstediğiniz kanalde istediğiniz mesajı otomatik gönderir.",aliases = ["automessage",'otomesaj'])
+    @commands.command(name = "Automessage",brief = "İstediğiniz kanala otomatik mesaj gönderir.",aliases = ["automessage"])
     @commands.has_permissions(administrator=True)
     async def auto_message_scheduler_command(self,ctx):
         """Auto Message Scheduler

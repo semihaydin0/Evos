@@ -14,7 +14,7 @@ class Users(commands.Cog):
         self.client = client
 
     @commands.guild_only()
-    @commands.command(name="Profil", brief = "Kullanıcının profil bilgilerini getirir.",aliases = ['profil','Profile','profile'])
+    @commands.command(name="Profil", brief = "Kullanıcının profil bilgilerini görüntüler.",aliases = ['profil','Profile','profile'])
     async def profile_command(self,ctx,member : discord.Member = None):
         """Profile
         Use of : profil
@@ -63,12 +63,14 @@ class Users(commands.Cog):
         profileImg.paste(author_image, (50, 835), circle_image)
         profileImg.paste(member_image, (1360, 245), circle_image_2)
         profileImg.save("profile.png")
-        print("done")
+
         await ctx.send(file=discord.File("profile.png"))
+        
         os.remove("profile.png")
+        
         logger.info(f"Users | Profil | Tarafından : {ctx.author}")
     
-    @commands.command(name="Avatar",brief = "Kullanıcının avatarını getirir.",aliases = ['avatar'])
+    @commands.command(name="Avatar",brief = "Kullanıcının avatarını görüntüler.",aliases = ['avatar'])
     async def avatar_command(self,ctx,member : discord.Member=None):
         """Avatar
         Use of : avatar
@@ -84,7 +86,7 @@ class Users(commands.Cog):
         logger.info(f"Users | Avatar | Tarafından : {ctx.author}")
 
     @commands.guild_only()
-    @commands.command(name="Sunucu", brief = "Server bilgilerini getirir.",aliases = ['sunucu','server','Server'])
+    @commands.command(name="Sunucu", brief = "Server bilgilerini görüntüler.",aliases = ['sunucu','server','Server'])
     async def server_command(self,ctx):
         """Server Info
         Use of : server
@@ -94,7 +96,7 @@ class Users(commands.Cog):
         defaultSize = 70
         
         if  len(str(ctx.guild.owner)) > 25 :
-            defaultSize -= len(str(ctx.guild.owner)) - 5
+            defaultSize -= len(str(ctx.guild.owner)) - 10
 
         defaultFont = ImageFont.truetype("./assets/fonts/Oxanium-Regular.ttf", defaultSize)
         headerFont = ImageFont.truetype("./assets/fonts/SansitaSwashed-VariableFont_wght.ttf", 150)
