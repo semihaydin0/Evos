@@ -42,16 +42,16 @@ class Events(commands.Cog):
                 for channel in guild.text_channels:
                     
                     try :
-                        currentTimeLeft = svConfig[str(channel.id)]['auto_message_timer']
-                        defaultTime = svConfig[str(channel.id)]['default_time']
+                        currentTimeLeft = svConfig[str(channel.id)]['TIMER']
+                        defaultTime = svConfig[str(channel.id)]['DEFAULT']
                         if currentTimeLeft > 0 :
                             
                             if currentTimeLeft - 1 == 0 :
-                                svConfig[str(channel.id)]['auto_message_timer'] = svConfig[str(channel.id)]['default_time']
+                                svConfig[str(channel.id)]['TIMER'] = svConfig[str(channel.id)]['DEFAULT']
                             else :
-                                svConfig[str(channel.id)]['auto_message_timer'] = currentTimeLeft - 1
+                                svConfig[str(channel.id)]['TIMER'] = currentTimeLeft - 1
                         elif defaultTime > 0:
-                            svConfig[str(channel.id)]['auto_message_timer'] = svConfig[str(channel.id)]['default_time']
+                            svConfig[str(channel.id)]['TIMER'] = svConfig[str(channel.id)]['DEFAULT']
                         with open (dataSource, 'w+') as f:
                             json.dump(svConfig, f,indent=4)    
                     except :
@@ -104,12 +104,12 @@ class Events(commands.Cog):
                 for channel in guild.text_channels:
                     
                     try :
-                        currentTimeLeft = svConfig[str(channel.id)]['auto_message_timer']
-                        defaultTime = svConfig[str(channel.id)]['default_time']
+                        currentTimeLeft = svConfig[str(channel.id)]['TIMER']
+                        defaultTime = svConfig[str(channel.id)]['DEFAULT']
                         
                         if defaultTime == currentTimeLeft :
                             automessage_channel_id = discord.utils.get(guild.text_channels, id=int(channel.id))
-                            automessage_text = svConfig[str(channel.id)]['auto_message_text']
+                            automessage_text = svConfig[str(channel.id)]['TEXT']
                             
                             await automessage_channel_id.send(automessage_text)
                     except :
