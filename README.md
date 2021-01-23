@@ -2,24 +2,18 @@
 *** Semih Aydın 2020
 -->
 
-## ![Evos](./images/evos.png)
-
-🤖 A discord bot with many features.
+## ![Evos](./images/banner.jpg)
 
 ## Sample Commands
 
 ![Example](./images/example_commands.png)
 ![Example2](./images/sample2.png)
 
-## Commands
-
-![Commands](./images/commands.png)
-
 ## Invite
 
 [Here](https://discord.com/api/oauth2/authorize?client_id=675459603420545056&permissions=8&scope=bot) you can invite the bot to your server.
 
-Evos is currently active on Google Cloud's European servers.
+Evos is currently running on Google Cloud's European servers.
 
 ## Important
 > :warning: **Some commands will not work properly if your bot is not verified.**
@@ -38,6 +32,7 @@ Evos is currently active on Google Cloud's European servers.
 * [Googletrans](https://github.com/ssut/py-googletrans)
 * [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
 * [Matplotlib](https://github.com/matplotlib/matplotlib)
+* [Pillow](https://github.com/python-pillow/Pillow)
 * [Humanize](https://github.com/jmoiron/humanize)
 * [Cpuinfo](https://github.com/workhorsy/py-cpuinfo)
 * [Uptime](https://github.com/Cairnarvon/uptime)
