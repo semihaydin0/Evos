@@ -1,5 +1,8 @@
 {
-    "guild_id": {
-        "custom_prefix": "!"
+    "GUILD_ID": {
+        "CUSTOM_PREFIX": ".",
+        "AUTOROLE_ID": 0,
+        "WELCOME_CHANNEL_ID": 0,
+        "LEAVE_CHANNEL_ID": 0
     }
 }

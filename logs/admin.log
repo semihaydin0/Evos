@@ -1,1 +1,2 @@
-2020-10-14 16:07:47,590:INFO:Admin | Aktivite De�i�ikli�i : .yardım   | Taraf�ndan : PHOENIX#0001
+2021-01-18 17:19:13,568:ERROR:Admin | ChangeUsername | Error : 400 Bad Request (error code: 50035): Invalid Form Body
+In username: You are changing your username or Discord Tag too fast. Try again later.

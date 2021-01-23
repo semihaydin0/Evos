@@ -1,7 +1,7 @@
 {
-    "791649642467033092": {
-        "auto_message_text": "Message",
-        "auto_message_timer": 3,
-        "default_time": 5
+    "CHANNEL_ID": {
+        "TEXT": "DELETED CONTENT",
+        "TIMER": 0,
+        "DEFAULT": -1
     }
 }
