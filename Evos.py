@@ -15,9 +15,9 @@ default_prefix = '.'
 
 def get_prefix(client,message):
     try :
-        with open("./data/ServerData.json", "r") as jsonFile:
+        with open("./data/server/ServerData.json", "r") as jsonFile:
             prefixes = json.load(jsonFile)
-        return prefixes[str(message.guild.id)]["custom_prefix"]
+        return prefixes[str(message.guild.id)]["CUSTOM_PREFIX"]
     except : 
         return default_prefix
 
