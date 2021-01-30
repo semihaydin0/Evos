@@ -5,10 +5,8 @@
 import discord
 from discord.utils import get
 from discord.ext import commands
-import json
+import sqlite3
 from logging_files.moderation_log import logger
-
-dataSource = "./data/server/MuteList.json"
 
 class Moderation(commands.Cog):
     def __init__(self,client):
@@ -165,19 +163,18 @@ class Moderation(commands.Cog):
                     if minute > 0 :
                     
                             await member.add_roles(role)
-
+                            db = sqlite3.connect('data/server/Mute.db')
+                            cursor = db.cursor()
+                            
                             try :
-                                jsonFile = open(dataSource, "r")
-                                muteList = json.load(jsonFile)
-                                jsonFile.close()
-                            
-                                muteList[str(member.id)] = {}
-                                muteList[str(member.id)]["TIME_LEFT"] = minute
-                            
-                                with open (dataSource, 'w+') as f:
-                                    json.dump(muteList, f,indent=4)
+                                cursor.execute(f"INSERT INTO MutedUsers VALUES ({str(member.id)},{minute})")
+                                db.commit()
                             except :
                                 await ctx.send(":thinking: Görünüşe göre şu anda susturulmuş kullanıcı kayıtlarına ulaşamıyoruz. Belirtilen kullanıcı susturuldu ancak yasağını manuel kaldırman gerekir.")
+                                return
+                            finally :
+                                cursor.close()
+                                db.close()
                             
                             muteEmbed_2=discord.Embed(title=f"{member} {minute} dakika susturuldu !",colour=0xffd500,timestamp=ctx.message.created_at)
                             muteEmbed_2.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)    
@@ -216,17 +213,18 @@ class Moderation(commands.Cog):
             if role in member.roles:
                 
                 try :
+                    db = sqlite3.connect('data/server/Mute.db')
+                    cursor = db.cursor()
+                    
                     try :
-                        with open(dataSource, 'rb') as fp:
-                            jsondata = json.load(fp)
-                        
-                        jsondata[str(member.id)] = {}
-                        jsondata[str(member.id)]["TIME_LEFT"] = -1
-                        
-                        with open (dataSource, 'w+') as f:
-                            json.dump(jsondata, f,indent=4)
+                        cursor.execute(f"DELETE FROM MutedUsers WHERE USER_ID = {str(member.id)}")
+                        db.commit()
                     except :
                         await ctx.send(":thinking: Görünüşe göre şu anda susturulmuş kullanıcı kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
+                        return
+                    finally :
+                        cursor.close()
+                        db.close()
                     
                     await member.remove_roles(role)
                         
