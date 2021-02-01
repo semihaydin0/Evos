@@ -6,15 +6,8 @@ import discord
 from discord.utils import get
 from discord.ext import tasks, commands
 import asyncio
-import json
-
-dataSource = "./data/server/ServerConfig.json"
-dataSource2 = "./data/server/MuteList.json"
-configStatus = False
-listStatus = False
-currentTimeLeft = 0
-currentTimeLeft2 = 0
-defaultTime = 0
+import sqlite3
+from logging_files.events_log import logger
 
 class Events(commands.Cog):
     def __init__(self,client):
@@ -28,128 +21,107 @@ class Events(commands.Cog):
     async def auto_message_time_organizer(self):
         await self.client.wait_until_ready()
         
+        db = sqlite3.connect('data/server/Config.db')
+        cursor = db.cursor()
         try :
-            jsonFile = open(dataSource, "r")
-            svConfig = json.load(jsonFile)
-            jsonFile.close()
-            configStatus = True
-        except :
-            configStatus = False
+            cursor.execute(f"UPDATE AutoMessage SET TIME_LEFT = TIME_LEFT-1")
+            db.commit()
+        except Exception as e :
+            logger.error(f"Events | AutoMessageTimeOrganizer | Error: {e}")
             pass
-        
-        if configStatus == True:
-            for guild in self.client.guilds:
-                for channel in guild.text_channels:
-                    
-                    try :
-                        currentTimeLeft = svConfig[str(channel.id)]['TIMER']
-                        defaultTime = svConfig[str(channel.id)]['DEFAULT']
-                        if currentTimeLeft > 0 :
-                            
-                            if currentTimeLeft - 1 == 0 :
-                                svConfig[str(channel.id)]['TIMER'] = svConfig[str(channel.id)]['DEFAULT']
-                            else :
-                                svConfig[str(channel.id)]['TIMER'] = currentTimeLeft - 1
-                        elif defaultTime > 0:
-                            svConfig[str(channel.id)]['TIMER'] = svConfig[str(channel.id)]['DEFAULT']
-                        with open (dataSource, 'w+') as f:
-                            json.dump(svConfig, f,indent=4)    
-                    except :
-                        pass
+        finally :
+            cursor.close()
+            db.close()
 
     @tasks.loop(minutes=1)
     async def muted_users_time_organizer(self):
         await self.client.wait_until_ready()
         
-        try :
-            jsonFile = open(dataSource2, "r")
-            muteList = json.load(jsonFile)
-            jsonFile.close()
-            listStatus = True
-        except :
-            listStatus = False
-            pass
-        
-        if listStatus == True:
-            for guild in self.client.guilds:
-                for member in guild.members:
+        db = sqlite3.connect('data/server/Mute.db')
+        cursor = db.cursor()
                     
-                    try :
-                        currentTimeLeft2 = muteList[str(member.id)]['TIME_LEFT']
-                        
-                        if currentTimeLeft2 > 0 :
-                            muteList[str(member.id)]['TIME_LEFT'] = currentTimeLeft2 - 1
-                        
-                        with open (dataSource2, 'w+') as f:
-                            json.dump(muteList, f,indent=4)
-                    except :
-                        pass
-    
+        try :
+            cursor.execute(f"UPDATE MutedUsers SET TIME_LEFT = TIME_LEFT-1")
+            db.commit()
+        except Exception as e :
+            logger.error(f"Events | MutedUsersTimeOrganizer | Error: {e}")
+            pass
+        finally :
+            cursor.close()
+            db.close()
+
     @tasks.loop(hours=1)
     async def auto_message(self):
         await self.client.wait_until_ready()
+        await asyncio.sleep(15)
         
-        await asyncio.sleep(60)
+        db = sqlite3.connect('data/server/Config.db')
+        cursor = db.cursor()
+        
         try :
-            jsonFile = open(dataSource, "r")
-            svConfig = json.load(jsonFile)
-            jsonFile.close()
-            configStatus = True
-        except :
-            configStatus = False
-            pass
-        
-        if configStatus == True:
-            for guild in self.client.guilds:
-                for channel in guild.text_channels:
+            cursor.execute(f"SELECT CHANNEL_ID,MESSAGE_CONTENT FROM AutoMessage WHERE TIME_LEFT <= 0")
+            data = cursor.fetchall()
+            db.commit()
+            
+            for guild in self.client.guilds :
+                
+                for _data in data :
                     
-                    try :
-                        currentTimeLeft = svConfig[str(channel.id)]['TIMER']
-                        defaultTime = svConfig[str(channel.id)]['DEFAULT']
+                    for channel in guild.text_channels :
                         
-                        if defaultTime == currentTimeLeft :
-                            automessage_channel_id = discord.utils.get(guild.text_channels, id=int(channel.id))
-                            automessage_text = svConfig[str(channel.id)]['TEXT']
+                        if str(channel.id) == _data[0] :
                             
-                            await automessage_channel_id.send(automessage_text)
-                    except :
-                        pass
+                            try :
+                                channelID = discord.utils.get(guild.text_channels, id=int(channel.id))
+                                messageContent = _data[1]
+                            
+                                await channelID.send(messageContent)
+                                
+                                cursor.execute(f"UPDATE AutoMessage SET TIME_LEFT = DEFAULT_TIME WHERE TIME_LEFT <= 0")
+                                db.commit()
+                            except Exception as e :
+                                logger.error(f"Events | AutoMessage-2 | Error: {e}")
+        except Exception as e :
+            logger.error(f"Events | AutoMessage-1 | Error: {e}")
+            pass
+        finally :
+            cursor.close()
+            db.close()                
 
     @tasks.loop(minutes=1)
     async def unmute_organizer(self):
         await self.client.wait_until_ready()
-        
         await asyncio.sleep(10)
-        try :
-            jsonFile = open(dataSource2, "r")
-            muteList = json.load(jsonFile)
-            jsonFile.close()
-            listStatus = True
-        except :
-            listStatus = False
-            pass
         
-        if listStatus == True:
-            for guild in self.client.guilds:
-                for member in guild.members:
+        db = sqlite3.connect('data/server/Mute.db')
+        cursor = db.cursor()
+        
+        try :
+            cursor.execute(f"SELECT USER_ID FROM MutedUsers WHERE TIME_LEFT <= 0")
+            users = cursor.fetchall()
+            db.commit()
+            
+            for guild in self.client.guilds :
+                role = discord.utils.get(guild.roles,name = "Muted")
+                
+                for user in users :
                     
-                    try :
-                        currentTimeLeft2 = muteList[str(member.id)]['TIME_LEFT']
+                    for member in guild.members :
                         
-                        if currentTimeLeft2 == 0:
-                            role = discord.utils.get(guild.roles,name = "Muted")
+                        if str(member.id) == user[0] :
                             
                             try :
                                 await member.remove_roles(role)
-                                
-                                muteList[str(member.id)]['TIME_LEFT'] = -1
-                                
-                                with open (dataSource2, 'w+') as f:
-                                    json.dump(muteList, f,indent=4)
-                            except :
-                                pass
-                    except :
-                        pass
+                                cursor.execute(f"DELETE FROM MutedUsers WHERE USER_ID = {user[0]}")
+                                db.commit()
+                            except Exception as e :
+                                logger.error(f"Events | UnmuteOrganizer-2 | Error: {e}")
+        except Exception as e :
+            logger.error(f"Events | UnmuteOrganizer-1 | Error: {e}")
+            pass
+        finally :
+            cursor.close()
+            db.close()
 
 def setup(client):
     client.add_cog(Events(client))
