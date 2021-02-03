@@ -477,6 +477,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             
             await ctx.send(embed=queueEmbed_2)
 
+    @commands.has_permissions(administrator=True)
     @commands.command(name="Düzey", brief = "Ses düzeyini ayarlar.",aliases=["düzey","Volume","volume"])
     async def volume_command(self,ctx,value:int):
         """Volume

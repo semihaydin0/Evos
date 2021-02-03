@@ -156,7 +156,7 @@ class Guild(commands.Cog):
             db = sqlite3.connect('data/server/Data.db')
             cursor = db.cursor()
             try :
-                cursor.execute(f"UPDATE ServerData SET CUSTOM_PREFIX = {prefixSelection.content} WHERE SERVER_ID = {ctx.author.guild.id}")
+                cursor.execute(f"UPDATE ServerData SET CUSTOM_PREFIX = '{str(prefixSelection.content)}' WHERE SERVER_ID = {str(ctx.author.guild.id)}")
                 db.commit()
                 
                 await ctx.send(f"Harika! :partying_face: Bu sunucu için komut ön eki **{prefixSelection.content}** olarak ayarlandı.")

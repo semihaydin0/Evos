@@ -4,6 +4,7 @@
 
 import discord
 from discord.ext import commands
+import sqlite3
 import json
 import os
 
@@ -11,20 +12,22 @@ intents = discord.Intents.default()
 intents.members = True
 modules = 0
 loaded = 0
-default_prefix = '.'
+defaultPrefix = '.'
 
 def get_prefix(client,message):
+    db = sqlite3.connect("data/server/Data.db")
+    cursor = db.cursor()
     try :
-        with open("./data/server/ServerData.json", "r") as jsonFile:
-            prefixes = json.load(jsonFile)
-        return prefixes[str(message.guild.id)]["CUSTOM_PREFIX"]
+        cursor.execute(f"SELECT CUSTOM_PREFIX FROM ServerData WHERE SERVER_ID = {str(message.guild.id)}")
+        customPrefix = cursor.fetchone()
+        return customPrefix[0]
     except : 
-        return default_prefix
+        return defaultPrefix
 
 def get_token():
     with open("./data/Token.json", "r") as tokenjsonFile:
-        Data = json.load(tokenjsonFile)
-        token = Data["token"]
+        data = json.load(tokenjsonFile)
+        token = data["token"]
     return token
 
 client = commands.Bot(command_prefix=get_prefix,intents=intents)
