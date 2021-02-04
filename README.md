@@ -2,7 +2,7 @@
 *** Semih Aydın 2020
 -->
 
-## ![Evos](./images/banner.jpg)
+## ![Evos](./images/evosBanner.jpg)
 
 ## Sample Commands
 
