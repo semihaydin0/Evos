@@ -6,8 +6,7 @@
 
 ## Sample Commands
 
-![Example](./images/example_commands.png)
-![Example2](./images/sample2.png)
+![Example](./images/exampleCommands.png)
 
 ## Invite
 
@@ -16,7 +15,6 @@
 Evos is currently running on Google Cloud's European servers.
 
 ## Important
-> :warning: **Some commands will not work properly if your bot is not verified.**
 
 > :warning: **Your python version must be 3.8>** to use this project
 
@@ -27,6 +25,7 @@ Evos is currently running on Google Cloud's European servers.
 
 ## Libraries
 * [Discord.py](https://github.com/Rapptz/discord.py)
+* [SQLite](https://github.com/sqlite/sqlite)
 * [Lavalink](https://github.com/Frederikam/Lavalink)
 * [Requests](https://github.com/psf/requests)
 * [Googletrans](https://github.com/ssut/py-googletrans)
@@ -47,7 +46,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 ## Contact
 For any problems, you can contact me at the addresses below.
 * Discord : PHOENIX#7103
-* E-Mail : semihaydn034@gmail.com
+* E-Mail  : semihaydn034@gmail.com
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
