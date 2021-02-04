@@ -96,8 +96,15 @@ class Requests(commands.Cog):
 
             labels = ['İyileşen', 'Ölen','Aktif']
             quantity = [Recover/Cases, Deaths/Cases,(Cases-Deaths-Recover)/Cases]
+            explodeValue = 0.2
+            
+            if max(quantity) >= 0.9 :
+                explodeValue = 0.4
+            elif max(quantity) >= 0.8 :
+                explodeValue = 0.3    
+            
             colors = ['green', 'orangered','coral']
-            explode = (0.2, 0.2, 0.2)
+            explode = (explodeValue, explodeValue, explodeValue)
             
             coronaplt.clf()
             coronaplt.figure(figsize=(6,4),facecolor="lightgray")
@@ -106,11 +113,11 @@ class Requests(commands.Cog):
             coronaplt.title("VAKALARIN DURUMLARI")
             coronaplt.savefig(f"{ctx.author.id}.png")
 
-            file = discord.File(f"{ctx.author.id}.png", filename="COVID-19.png")
+            file = discord.File(f"{ctx.author.id}.png", filename=f"{Country}_COVID-19.png")
 
-            coronaStatsEmbed.set_image(url="attachment://COVID-19.png")
+            coronaStatsEmbed.set_image(url=f"attachment://{Country}_COVID-19.png")
             coronaStatsEmbed.set_thumbnail(url=CountryFlag)
-            coronaStatsEmbed.set_footer(text=f"Tarafından: {ctx.author.name}",icon_url=ctx.author.avatar_url)
+            coronaStatsEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
 
             await ctx.send(file=file,embed=coronaStatsEmbed)
 
@@ -180,7 +187,7 @@ class Requests(commands.Cog):
             currencyEmbed.add_field(name=f"Bitcoin",value = f'1 ₿ = **{BTC}** ₺\n1 ₺ = **{round(1/float(BTC),7)}** ₿')
             currencyEmbed.add_field(name=f"Ethereum",value = f'1 Ξ = **{ETH}** ₺\n1 ₺ = **{round(1/float(ETH),6)}** Ξ')
             currencyEmbed.add_field(name=f"Ripple",value = f'1 X = **{XRP}** ₺\n1 ₺ = **{round(1/float(XRP),2)}** X')
-            currencyEmbed.set_footer(text=f"Tarafından: {ctx.author.name}",icon_url=ctx.author.avatar_url)
+            currencyEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
             
             await ctx.send(file=file,embed=currencyEmbed)
             
