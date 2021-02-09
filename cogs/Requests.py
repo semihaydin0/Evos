@@ -18,11 +18,6 @@ class Requests(commands.Cog):
 
     @commands.command(name="Korona", brief = "Detaylı COVID-19 istatistiklerini görüntüler.",aliases = ['korona','corona','Corona'])
     async def corona_command(self,ctx,CountryName = None):
-        
-        """COVID-19 Statistics
-        Use of : corona {country}
-        """
-        
         try : 
             if CountryName is None :
                 CountryName = "dünya"
@@ -131,12 +126,7 @@ class Requests(commands.Cog):
             logger.error(f"Requests | COVID-19 | Error: {e}")
 
     @commands.command(name="Kur", brief = "Canlı Döviz Kurunu ve Kripto Paraları görüntüler.",aliases = ['döviz','Döviz','kur'])
-    async def currency_command(self,ctx):
-        
-        """The value of the Turkish lira against other currencies and cryptocurrencies
-        Use of : kur
-        """
-        
+    async def currency_command(self,ctx):        
         try :
             Currency = requests.get('http://bigpara.hurriyet.com.tr/doviz/')
             BSoup = BeautifulSoup(Currency.content,'html.parser')

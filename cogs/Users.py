@@ -16,10 +16,6 @@ class Users(commands.Cog):
     @commands.guild_only()
     @commands.command(name="Profil", brief = "Kullanıcının profil bilgilerini görüntüler.",aliases = ['profil','Profile','profile'])
     async def profile_command(self,ctx,member : discord.Member = None):
-        """Profile
-        
-        Use of : profile
-        """
         if member is None :
             member = ctx.author
         
@@ -73,10 +69,6 @@ class Users(commands.Cog):
     
     @commands.command(name="Avatar",brief = "Kullanıcının avatarını görüntüler.",aliases = ['avatar'])
     async def avatar_command(self,ctx,member : discord.Member=None):
-        """Avatar
-        
-        Use of : avatar
-        """
         if member is None : 
             member = ctx.message.author
         avatarEmbed = discord.Embed(colour=member.color)
@@ -90,10 +82,6 @@ class Users(commands.Cog):
     @commands.guild_only()
     @commands.command(name="Sunucu", brief = "Server bilgilerini görüntüler.",aliases = ['sunucu','server','Server'])
     async def server_command(self,ctx):
-        """Server Info
-        
-        Use of : server
-        """
         serverImg = Image.open("./images/info-background.jpg")
         draw = ImageDraw.Draw(serverImg)
         defaultSize = 70
