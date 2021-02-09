@@ -5,7 +5,6 @@
 import discord
 from discord.ext import commands
 from enum import Enum
-import datetime as dt
 import typing as t
 import wavelink
 import asyncio
@@ -254,9 +253,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Çık", brief = "Bot bulunduğu ses kanalından çıkar.",aliases=["Leave","leave","çık"])
     async def disconnect_command(self, ctx):
+        
         """Leave
         Use of : leave
         """
+        
         player = self.get_player(ctx)
         await player.teardown()
         
@@ -264,9 +265,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Çal", brief = "İstediğiniz ses dosyasını çalar.",aliases=["çal","Play","play"])
     async def play_command(self, ctx, *, query: t.Optional[str]):
+        
         """Play
         Use of : play {url/query}
         """
+        
         player = self.get_player(ctx)
         
         if not player.is_connected:
@@ -304,9 +307,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Duraklat", brief = "Sesi duraklatır.",aliases=["duraklat","Pause","pause"])
     async def pause_command(self, ctx):
+        
         """Pause
         Use of : pause
         """
+        
         player = self.get_player(ctx)
         
         if player.is_paused:
@@ -328,9 +333,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Dur", brief = "Sesi durdurur ve listeyi temizler.",aliases=["dur","Stop","stop"])
     async def stop_command(self, ctx):
+        
         """Stop
         Use of : stop
         """
+        
         player = self.get_player(ctx)
         player.queue.empty()
         await player.stop()
@@ -343,9 +350,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Sıradaki", brief = "Listedeki bir sonraki şarkıya atlar.",aliases=["sıradaki","Skip","skip","Next","next"])
     async def next_command(self, ctx):
+        
         """Next
         Use of : next
         """
+        
         player = self.get_player(ctx)
         
         if not player.queue.upcoming:
@@ -371,9 +380,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Önceki", brief = "Listedeki bir önceki şarkıya döner.",aliases=["önceki","Previous","previous"])
     async def previous_command(self, ctx):
+        
         """Previous
         Use of : previous
         """
+        
         player = self.get_player(ctx)
         
         if not player.queue.history:
@@ -400,9 +411,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Karıştır", brief = "Listeyi karıştırır.",aliases=["karıştır","Shuffle","shuffle"])
     async def shuffle_command(self, ctx):
+        
         """Shuffle
         Use of : shuffle
         """
+        
         player = self.get_player(ctx)
         player.queue.shuffle()
         shuffleEmbed=discord.Embed(title="Liste karıştırıldı.",colour=0xffd500)
@@ -421,9 +434,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Tekrarla", brief = "Mevcut parçayı veya listeyi tekrarlar.",aliases=["tekrarla","Repeat","repeat"])
     async def repeat_command(self, ctx, mode: str):
+        
         """Repeat
         Use of : repeat {none/1/all}
         """
+        
         mode = mode.title()
         if mode not in ("Yok", "1", "Tümü"):
             raise InvalidRepeatMode
@@ -452,9 +467,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(name="Liste", brief = "Listenin güncel durumunu görüntüler.",aliases=["liste","Queue","queue"])
     async def queue_command(self, ctx):
+        
         """Queue
         Use of : queue
         """
+        
         player = self.get_player(ctx)
         
         if player.queue.is_empty:
@@ -480,9 +497,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
     @commands.has_permissions(administrator=True)
     @commands.command(name="Düzey", brief = "Ses düzeyini ayarlar.",aliases=["düzey","Volume","volume"])
     async def volume_command(self,ctx,value:int):
+        
         """Volume
         Use of : volume {value}
         """
+        
         player = self.get_player(ctx)
         
         if player.queue.is_empty:

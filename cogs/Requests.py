@@ -4,9 +4,9 @@
 
 import discord
 from discord.ext import commands
-from bs4 import BeautifulSoup
-from googletrans import Translator
 import matplotlib.pyplot as coronaplt
+from googletrans import Translator
+from bs4 import BeautifulSoup
 import requests
 import humanize
 import os
@@ -18,9 +18,11 @@ class Requests(commands.Cog):
 
     @commands.command(name="Korona", brief = "Detaylı COVID-19 istatistiklerini görüntüler.",aliases = ['korona','corona','Corona'])
     async def corona_command(self,ctx,CountryName = None):
+        
         """COVID-19 Statistics
         Use of : corona {country}
         """
+        
         try : 
             if CountryName is None :
                 CountryName = "dünya"
@@ -28,11 +30,11 @@ class Requests(commands.Cog):
             translator = Translator()
             translation = translator.translate(CountryName)
             Country = translation.text.title()
-            
             DataUrl = f"https://coronavirus-19-api.herokuapp.com/countries/{Country}"
             
             if Country == "World" :
                 CountryFlag = "https://i.ibb.co/fVJyrgP/world.png"
+            
             else :
                 CountryFlag = f"https://www.countries-ofthe-world.com/flags-normal/flag-of-{Country}.png"
 
@@ -41,8 +43,7 @@ class Requests(commands.Cog):
             Cases = json_stats["cases"]
             Recover = json_stats["recovered"]
             Deaths = json_stats["deaths"]
-            _t = humanize.i18n.activate("tr_TR")
-
+            humanize.i18n.activate("tr_TR")
             totalCases = humanize.intword(json_stats["cases"])
             todayCases = humanize.intword(json_stats["todayCases"])
             totalDeaths = humanize.intword(json_stats["deaths"])
@@ -82,7 +83,6 @@ class Requests(commands.Cog):
 
             CountryNameTR = translator.translate(CountryName,dest="tr")
             TRCountry = CountryNameTR.text.title()
-
             coronaStatsEmbed = discord.Embed(title=f"{TRCountry} COVID-19 İstatistikleri", colour=0xffd500, timestamp=ctx.message.created_at)
             coronaStatsEmbed.add_field(name="Bugünkü Vaka", value=todayCases)
             coronaStatsEmbed.add_field(name="Bugünkü Ölüm", value=todayDeaths)
@@ -100,12 +100,12 @@ class Requests(commands.Cog):
             
             if max(quantity) >= 0.9 :
                 explodeValue = 0.4
+            
             elif max(quantity) >= 0.8 :
-                explodeValue = 0.3    
+                explodeValue = 0.3
             
             colors = ['green', 'orangered','coral']
             explode = (explodeValue, explodeValue, explodeValue)
-            
             coronaplt.clf()
             coronaplt.figure(figsize=(6,4),facecolor="lightgray")
             coronaplt.pie(quantity,colors=colors, explode=explode, labels=labels, autopct='%1.1f%%',shadow=True, startangle=90)
@@ -132,9 +132,11 @@ class Requests(commands.Cog):
 
     @commands.command(name="Kur", brief = "Canlı Döviz Kurunu ve Kripto Paraları görüntüler.",aliases = ['döviz','Döviz','kur'])
     async def currency_command(self,ctx):
+        
         """The value of the Turkish lira against other currencies and cryptocurrencies
         Use of : kur
         """
+        
         try :
             Currency = requests.get('http://bigpara.hurriyet.com.tr/doviz/')
             BSoup = BeautifulSoup(Currency.content,'html.parser')
@@ -184,9 +186,9 @@ class Requests(commands.Cog):
             currencyEmbed.add_field(name=f":flag_us:    {USDPer}",value = f'1 $ = **{USD}** ₺\n1 ₺ = **{exUSD}** $')
             currencyEmbed.add_field(name=f":flag_eu:    {EURPer}",value = f'1 € = **{EUR}** ₺\n1 ₺ = **{exEUR}** €')
             currencyEmbed.add_field(name=f":flag_gb:    {GBPPer}",value = f'1 £ = **{GBP}** ₺\n1 ₺ = **{exGBP}** £')
-            currencyEmbed.add_field(name=f"Bitcoin",value = f'1 ₿ = **{BTC}** ₺\n1 ₺ = **{round(1/float(BTC),7)}** ₿')
-            currencyEmbed.add_field(name=f"Ethereum",value = f'1 Ξ = **{ETH}** ₺\n1 ₺ = **{round(1/float(ETH),6)}** Ξ')
-            currencyEmbed.add_field(name=f"Ripple",value = f'1 X = **{XRP}** ₺\n1 ₺ = **{round(1/float(XRP),2)}** X')
+            currencyEmbed.add_field(name="Bitcoin",value = f'1 ₿ = **{BTC}** ₺\n1 ₺ = **{round(1/float(BTC),7)}** ₿')
+            currencyEmbed.add_field(name="Ethereum",value = f'1 Ξ = **{ETH}** ₺\n1 ₺ = **{round(1/float(ETH),6)}** Ξ')
+            currencyEmbed.add_field(name="Ripple",value = f'1 X = **{XRP}** ₺\n1 ₺ = **{round(1/float(XRP),2)}** X')
             currencyEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
             
             await ctx.send(file=file,embed=currencyEmbed)
