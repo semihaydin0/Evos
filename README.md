@@ -1,7 +1,7 @@
 <!--
 *** Semih Aydın 2020
 -->
-
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/4c254313de2d4ca0a5d6d5813b981117)](https://www.codacy.com/gh/semihaydin0/Evos/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=semihaydin0/Evos&amp;utm_campaign=Badge_Grade)
 ![Evos](./images/evosBanner.jpg)
 
 ## Sample Commands
@@ -22,7 +22,7 @@ Evos is currently running on Google Cloud's European servers.
 
 ## Made With
 
-* Python: 3.9.0
+*   Python: 3.9.0
 
 ## Libraries
 
