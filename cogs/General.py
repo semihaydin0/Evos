@@ -24,9 +24,6 @@ class General(commands.Cog):
 
     @commands.command(name ="Ping",brief ="Evos'un gecikme değerini gösterir.",aliases = ['ping','Latency','latency'])
     async def ping_command(self,ctx):
-        """Ping
-        Use of : ping
-        """
         pingEmbed = discord.Embed(title = f'Ping: {round(self.client.latency * 1000)} ms',color=0xd8f500)
         pingEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
 
@@ -37,9 +34,6 @@ class General(commands.Cog):
     @commands.guild_only()
     @commands.command(name ="Davet",brief ="Kanal davet linki oluşturur.",aliases=['davet','Invite','invite'])
     async def invite_command(self,ctx,time: int = 0,amount: int = 0):
-        """Invite
-        Use of : invite
-        """
         link = await ctx.channel.create_invite(max_age = time*3600,max_uses = amount)
         
         if time == 0:
@@ -58,14 +52,11 @@ class General(commands.Cog):
 
     @commands.command(name ="Evos",brief ="Evos'un davet linkini gönderir.",aliases=["evos"])
     async def evos_invite_command(self,ctx):
-        """Evos
-        Use of : evos
-        """
         evosEmbed=discord.Embed(title =f"Evos - Türkçe Discord Botu",description ="**Bu [linkten](https://discord.com/api/oauth2/authorize?client_id=675459603420545056&permissions=8&scope=bot)** beni sunucuna ekleyebilirsin.",color=0xd8f500,timestamp=ctx.message.created_at)
         evosEmbed.add_field(name="Geliştirici misin ?",value="[Buradan](https://github.com/semihaydin0/Evos) kaynak kodlarını inceleyebilirsin.",inline=False)
 
         file = discord.File("images/evos.png", filename="evos.png")
-        evosEmbed.set_footer(text=f"Teşekkürler!",icon_url="attachment://evos.png")
+        evosEmbed.set_footer(text="Teşekkürler!",icon_url="attachment://evos.png")
 
         await ctx.send(file=file,embed=evosEmbed)
 
@@ -73,9 +64,6 @@ class General(commands.Cog):
 
     @commands.command(name="Hesapla",brief="İki sayı ile dört işlem yapar.",aliases = ['hesapla','Math','math'])
     async def math_command(self,ctx,num1: float,op: str,num2: float):
-        """Math
-        Use of : math {number1} {operator} {number2}
-        """
         result = 0.0
         
         if op == "+":
@@ -104,9 +92,6 @@ class General(commands.Cog):
 
     @commands.command(name ="Yardım",brief ="Komutlar hakkında bilgi verir.",aliases=["yardım"])
     async def help_command(self,ctx,cog="1"):
-        """Help
-        Use of : yardım
-        """
         helpEmbed=discord.Embed(title="🤖 Komutlar",description="Komutların kullanımlarını görmek için **.help** yazabilirsin.", color=0xd8f500,timestamp=ctx.message.created_at)
         file = discord.File("images/evos.png", filename="evos.png")
         helpEmbed.set_thumbnail(url="attachment://evos.png")
@@ -152,9 +137,6 @@ class General(commands.Cog):
 
     @commands.command(name="Evosinfo",brief="Evos'un istatistiklerini gösterir.",aliases=["evosinfo"])
     async def info_command(self,ctx):
-        """Stats
-        Use of : stats
-        """
         svmem = psutil.virtual_memory()
         day = int(uptime()/3600/24)
         hours = int(uptime()/3600-day*24)

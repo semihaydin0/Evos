@@ -16,9 +16,6 @@ class Admin(commands.Cog):
     @commands.is_owner()
     @commands.command(name = "Load",aliases=['load'],hidden=True)
     async def load_command(self,ctx,module :str):
-        """Loads Module
-        Use of : load {module}
-        """
         moduleStatus = False
         
         for filename in os.listdir('./cogs'):
@@ -47,9 +44,6 @@ class Admin(commands.Cog):
     @commands.is_owner()
     @commands.command(name="Unload",aliases=['unload'],hidden=True)
     async def unload_command(self,ctx,module: str):
-        """Unloads an Module
-        Use of : unload {module}
-        """
         moduleStatus = False
         
         for filename in os.listdir('./cogs'):
@@ -78,9 +72,6 @@ class Admin(commands.Cog):
     @commands.is_owner()
     @commands.command(name="Reload",aliases=['reload'],hidden=True)
     async def reload_command(self,ctx,module: str):
-        """Reloads an extension.
-        Use of : reload {module}
-        """
         moduleStatus = False
         
         for filename in os.listdir('./cogs'):
@@ -109,10 +100,7 @@ class Admin(commands.Cog):
     @commands.is_owner()
     @commands.command(name="ReloadAll",aliases=['reloadall'],hidden=True)
     async def reload_all_command(self,ctx):
-        """Reloads all extension.
-        Use of : reloadall
-        """
-        reloadEmbed=discord.Embed(title=f"Tüm Modülleri Yeniden Yükle",colour=0xffd500)
+        reloadEmbed=discord.Embed(title="Tüm Modülleri Yeniden Yükle",colour=0xffd500)
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):  
                     
@@ -131,9 +119,6 @@ class Admin(commands.Cog):
     @commands.is_owner()
     @commands.command(name="Log",aliases=['log'],hidden=True)
     async def send_log_command(self, ctx,name: str):
-        """Send The Logs
-        Use of : log {name}
-        """
         logStatus = False
         
         for filename in os.listdir('./logs'):
@@ -157,9 +142,6 @@ class Admin(commands.Cog):
     @commands.is_owner()
     @commands.command(name="ChangeUsername",aliases=['changeusername'],hidden=True)
     async def change_username_command(self, ctx, *, name: str):
-        """Change Username
-        Use of : changeusername {name}
-        """
         try:
             await self.client.user.edit(username=name)
             changeUsernameEmbed=discord.Embed(title="Kullanıcı adı değişikliği başarılı.",colour=0xffd500)
@@ -176,9 +158,6 @@ class Admin(commands.Cog):
     @commands.is_owner()
     @commands.command(name="Activity",aliases=['activity'],hidden=True)
     async def activity_command(self, ctx, *,name: str):
-        """Changing Activity
-        Use of : activity {name}
-        """
         try: 
             await self.client.change_presence(status=discord.Status.online , 
                 activity=discord.Game(name))
@@ -196,9 +175,6 @@ class Admin(commands.Cog):
     @commands.is_owner()
     @commands.command(name="Reboot",aliases=['reboot'],hidden=True)
     async def reboot_command(self,ctx):
-        """Reboot
-        Use of : reboot
-        """
         rebootEmbed=discord.Embed(title=f"{self.client.user.name} yeniden başlatılıyor.",colour=0xffd500)
         
         message = await ctx.send(embed = rebootEmbed)
@@ -216,9 +192,6 @@ class Admin(commands.Cog):
     @commands.is_owner()
     @commands.command(name="Off",aliases=['off'],hidden=True)
     async def off_command(self, ctx):
-        """Off
-        Use of : off
-        """
         offEmbed=discord.Embed(title=f"{self.client.user.name} kapatılıyor.",colour=0xffd500)
         
         message = await ctx.send(embed=offEmbed)

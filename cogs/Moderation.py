@@ -3,7 +3,6 @@
 #UTF-8
 
 import discord
-from discord.utils import get
 from discord.ext import commands
 import sqlite3
 from logging_files.moderation_log import logger
@@ -17,9 +16,6 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(manage_messages=True)
     @commands.command(name= "Sil", brief = "Metin kanalından mesaj siler.",aliases=['sil','Purge','purge'])
     async def purge_command(self,ctx,amount: int):
-        """Purge
-        Use of : purge {amount}
-        """
         if amount <= 100 :
             cleaned = await ctx.message.channel.purge(limit=amount + 1)
             purgeEmbed=discord.Embed(title=f"Bu kanaldan {len(cleaned)-1} mesaj silindi.",colour=0xffd500)
@@ -38,9 +34,6 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(kick_members=True)
     @commands.command(name = "At",brief = "Sunucudan üye atar.",aliases=['at','Kick','kick'])
     async def kick_command(self,ctx,member: discord.Member, *,reason: str=None):
-        """Kick
-        Use of : kick {member} (reason)
-        """
         if member != ctx.author :
             
             if reason==None :
@@ -66,9 +59,6 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(ban_members=True)
     @commands.command(name="Yasakla" ,brief = "Sunucudan üye yasaklar.",aliases=['yasakla','Ban','ban'])
     async def ban_command(self,ctx,member: discord.Member, *,reason: str=None):
-        """Ban
-        Use of : ban {member} (reason)
-        """
         if member != ctx.author :              
             
             if reason == None :
@@ -94,9 +84,6 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(ban_members=True)
     @commands.command(name ="Unban",brief = "Yasaklanan üyenin yasağını kaldırır.",aliases=["unban"])
     async def unban_command(self,ctx,member: str):
-        """Unban
-        Use of : unban {member}
-        """
         control = 0
         
         for i in range(len(member)) :
@@ -137,10 +124,6 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(manage_roles=True)
     @commands.command(name="Sustur", brief = "Üyeyi belirlediğiniz süreye kadar susturur.",aliases=["sustur","mute"])
     async def mute_command(self,ctx,member: discord.Member, minute: int):
-        """Mute
-        Use of : mute {member} minute
-        Minute <= 0 : Permanent
-        """
         role = discord.utils.get(ctx.guild.roles,name = "Muted")
         
         if member != ctx.author :
@@ -167,10 +150,12 @@ class Moderation(commands.Cog):
                             cursor = db.cursor()
                             
                             try :
-                                cursor.execute(f"INSERT INTO MutedUsers VALUES ({str(member.id)},{minute})")
+                                cursor.execute("INSERT INTO MutedUsers VALUES (?,?)",(str(member.id),minute,))
                                 db.commit()
-                            except :
+                            except Exception as e:
                                 await ctx.send(":thinking: Görünüşe göre şu anda susturulmuş kullanıcı kayıtlarına ulaşamıyoruz. Belirtilen kullanıcı susturuldu ancak yasağını manuel kaldırman gerekir.")
+                                
+                                logger.error(f"Moderation | Mute | Error: {e}")
                                 return
                             finally :
                                 cursor.close()
@@ -189,7 +174,7 @@ class Moderation(commands.Cog):
                         muteEmbed_3.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
                         
                         await ctx.send(embed=muteEmbed_3)
-                except :
+                except Exception:
                     muteEmbed_4=discord.Embed(title="Hata",description=f"Bu işlem için Muted rolünün kademesi {self.client.user.name} rolünden en az 1 kademe altında olması gerekir.",colour=0xffd500)
             
                     await ctx.send(embed = muteEmbed_4)
@@ -203,9 +188,6 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(manage_roles=True)
     @commands.command(name = "Unmute",brief = "Üyenin konuşma yasağını kaldırır.",aliases=["unmute"])
     async def unmute_command(self,ctx,member: discord.Member):
-        """Unmute
-        Use of : unmute {member}
-        """
         role = discord.utils.get(ctx.guild.roles,name = "Muted")
             
         if role != None :
@@ -217,10 +199,12 @@ class Moderation(commands.Cog):
                     cursor = db.cursor()
                     
                     try :
-                        cursor.execute(f"DELETE FROM MutedUsers WHERE USER_ID = {str(member.id)}")
+                        cursor.execute("DELETE FROM MutedUsers WHERE USER_ID=?",(str(member.id),))
                         db.commit()
-                    except :
+                    except Exception as e:
                         await ctx.send(":thinking: Görünüşe göre şu anda susturulmuş kullanıcı kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
+                        
+                        logger.error(f"Moderation | Unmute | Error: {e}")
                         return
                     finally :
                         cursor.close()
@@ -252,9 +236,6 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(change_nickname=True)
     @commands.command(name="Rename" ,brief = "Üyenin sunucu içindeki takma adını değiştirir.",aliases=["rename"])
     async def rename_command(self,ctx,member : discord.Member,nick: str):
-        """Rename
-        Use of : rename {member} {nick}
-        """
         if member != ctx.author :
             await member.edit(nick=nick)
                 
