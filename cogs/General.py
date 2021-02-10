@@ -52,7 +52,7 @@ class General(commands.Cog):
 
     @commands.command(name ="Evos",brief ="Evos'un davet linkini gönderir.",aliases=["evos"])
     async def evos_invite_command(self,ctx):
-        evosEmbed=discord.Embed(title =f"Evos - Türkçe Discord Botu",description ="**Bu [linkten](https://discord.com/api/oauth2/authorize?client_id=675459603420545056&permissions=8&scope=bot)** beni sunucuna ekleyebilirsin.",color=0xd8f500,timestamp=ctx.message.created_at)
+        evosEmbed=discord.Embed(title ="Evos - Türkçe Discord Botu",description ="**Bu [linkten](https://discord.com/api/oauth2/authorize?client_id=675459603420545056&permissions=8&scope=bot)** beni sunucuna ekleyebilirsin.",color=0xd8f500,timestamp=ctx.message.created_at)
         evosEmbed.add_field(name="Geliştirici misin ?",value="[Buradan](https://github.com/semihaydin0/Evos) kaynak kodlarını inceleyebilirsin.",inline=False)
 
         file = discord.File("images/evos.png", filename="evos.png")

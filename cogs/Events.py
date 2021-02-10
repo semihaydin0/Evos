@@ -3,7 +3,6 @@
 #UTF-8
 
 import discord
-from discord.utils import get
 from discord.ext import tasks, commands
 import asyncio
 import sqlite3
@@ -24,11 +23,10 @@ class Events(commands.Cog):
         db = sqlite3.connect('data/server/Config.db')
         cursor = db.cursor()
         try :
-            cursor.execute(f"UPDATE AutoMessage SET TIME_LEFT = TIME_LEFT-1")
+            cursor.execute("UPDATE AutoMessage SET TIME_LEFT=TIME_LEFT-1")
             db.commit()
         except Exception as e :
             logger.error(f"Events | AutoMessageTimeOrganizer | Error: {e}")
-            pass
         finally :
             cursor.close()
             db.close()
@@ -41,11 +39,10 @@ class Events(commands.Cog):
         cursor = db.cursor()
                     
         try :
-            cursor.execute(f"UPDATE MutedUsers SET TIME_LEFT = TIME_LEFT-1")
+            cursor.execute("UPDATE MutedUsers SET TIME_LEFT = TIME_LEFT-1")
             db.commit()
         except Exception as e :
             logger.error(f"Events | MutedUsersTimeOrganizer | Error: {e}")
-            pass
         finally :
             cursor.close()
             db.close()
@@ -59,7 +56,7 @@ class Events(commands.Cog):
         cursor = db.cursor()
         
         try :
-            cursor.execute(f"SELECT CHANNEL_ID,MESSAGE_CONTENT FROM AutoMessage WHERE TIME_LEFT <= 0")
+            cursor.execute("SELECT CHANNEL_ID,MESSAGE_CONTENT FROM AutoMessage WHERE TIME_LEFT <= 0")
             data = cursor.fetchall()
             db.commit()
             
@@ -77,13 +74,12 @@ class Events(commands.Cog):
                             
                                 await channelID.send(messageContent)
                                 
-                                cursor.execute(f"UPDATE AutoMessage SET TIME_LEFT = DEFAULT_TIME WHERE TIME_LEFT <= 0")
+                                cursor.execute("UPDATE AutoMessage SET TIME_LEFT = DEFAULT_TIME WHERE TIME_LEFT <= 0")
                                 db.commit()
                             except Exception as e :
                                 logger.error(f"Events | AutoMessage-2 | Error: {e}")
         except Exception as e :
             logger.error(f"Events | AutoMessage-1 | Error: {e}")
-            pass
         finally :
             cursor.close()
             db.close()                
@@ -97,7 +93,7 @@ class Events(commands.Cog):
         cursor = db.cursor()
         
         try :
-            cursor.execute(f"SELECT USER_ID FROM MutedUsers WHERE TIME_LEFT <= 0")
+            cursor.execute("SELECT USER_ID FROM MutedUsers WHERE TIME_LEFT <= 0")
             users = cursor.fetchall()
             db.commit()
             
@@ -112,13 +108,12 @@ class Events(commands.Cog):
                             
                             try :
                                 await member.remove_roles(role)
-                                cursor.execute(f"DELETE FROM MutedUsers WHERE USER_ID = {user[0]}")
+                                cursor.execute("DELETE FROM MutedUsers WHERE USER_ID=?",(user[0],))
                                 db.commit()
                             except Exception as e :
                                 logger.error(f"Events | UnmuteOrganizer-2 | Error: {e}")
         except Exception as e :
             logger.error(f"Events | UnmuteOrganizer-1 | Error: {e}")
-            pass
         finally :
             cursor.close()
             db.close()
