@@ -3,7 +3,6 @@
 #UTF-8
 
 import discord
-from discord.utils import get
 from discord.ext import commands
 from PIL import Image,ImageFont,ImageDraw
 import sqlite3
@@ -43,9 +42,6 @@ class Guild(commands.Cog):
     @commands.command(name = "Wlmessage",brief = "Yeni gelen üyeler için karşılama mesajı gönderir.",aliases = ["wlmessage"])
     @commands.has_permissions(administrator=True)
     async def member_welcome_command(self,ctx):
-        """Welcome message for newcomers
-        Use of : wlmessage
-        """
         await ctx.send(f"Selam {ctx.author.mention}!\nSeçmek istediğin kanalı belirleyelim.\n`Belirlemek istediğin kanalı etiketlemen yeterli.`")
         
         try:
@@ -58,7 +54,7 @@ class Guild(commands.Cog):
             cursor = db.cursor()
             try :
                 channelID = channelSelection.channel_mentions[0].id
-                cursor.execute(f"UPDATE ServerData SET WELCOME_CHANNEL_ID = {channelID} WHERE SERVER_ID = {ctx.author.guild.id}")
+                cursor.execute("UPDATE ServerData SET WELCOME_CHANNEL_ID=? WHERE SERVER_ID=?",(channelID,ctx.author.guild.id,))
                 db.commit()
                 
                 await ctx.send(f"Harika! :partying_face: Artık {channelSelection.channel_mentions[0].mention} kanalında yeni üyeler için bilgilendirme mesajı gönderilecek.")
@@ -68,7 +64,6 @@ class Guild(commands.Cog):
                 await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")         
                 
                 logger.error(f"Guild | Wlmessage | Error: {e}")
-                pass
             finally :
                 cursor.close()
                 db.close()
@@ -76,9 +71,6 @@ class Guild(commands.Cog):
     @commands.command(name = "Lvmessage",brief = "Ayrılan üyeler için bilgilendirme mesajı gönderir.",aliases = ["lvmessage"])
     @commands.has_permissions(administrator=True)
     async def member_leave_command(self,ctx):
-        """Information message for leaving members
-        Use of : lvmessage
-        """
         await ctx.send(f"Selam {ctx.author.mention}!\nSeçmek istediğin kanalı belirleyelim.\n`Belirlemek istediğin kanalı etiketlemen yeterli.`")
         
         try:
@@ -91,7 +83,7 @@ class Guild(commands.Cog):
             cursor = db.cursor()
             try :
                 channelID = channelSelection.channel_mentions[0].id
-                cursor.execute(f"UPDATE ServerData SET LEAVE_CHANNEL_ID = {channelID} WHERE SERVER_ID = {ctx.author.guild.id}")
+                cursor.execute("UPDATE ServerData SET LEAVE_CHANNEL_ID=? WHERE SERVER_ID=?",(channelID,ctx.author.guild.id,))
                 db.commit()
                 
                 await ctx.send(f"Harika! :partying_face: Artık {channelSelection.channel_mentions[0].mention} kanalında ayrılan üyeler için bilgilendirme mesajı gönderilecek.")
@@ -101,7 +93,6 @@ class Guild(commands.Cog):
                 await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
                 
                 logger.error(f"Guild | Lvmessage | Error: {e}")
-                pass
             finally :
                 cursor.close()
                 db.close()
@@ -109,9 +100,6 @@ class Guild(commands.Cog):
     @commands.command(name = "Setautorole",brief = "Yeni gelen üyeler için otomatik rol verir.",aliases = ["setautorole"])
     @commands.has_permissions(administrator=True)
     async def autorole_command(self,ctx):
-        """Automatic role for newcomers
-        Use of : setautorole
-        """
         await ctx.send(f"Selam {ctx.author.mention}!\nSeçmek istediğin rolü belirleyelim.\n`Belirlemek istediğin rolü etiketlemen yeterli.`")      
         
         try:
@@ -124,7 +112,7 @@ class Guild(commands.Cog):
             cursor = db.cursor()
             try :
                 roleID = roleSelection.role_mentions[0].id
-                cursor.execute(f"UPDATE ServerData SET AUTOROLE_ID = {roleID} WHERE SERVER_ID = {ctx.author.guild.id}")
+                cursor.execute("UPDATE ServerData SET AUTOROLE_ID=? WHERE SERVER_ID=?",(roleID,ctx.author.guild.id,))
                 db.commit()
                 
                 await ctx.send(f"Harika! :partying_face: Artık yeni gelen üyelere {roleSelection.role_mentions[0].mention} rolü verilecek.\n`Uyarı: Evos'un bu işlevi tam olarak yerine getirebilmesi için roller kısmından Evos'un rolünü {roleSelection.role_mentions[0]} rolünden en az 1 kademe üstüne taşıman gerekli.`")
@@ -134,7 +122,6 @@ class Guild(commands.Cog):
                 await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
                 
                 logger.error(f"Guild | Autorole | Error: {e}")
-                pass
             finally :
                 cursor.close()
                 db.close()
@@ -142,9 +129,6 @@ class Guild(commands.Cog):
     @commands.command(name = "ChangePrefix",brief = "Evos'un komut ön ekini değiştirir.",aliases = ["changeprefix"])
     @commands.has_permissions(administrator=True)
     async def change_prefix_command(self,ctx):
-        """Change Prefix
-        Use of : changeprefix
-        """
         await ctx.send(f"Selam {ctx.author.mention}!\nSeçmek istediğin komut ön ekini belirleyelim.\n`Maksimum 3 karakter olmasını ve son karakterinde işaret bulundurmanızı öneriyoruz.`")     
         
         try:
@@ -156,7 +140,7 @@ class Guild(commands.Cog):
             db = sqlite3.connect('data/server/Data.db')
             cursor = db.cursor()
             try :
-                cursor.execute(f"UPDATE ServerData SET CUSTOM_PREFIX = '{str(prefixSelection.content)}' WHERE SERVER_ID = {str(ctx.author.guild.id)}")
+                cursor.execute("UPDATE ServerData SET CUSTOM_PREFIX=? WHERE SERVER_ID=?",(str(prefixSelection.content),ctx.author.guild.id,))
                 db.commit()
                 
                 await ctx.send(f"Harika! :partying_face: Bu sunucu için komut ön eki **{prefixSelection.content}** olarak ayarlandı.")
@@ -166,33 +150,28 @@ class Guild(commands.Cog):
                 await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
                 
                 logger.error(f"Guild | ChangePrefix | Error: {e}")
-                pass
 
     @commands.command(name = "ResetConfig",brief = "Sunucu ayarlarını sıfırlar.",aliases = ["resetconfig"])
     @commands.has_permissions(administrator=True)
     async def server_config_reset_command(self,ctx):
-        """Reset Server Config
-        Use of : resetconfig
-        """
         db = sqlite3.connect('data/server/Data.db')
         cursor = db.cursor()
         db2 = sqlite3.connect('data/server/Config.db')
         cursor2 = db2.cursor()
         try :
-            cursor.execute(f"UPDATE ServerData SET CUSTOM_PREFIX = '.',AUTOROLE_ID = NULL,WELCOME_CHANNEL_ID = NULL,LEAVE_CHANNEL_ID = NULL WHERE SERVER_ID = {str(ctx.author.guild.id)}")
+            cursor.execute("UPDATE ServerData SET CUSTOM_PREFIX = '.',AUTOROLE_ID = NULL,WELCOME_CHANNEL_ID = NULL,LEAVE_CHANNEL_ID = NULL WHERE SERVER_ID = ?",(str(ctx.author.guild.id),))
             db.commit()
             cursor.close()
             db.close()
             
-            cursor2.execute(f"DELETE FROM AutoMessage WHERE SERVER_ID = {str(ctx.author.guild.id)}")
+            cursor2.execute("DELETE FROM AutoMessage WHERE SERVER_ID = ?",(str(ctx.author.guild.id),))
             db2.commit()
             
-            await ctx.send(f"Harika! :partying_face: Bu sunucunun tüm ayarları sıfırlandı. Prefix(komut ön eki) varsayılan **.(nokta)** olarak ayarlandı.")
+            await ctx.send("Harika! :partying_face: Bu sunucunun tüm ayarları sıfırlandı. Prefix(komut ön eki) varsayılan **.(nokta)** olarak ayarlandı.")
         except Exception as e:
             await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
                 
             logger.error(f"Guild | ResetServerConfig | Error: {e}")
-            pass
         finally :
             cursor2.close()
             db2.close()
@@ -200,9 +179,6 @@ class Guild(commands.Cog):
     @commands.command(name = "Automessage",brief = "İstediğiniz kanala otomatik mesaj gönderir.",aliases = ["automessage"])
     @commands.has_permissions(administrator=True)
     async def auto_message_scheduler_command(self,ctx):
-        """Auto Message Scheduler
-        Use of : automessage
-        """
         await ctx.send(f"Selam {ctx.author.mention}!\nÖnce istediğin duyurmak istediğin mesajı belirleyelim.\n`Mesajının maksimum 512 karakter olmasını öneriyoruz.`")     
         
         try:
@@ -211,7 +187,7 @@ class Guild(commands.Cog):
             await ctx.send(f":sleeping: {ctx.author.mention} Belirlenen sürede senden herhangi bir yanıt alamadık.")
         
         else :
-            await ctx.send(f"Harika! :partying_face: Şimdi bu mesajın kaç saatte bir yayınlanmasını gerektiğini belirleyelim.\n`Sadece tam sayı girişi yapman gerekir. Aksi taktirde bu sistem çalışmayacaktır.`")           
+            await ctx.send("Harika! :partying_face: Şimdi bu mesajın kaç saatte bir yayınlanmasını gerektiğini belirleyelim.\n`Sadece tam sayı girişi yapman gerekir. Aksi taktirde bu sistem çalışmayacaktır.`")           
             
             try:
                 timeSelection = await self.client.wait_for('message',check = check_message(ctx.author,ctx.message.channel.id) ,timeout=30)
@@ -222,17 +198,16 @@ class Guild(commands.Cog):
                 db = sqlite3.connect('data/server/Config.db')
                 cursor = db.cursor()
                 try :
-                    cursor.execute(f"INSERT INTO AutoMessage VALUES ('{str(ctx.message.guild.id)}','{str(ctx.message.channel.id)}','{str(messageSelection.content)}',{int(timeSelection.content)},{int(timeSelection.content)})")
+                    cursor.execute("INSERT INTO AutoMessage VALUES (?,?,?,?,?)",(str(ctx.message.guild.id),str(ctx.message.channel.id),str(messageSelection.content),int(timeSelection.content),int(timeSelection.content)))
                     db.commit()
 
                     await ctx.send(f"Harika! :partying_face: Artık bu kanalda her **{timeSelection.content}** saatte bir mesajın yayınlanacak.")             
                     
-                    logger.info(f"Guild | AutoMessage | Sunucu : {ctx.guild.name} | Mesaj : {messageSelection.content} |Tarafından : {ctx.author}")
+                    logger.info(f"Guild | AutoMessage | Tarafından: {ctx.author}")
                 except Exception as e:
                     await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
                 
                     logger.error(f"Guild | AutoMessage | Error: {e}")
-                    pass
                 finally :
                     cursor.close()
                     db.close()
@@ -243,7 +218,7 @@ class Guild(commands.Cog):
         cursor = db.cursor()
         
         try :
-            cursor.execute(f"SELECT AUTOROLE_ID,WELCOME_CHANNEL_ID FROM ServerData WHERE SERVER_ID = {member.guild.id}")
+            cursor.execute("SELECT AUTOROLE_ID,WELCOME_CHANNEL_ID FROM ServerData WHERE SERVER_ID = ?",(member.guild.id,))
             data = cursor.fetchone()
 
             if data[0] != None :
@@ -253,8 +228,9 @@ class Guild(commands.Cog):
                 if autoRole != None :                  
                     try :
                         await member.add_roles(autoRole)
-                    except :
-                        pass
+                    except Exception as e:
+
+                        logger.error(f"Guild | OnMemberJoin | Error: {e}")
 
             if data[1] is not None :
                 channelID = data[1]
@@ -275,8 +251,7 @@ class Guild(commands.Cog):
                     countMemberMessage = f"{member.guild.name} | {len(member.guild.members)}.ÜYE"
 
                     w,h = draw.textsize(headerMessage,font=headerFont)
-
-                    draw.text(((W-w)/2,50), headerMessage, (255, 255, 255), font=headerFont)
+                    draw.text(((W-w)/2,h-141), headerMessage, (255, 255, 255), font=headerFont)
                     w,h = draw.textsize(countMemberMessage,font=defaultFont)
                     draw.text(((W-w)/2,900), countMemberMessage, (255, 255, 255), font=defaultFont)
 
@@ -299,7 +274,6 @@ class Guild(commands.Cog):
         except Exception as e:
 
             logger.error(f"Guild | Data | Error: {e}")
-            pass
         finally :
             cursor.close()
             db.close()
@@ -312,7 +286,7 @@ class Guild(commands.Cog):
         if member.name != self.client.user.name :
 
             try :
-                cursor.execute(f"SELECT LEAVE_CHANNEL_ID FROM ServerData WHERE SERVER_ID = {member.guild.id}")
+                cursor.execute("SELECT LEAVE_CHANNEL_ID FROM ServerData WHERE SERVER_ID = ?",(member.guild.id,))
                 data = cursor.fetchone()
 
                 if data[0] != None :
@@ -334,8 +308,7 @@ class Guild(commands.Cog):
                         countMemberMessage = f"{member.guild.name} | {len(member.guild.members)} ÜYE"
 
                         w,h = draw.textsize(headerMessage,font=headerFont)
-
-                        draw.text(((W-w)/2,50), headerMessage, (255, 255, 255), font=headerFont)
+                        draw.text(((W-w)/2,h-133), headerMessage, (255, 255, 255), font=headerFont)
                         w,h = draw.textsize(countMemberMessage,font=defaultFont)
                         draw.text(((W-w)/2,900), countMemberMessage, (255, 255, 255), font=defaultFont)
 
@@ -358,7 +331,6 @@ class Guild(commands.Cog):
             except Exception as e:
 
                 logger.error(f"Guild | Data | Error: {e}")
-                pass
             finally :
                 cursor.close()
                 db.close()
@@ -369,8 +341,8 @@ class Guild(commands.Cog):
         cursor = db.cursor()
         
         try :
-            cursor.execute(f"DELETE FROM ServerData WHERE SERVER_ID = {str(guild.id)}")
-            cursor.execute(f"INSERT INTO ServerData VALUES ('{str(guild.id)}','.',NULL,NULL,NULL)")
+            cursor.execute("DELETE FROM ServerData WHERE SERVER_ID = ?",(str(guild.id),))
+            cursor.execute("INSERT INTO ServerData VALUES (?,?,?,?,?)",(str(guild.id),'.','NULL','NULL','NULL'))
             db.commit()
             
             infoEmbed = discord.Embed(title = "Evos'u sunucuna eklediğin için teşekkürler!",colour=0xd8f500)
@@ -388,7 +360,6 @@ class Guild(commands.Cog):
         except Exception as e:
 
             logger.error(f"Guild | Data | Error: {e}")
-            pass
         finally :
             cursor.close()
             db.close()
