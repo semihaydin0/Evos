@@ -1,7 +1,11 @@
 <!--
-*** Semih Aydın 2020
+*** Semih Aydın 2021
 -->
 ![Codacy Badge](https://app.codacy.com/project/badge/Grade/4c254313de2d4ca0a5d6d5813b981117)
+![Last Commit](https://img.shields.io/github/last-commit/semihaydin0/Evos)
+![Total Lines](https://img.shields.io/tokei/lines/github/semihaydin0/Evos)
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 
 ![Evos](./images/evosBanner.jpg)
 
@@ -9,11 +13,23 @@
 
 ![Example](./images/exampleCommands.png)
 
-## Invite
-
-[Here](https://discord.com/api/oauth2/authorize?client_id=675459603420545056&permissions=8&scope=bot) you can invite the bot to your server.
-
-Evos is currently running on Google Cloud's European servers.
+## Installation
+  1. Clone the repository.
+```
+git clone https://github.com/semihaydin0/Evos
+```
+  2. Load project dependencies
+```
+pip3 install -U -r requirements.txt
+```
+  3. Edit the [token](https://github.com/semihaydin0/Evos/blob/main/data/Token.json) file.
+```
+{"token" : "INSERTYOURTOKENHERE"}
+```
+  4. Run the project.(Read important information before running the project.)
+```
+python3.8 Evos.py
+```
 
 ## Important
 
@@ -40,8 +56,11 @@ Evos is currently running on Google Cloud's European servers.
 *   [Uptime](https://github.com/Cairnarvon/uptime)
 *   [Psutil](https://github.com/giampaolo/psutil)
 
-## Installation
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install libraries.
+## Invite
+
+[Here](https://discord.com/api/oauth2/authorize?client_id=675459603420545056&permissions=8&scope=bot) you can invite the bot to your server.
+
+Evos is currently running on Google Cloud's European servers.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
