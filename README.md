@@ -1,11 +1,12 @@
 <!--
 *** Semih Aydın 2021
 -->
+
 ![Codacy Badge](https://app.codacy.com/project/badge/Grade/4c254313de2d4ca0a5d6d5813b981117)
 ![Last Commit](https://img.shields.io/github/last-commit/semihaydin0/Evos)
 ![Total Lines](https://img.shields.io/tokei/lines/github/semihaydin0/Evos)
+![Release](https://img.shields.io/github/v/release/semihaydin0/Evos)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
-[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 
 ![Evos](./images/evosBanner.jpg)
 
@@ -55,6 +56,7 @@ python3.8 Evos.py
 *   [Cpuinfo](https://github.com/workhorsy/py-cpuinfo)
 *   [Uptime](https://github.com/Cairnarvon/uptime)
 *   [Psutil](https://github.com/giampaolo/psutil)
+*   [Pyfiglet](https://github.com/pwaller/pyfiglet)
 
 ## Invite
 
