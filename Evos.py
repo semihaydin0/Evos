@@ -4,6 +4,7 @@
 
 import discord
 from discord.ext import commands
+import pyfiglet
 import sqlite3
 import json
 import os
@@ -23,23 +24,29 @@ def get_prefix(client,message):
         customPrefix = cursor.fetchone()
         return customPrefix[0]
     except Exception as e:
-        logger.error(f"Evos | GetPrefix | Error: {e}")
+        logger.error(f"{client.user.name} | GetPrefix | Error: {e}")
         return defaultPrefix
 
 def get_token():
-    with open("data/Token.json", "r") as tokenjsonFile:
-        data = json.load(tokenjsonFile)
+    with open("data/Token.json", "r") as tokenJsonFile:
+        data = json.load(tokenJsonFile)
         token = data["token"]
     return token
+
+def get_version_number():
+    with open("data/package.json", "r") as packageJsonFile:
+        data = json.load(packageJsonFile)
+        versionNumber = data["version"]
+    return versionNumber
 
 client = commands.Bot(command_prefix=get_prefix,intents=intents)
 
 @client.event
 async def on_ready():
-    print(f"{client.user.name} hazır.")
-    print(f"{len(client.guilds)} sunucuda aktif.")
-    await client.change_presence(status=discord.Status.online, activity=discord.Game(".yardım | 🎵 HIGH QUALITY MUSIC"))
-    logger.info("Evos is ready.")
+    await client.change_presence(status=discord.Status.online, activity=discord.Game(f".yardım | Versiyon: {get_version_number()}"))
+    asciiArt = pyfiglet.figlet_format(f"{client.user.name} |  {get_version_number()}")
+    print(asciiArt)
+    logger.info(f"{client.user.name} is ready.")
 
 print("Modül yükleme işlemi başladı.")
 for filename in os.listdir('cogs'):
@@ -50,9 +57,9 @@ for filename in os.listdir('cogs'):
             print(f"\t{filename[:-3]} yüklendi.")
             loaded += 1
         except Exception as e:
-            logger.error(f"Evos | LoadModule | File: {filename[:-3]} | Error: {e}")
+            logger.error(f"{client.user.name} | LoadModule | File: {filename[:-3]} | Error: {e}")
             print(f"\t{filename[:-3]} yüklenemedi.")
-print(f"\t-------------------\n\tToplam Eklenti : \t{modules}\n\tYüklenen Eklenti : \t{loaded}\n\tYüklenemeyen Eklenti : \t{modules-loaded}\n\t-------------------")
+print(f"\t-------------------------\n\tToplam Eklenti: \t{modules}\n\tYüklenen Eklenti: \t{loaded}\n\tYüklenemeyen Eklenti: \t{modules-loaded}\n\t-------------------------")
 print("Modül yükleme işlemi tamamlandı.")
 
-client.run(get_token())
+client.run(get_token(), reconnect=True)
