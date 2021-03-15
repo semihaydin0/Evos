@@ -11,6 +11,15 @@ import io
 import os
 from logging_files.guild_log import logger
 
+class InvalidLoggingValue(commands.CommandError):
+    pass
+
+class AlreadyHasALogChannel(commands.CommandError):
+    pass
+
+class NoLogChannel(commands.CommandError):
+    pass
+
 def check_channel(author,channel):
     def inner_check(message):
         return len(message.channel_mentions) == 1 and message.author == author and message.channel.id == channel
@@ -211,6 +220,54 @@ class Guild(commands.Cog):
                 finally :
                     cursor.close()
                     db.close()
+
+    @commands.command(name = "Logging",brief = "Sunucunuz için log ayarının açılmasını/kapatılmasını sağlar.",aliases = ["logging"])
+    @commands.has_permissions(administrator=True)
+    async def logging_command(self,ctx,value: int):
+        if value not in (0, 1):
+            raise InvalidLoggingValue
+        
+        if value == 1:
+            log_channel = discord.utils.get(ctx.guild.text_channels, name="evos-log")
+            
+            if log_channel is None:
+                overwrites = {
+                    ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
+                }
+                await ctx.guild.create_text_channel('evos-log', overwrites=overwrites,position = 0,topic="Evos tarafından tutulan denetim kayıtları.")
+            else:
+                raise AlreadyHasALogChannel
+
+            logger.info(f"Guild | Logging-1 | Tarafından: {ctx.author}")
+        else :
+            status = 0
+            
+            for channel in ctx.guild.text_channels:
+                if channel.name == "evos-log":
+                    await channel.delete()
+                    status+=1
+            
+            if status == 0:
+                raise NoLogChannel
+
+            logger.info(f"Guild | Logging-0 | Tarafından: {ctx.author}")
+
+        await ctx.message.add_reaction("👍")
+
+    @logging_command.error
+    async def logging_command_error(self, ctx, exc):
+        if isinstance(exc, InvalidLoggingValue):
+            loggingEmbed=discord.Embed(title="Geçersiz bir değer girdiniz.",description="Sadece 1 ve 0 değerlerini girebilirsiniz.",colour=0xffd500)
+            
+            await ctx.send(embed=loggingEmbed)
+        elif isinstance(exc, AlreadyHasALogChannel):
+            loggingEmbed_2=discord.Embed(title="Halihazırda bir log kanalı var.",description="Log kanalını silip tekrar oluşturabilirsiniz.",colour=0xffd500)
+            
+            await ctx.send(embed=loggingEmbed_2)    
+        elif isinstance(exc, NoLogChannel):
+            loggingEmbed_3=discord.Embed(title="Log kanalı(evos-log) bulunamadı.",description="Kanal silinmiş veya ismi değiştirilmiş olabilir.",colour=0xffd500)
+            
+            await ctx.send(embed=loggingEmbed_3)
 
     @commands.Cog.listener()
     async def on_member_join(self,member):

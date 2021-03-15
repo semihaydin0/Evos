@@ -282,6 +282,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             
             if not re.match(URL_REGEX, query):
                 query = f"ytsearch:{query}"
+            
             await player.add_tracks(ctx, await self.wavelink.get_tracks(query))
 
     @play_command.error
