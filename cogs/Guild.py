@@ -167,6 +167,7 @@ class Guild(commands.Cog):
         cursor = db.cursor()
         db2 = sqlite3.connect('data/server/Config.db')
         cursor2 = db2.cursor()
+        
         try :
             cursor.execute("UPDATE ServerData SET CUSTOM_PREFIX = '.',AUTOROLE_ID = NULL,WELCOME_CHANNEL_ID = NULL,LEAVE_CHANNEL_ID = NULL WHERE SERVER_ID = ?",(str(ctx.author.guild.id),))
             db.commit()
@@ -223,51 +224,225 @@ class Guild(commands.Cog):
 
     @commands.command(name = "Logging",brief = "Sunucunuz için log ayarının açılmasını/kapatılmasını sağlar.",aliases = ["logging"])
     @commands.has_permissions(administrator=True)
-    async def logging_command(self,ctx,value: int):
+    async def logging_command(self, ctx, value: int):
         if value not in (0, 1):
             raise InvalidLoggingValue
         
+        db = sqlite3.connect('data/server/Config.db')
+        cursor = db.cursor()
+
         if value == 1:
-            log_channel = discord.utils.get(ctx.guild.text_channels, name="evos-log")
+            log_channel = discord.utils.get(ctx.guild.text_channels, name=f"{self.client.user.name}-log".lower())
             
             if log_channel is None:
                 overwrites = {
                     ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
                 }
-                await ctx.guild.create_text_channel('evos-log', overwrites=overwrites,position = 0,topic="Evos tarafından tutulan denetim kayıtları.")
+                channel = await ctx.guild.create_text_channel(f"{self.client.user.name}-log", overwrites=overwrites,position = 0,topic=f"{self.client.user.name} tarafından tutulan denetim kayıtları.")
+
+                try :
+                    cursor.execute("INSERT INTO Log VALUES (?,?)",(str(ctx.guild.id),str(channel.id)))
+                    db.commit()
+
+                    await ctx.send(f"Harika! :partying_face: Artık {channel.mention} kanalına sunucu ve üyeler ile ilgili değişiklikler gönderilecek.")
+                except Exception as e:
+
+                    logger.error(f"Guild | Data | Error: {e}")
+                finally :
+                    cursor.close()
+                    db.close()
             else:
                 raise AlreadyHasALogChannel
 
             logger.info(f"Guild | Logging-1 | Tarafından: {ctx.author}")
         else :
+            try :
+                cursor.execute("DELETE FROM Log WHERE SERVER_ID = ?",(str(ctx.guild.id),))
+                db.commit()
+            except Exception as e:
+
+                logger.error(f"Guild | Data | Error: {e}")
+            finally :
+                cursor.close()
+                db.close()
+
             status = 0
             
             for channel in ctx.guild.text_channels:
-                if channel.name == "evos-log":
+                if channel.name == f"{self.client.user.name}-log".lower():
                     await channel.delete()
                     status+=1
             
             if status == 0:
                 raise NoLogChannel
 
-            logger.info(f"Guild | Logging-0 | Tarafından: {ctx.author}")
+            loggingEmbed = discord.Embed(title="Log kanalı silindi.",description="Aynı komut üzerinden tekrar aktifleştirebilirsin.",colour=0xffd500)
+            
+            await ctx.send(embed=loggingEmbed)
 
-        await ctx.message.add_reaction("👍")
+            logger.info(f"Guild | Logging-0 | Tarafından: {ctx.author}")
 
     @logging_command.error
     async def logging_command_error(self, ctx, exc):
         if isinstance(exc, InvalidLoggingValue):
-            loggingEmbed=discord.Embed(title="Geçersiz bir değer girdiniz.",description="Sadece 1 ve 0 değerlerini girebilirsiniz.",colour=0xffd500)
+            loggingEmbed_2=discord.Embed(title="Geçersiz bir değer girdiniz.",description="Sadece 1 (Açmak) ve 0 (Kapatmak) değerlerini girebilirsiniz.",colour=0xffd500)
             
-            await ctx.send(embed=loggingEmbed)
+            await ctx.send(embed=loggingEmbed_2)
         elif isinstance(exc, AlreadyHasALogChannel):
-            loggingEmbed_2=discord.Embed(title="Halihazırda bir log kanalı var.",description="Log kanalını silip tekrar oluşturabilirsiniz.",colour=0xffd500)
-            
-            await ctx.send(embed=loggingEmbed_2)    
-        elif isinstance(exc, NoLogChannel):
-            loggingEmbed_3=discord.Embed(title="Log kanalı(evos-log) bulunamadı.",description="Kanal silinmiş veya ismi değiştirilmiş olabilir.",colour=0xffd500)
+            loggingEmbed_3=discord.Embed(title="Halihazırda bir log kanalı var.",colour=0xffd500)
             
             await ctx.send(embed=loggingEmbed_3)
+        elif isinstance(exc, NoLogChannel):
+            loggingEmbed_4=discord.Embed(title=f"Log kanalı bulunamadı.",colour=0xffd500)
+            
+            await ctx.send(embed=loggingEmbed_4)
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, before, after):
+        if not after.author.bot:
+            db = sqlite3.connect('data/server/Config.db')
+            cursor = db.cursor()
+
+            try :
+                cursor.execute("SELECT CHANNEL_ID FROM Log WHERE SERVER_ID = ?",(str(after.author.guild.id),))
+                data = cursor.fetchone()
+
+                if data[0] != None :
+                    channelID = data[0]
+                    channel = discord.utils.get(after.author.guild.text_channels, id=int(channelID))
+
+                if channel is not None:
+                    messageEditEmbed = discord.Embed(title="Mesaj Güncellemesi",description="Düzenlenen Mesaj",colour=0x34ebe2)
+                    messageEditEmbed.set_thumbnail(url=f'{after.author.avatar_url}')
+                    messageEditEmbed.add_field(name="Önce",value=before.content,inline=False)
+                    messageEditEmbed.add_field(name="Sonra",value=after.content,inline=False)
+                    messageEditEmbed.set_footer(text=f"Üye: {after.author}")
+                
+                    await channel.send(embed=messageEditEmbed)
+            except Exception as e:
+
+                logger.error(f"Guild | Data | Error: {e}")
+            finally :
+                cursor.close()
+                db.close()
+
+    @commands.Cog.listener()
+    async def on_message_delete(self, message):
+        if not message.author.bot:
+            db = sqlite3.connect('data/server/Config.db')
+            cursor = db.cursor()
+
+            try :
+                cursor.execute("SELECT CHANNEL_ID FROM Log WHERE SERVER_ID = ?",(str(message.author.guild.id),))
+                data = cursor.fetchone()
+
+                if data[0] != None :
+                    channelID = data[0]
+                    channel = discord.utils.get(message.author.guild.text_channels, id=int(channelID))
+
+                if channel is not None:
+                    messageDeleteEmbed = discord.Embed(title="Mesaj Güncellemesi",description="Silinen Mesaj",colour=0x3459eb)
+                    messageDeleteEmbed.set_thumbnail(url=f'{message.author.avatar_url}')
+                    messageDeleteEmbed.add_field(name="Mesaj",value=message.content)
+                    messageDeleteEmbed.set_footer(text=f"Üye: {message.author}")
+
+                    await channel.send(embed=messageDeleteEmbed)
+            except Exception as e:
+
+                logger.error(f"Guild | Data | Error: {e}")
+            finally :
+                cursor.close()
+                db.close()
+
+    @commands.Cog.listener()
+    async def on_guild_update(self, before, after):
+        db = sqlite3.connect('data/server/Config.db')
+        cursor = db.cursor()
+
+        try :
+            cursor.execute("SELECT CHANNEL_ID FROM Log WHERE SERVER_ID = ?",(str(before.id),))
+            data = cursor.fetchone()
+
+            if data[0] != None :
+                channelID = data[0]
+                channel = discord.utils.get(before.text_channels, id=int(channelID))
+
+            if channel is not None:
+                
+                if before.name != after.name:
+                    updatedNameEmbed = discord.Embed(title="Sunucu Güncellemesi",description="İsim Değişikliği",colour=0xa83832)
+                    updatedNameEmbed.set_thumbnail(url=f'{before.icon_url}')
+                    updatedNameEmbed.add_field(name="Önce",value=before.name,inline=False)
+                    updatedNameEmbed.add_field(name="Sonra",value=after.name,inline=False)
+
+                    await channel.send(embed=updatedNameEmbed)
+                
+                if before.region != after.region:
+                    updatedRegionEmbed = discord.Embed(title="Sunucu Güncellemesi",description="Bölge Değişikliği",colour=0xa83832)
+                    updatedRegionEmbed.set_thumbnail(url=f'{before.icon_url}')
+                    updatedRegionEmbed.add_field(name="Önce",value=before.region,inline=False)
+                    updatedRegionEmbed.add_field(name="Sonra",value=after.region,inline=False)
+
+                    await channel.send(embed=updatedRegionEmbed)
+                
+                if before.owner != after.owner:
+                    updatedOwnerEmbed = discord.Embed(title="Sunucu Güncellemesi",description="Sahiplik Değişikliği",colour=0xa83832)
+                    updatedOwnerEmbed.set_thumbnail(url=f'{before.icon_url}')
+                    updatedOwnerEmbed.add_field(name="Önce",value=before.owner,inline=False)
+                    updatedOwnerEmbed.add_field(name="Sonra",value=after.owner,inline=False)
+
+                    await channel.send(embed=updatedOwnerEmbed)
+                
+                if before.icon_url != after.icon_url:
+                    updatedIconEmbed = discord.Embed(title="Sunucu Güncellemesi",description="Simge Değişikliği",colour=0xa83832)
+                    updatedIconEmbed.set_image(url=after.icon_url)
+
+                    await channel.send(embed=updatedIconEmbed)
+        except Exception as e:
+
+            logger.error(f"Guild | Data | Error: {e}")
+        finally :
+            cursor.close()
+            db.close()
+    
+    @commands.Cog.listener()
+    async def on_member_update(self, before, after):
+        db = sqlite3.connect('data/server/Config.db')
+        cursor = db.cursor()
+
+        try :
+            cursor.execute("SELECT CHANNEL_ID FROM Log WHERE SERVER_ID = ?",(str(before.guild.id),))
+            data = cursor.fetchone()
+
+            if data[0] != None :
+                channelID = data[0]
+                channel = discord.utils.get(before.guild.text_channels, id=int(channelID))
+
+            if channel is not None:
+                
+                if before.display_name != after.display_name:
+                    updatedNameEmbed = discord.Embed(title="Üye Güncellemesi",description="Kullanıcı Adı Değişikliği",colour=0x32a84a)
+                    updatedNameEmbed.set_thumbnail(url=f'{before.avatar_url}')
+                    updatedNameEmbed.add_field(name="Önce",value=before.display_name,inline=False)
+                    updatedNameEmbed.add_field(name="Sonra",value=after.display_name,inline=False)
+                    updatedNameEmbed.set_footer(text=f"Üye: {before}")
+
+                    await channel.send(embed=updatedNameEmbed)
+                
+                if before.roles != after.roles:
+                    updatedRolesEmbed = discord.Embed(title="Üye Güncellemesi",description="Rol Değişikliği",colour=0x32a84a)
+                    updatedRolesEmbed.set_thumbnail(url=f'{before.avatar_url}')
+                    updatedRolesEmbed.add_field(name="Önce",value=", ".join([r.mention for r in before.roles]),inline=False)
+                    updatedRolesEmbed.add_field(name="Sonra",value=", ".join([r.mention for r in after.roles]),inline=False)
+                    updatedRolesEmbed.set_footer(text=f"Üye: {before}")
+
+                    await channel.send(embed=updatedRolesEmbed)
+        except Exception as e:
+
+            logger.error(f"Guild | Data | Error: {e}")
+        finally :
+            cursor.close()
+            db.close()
 
     @commands.Cog.listener()
     async def on_member_join(self,member):
