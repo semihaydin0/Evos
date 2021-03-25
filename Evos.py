@@ -43,7 +43,7 @@ client = commands.Bot(command_prefix=get_prefix,intents=intents)
 
 @client.event
 async def on_ready():
-    await client.change_presence(status=discord.Status.online, activity=discord.Game(f".yardım | v{get_version_number()}"))
+    await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name=f".yardım | .help | v{get_version_number()}"))
     asciiArt = pyfiglet.figlet_format(f"{client.user.name} | v{get_version_number()}")
     print(asciiArt)
     logger.info(f"{client.user.name} is ready.")

@@ -10,6 +10,7 @@ import platform
 import psutil
 import math
 from logging_files.general_log import logger
+from Evos import get_version_number
 
 def get_size(bytes, suffix="B"):
     factor = 1024
@@ -38,11 +39,13 @@ class General(commands.Cog):
         
         if time == 0:
             time = "Süresiz"
+        else:
+            time = str(time)+" saat"
         
         if amount == 0:
             amount = "Limitsiz"
-        inviteEmbed=discord.Embed(
-            description =f"Davet Linki: {link}\nBu davetin geçerlilik süresi: {time} saat\nBu davetin maksimum kullanım sayısı: {amount}",color=0xd8f500,timestamp=ctx.message.created_at)
+        
+        inviteEmbed=discord.Embed(description =f"Davet Linki: {link}\nBu davetin **geçerlilik** süresi: {time}\nBu davetin **maksimum kullanım** sayısı: {amount}",color=0xd8f500,timestamp=ctx.message.created_at)
         inviteEmbed.set_author(name=ctx.message.guild.name,icon_url=ctx.message.guild.icon_url)
         inviteEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
 
@@ -52,11 +55,13 @@ class General(commands.Cog):
 
     @commands.command(name ="Evos",brief ="Evos'un davet linkini gönderir.",aliases=["evos"])
     async def evos_invite_command(self,ctx):
-        evosEmbed=discord.Embed(title ="Evos - Türkçe Discord Botu",description ="**Bu [linkten](https://discord.com/api/oauth2/authorize?client_id=675459603420545056&permissions=8&scope=bot)** beni sunucuna ekleyebilirsin.",color=0xd8f500,timestamp=ctx.message.created_at)
+        evosEmbed=discord.Embed(title =f"{self.client.user.name} | Türkçe Discord Botu",color=0xd8f500,timestamp=ctx.message.created_at)
+        evosEmbed.add_field(name="Davet Linki",value=f"[Buradan](https://discord.com/api/oauth2/authorize?client_id={self.client.user.id}&permissions=8&scope=bot) sunucuna ekleyebilirsin.",inline=False)
         evosEmbed.add_field(name="Geliştirici misin ?",value="[Buradan](https://github.com/semihaydin0/Evos) kaynak kodlarını inceleyebilirsin.",inline=False)
 
         file = discord.File("images/evos.png", filename="evos.png")
-        evosEmbed.set_footer(text="Teşekkürler!",icon_url="attachment://evos.png")
+        evosEmbed.set_thumbnail(url="attachment://evos.png")
+        evosEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
 
         await ctx.send(file=file,embed=evosEmbed)
 
@@ -92,7 +97,7 @@ class General(commands.Cog):
 
     @commands.command(name ="Yardım",brief ="Komutlar hakkında bilgi verir.",aliases=["yardım"])
     async def help_command(self,ctx,cog="1"):
-        helpEmbed=discord.Embed(title="🤖 Komutlar",description="Komutların kullanımlarını görmek için **.help** yazabilirsin.", color=0xd8f500,timestamp=ctx.message.created_at)
+        helpEmbed=discord.Embed(title="🤖 Komutlar",description="Komutlar için gerekli argümanlara **help** komutuyla ulaşabilirsin.", color=0xd8f500,timestamp=ctx.message.created_at)
         file = discord.File("images/evos.png", filename="evos.png")
         helpEmbed.set_thumbnail(url="attachment://evos.png")
         
@@ -142,9 +147,9 @@ class General(commands.Cog):
         hours = int(uptime()/3600-day*24)
         minute = int(uptime()/60)-day*24*60-hours*60
         second = int(uptime())-day*24*3600-hours*3600-minute*60
+        
         statsEmbed=discord.Embed(title=f"📃 {self.client.user.name} Hakkında",color=0xd8f500,timestamp=ctx.message.created_at)
-        statsEmbed.add_field(
-            name="Teknik Bilgiler",value=f"Python Versiyonu: **{platform.python_version()}**\nDiscord.py Versiyonu: **{discord.__version__}**\nÇalışma Zamanı: **{day} Gün, {hours} Saat, {minute} Dakika, {second} Saniye**\nCPU(İşlemci): **{get_cpu_info()['brand_raw']}**\nFiziksel Çekirdekler: **{psutil.cpu_count(logical=False)}**\nToplam Çekirdek: **{psutil.cpu_count(logical=True)}**\nKullanımdaki İşlemci Yüzdesi: **%{psutil.cpu_percent(interval=0)}**\nOS(İşletim Sistemi): **{platform.platform()}**\nKullanılan Bellek: **{get_size(svmem.used)}**\nKullanılabilir Bellek: **{get_size(svmem.available)}**\nToplam Bellek: **{get_size(svmem.total)}**\nKullanımdaki Bellek Yüzdesi: **%{svmem.percent}**\nSunucu Bölgesi: **Google Cloud - Frankfurt**")
+        statsEmbed.add_field(name="Teknik Bilgiler",value=f"{self.client.user.name} Versiyonu: **v{get_version_number()}**\nPython Versiyonu: **{platform.python_version()}**\nDiscord.py Versiyonu: **{discord.__version__}**\nÇalışma Zamanı: **{day} Gün, {hours} Saat, {minute} Dakika, {second} Saniye**\nCPU(İşlemci): **{get_cpu_info()['brand_raw']}**\nFiziksel Çekirdekler: **{psutil.cpu_count(logical=False)}**\nToplam Çekirdek: **{psutil.cpu_count(logical=True)}**\nKullanımdaki İşlemci Yüzdesi: **%{psutil.cpu_percent(interval=0)}**\nOS(İşletim Sistemi): **{platform.platform()}**\nKullanılan Bellek: **{get_size(svmem.used)}**\nKullanılabilir Bellek: **{get_size(svmem.available)}**\nToplam Bellek: **{get_size(svmem.total)}**\nKullanımdaki Bellek Yüzdesi: **%{svmem.percent}**\nSunucu Bölgesi: **Google Cloud - Frankfurt**")
         statsEmbed.set_footer(text="PHOENIX#7103 tarafından 💖 ile geliştirildi!",icon_url=ctx.author.avatar_url)
         
         file = discord.File("images/evos.png", filename="evos.png")
