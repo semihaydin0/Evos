@@ -222,14 +222,6 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         else:
             await payload.player.advance()
 
-    async def cog_check(self, ctx):
-        if isinstance(ctx.channel, discord.DMChannel):
-            dmChannelEmbed=discord.Embed(title="Müzik komutlarını sadece sunucu üzerinde kullanabilirsin.",colour=0xffd500)
-            
-            await ctx.send(embed=dmChannelEmbed)
-            return False
-        return True
-
     async def start_nodes(self):
         await self.bot.wait_until_ready()
         nodes = {

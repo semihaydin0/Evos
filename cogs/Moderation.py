@@ -14,6 +14,7 @@ class Moderation(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
+    @commands.cooldown(1, 10, commands.BucketType.guild)
     @commands.command(name= "Sil", brief = "Metin kanalından mesaj siler.",aliases=['sil','Purge','purge'])
     async def purge_command(self,ctx,amount: int):
         if amount <= 100 :

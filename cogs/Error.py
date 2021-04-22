@@ -4,6 +4,7 @@
 
 import discord
 from discord.ext import commands
+from discord.ext.commands.errors import CommandOnCooldown
 from logging_files.error_log import logger
 
 class Error(commands.Cog):
@@ -21,18 +22,25 @@ class Error(commands.Cog):
             await ctx.send(embed = commandErrorEmbed)
 
             logger.info(f"Error | Komut : {ctx.message.content} | MissingRequiredArgument : {ctx.author}")
+        
+        if isinstance(error, CommandOnCooldown):
+            commandErrorEmbed = discord.Embed(title="Cooldown Uyarısı",description=f"Bu komuta {error.retry_after:,.2f} saniye sonra erişebilirsin.",colour = 0xffd500)
+            
+            await ctx.send(embed = commandErrorEmbed)
+
+            logger.info(f"Error | Komut : {ctx.message.content} | CommandOnCooldown : {ctx.author}")
 
         if isinstance(error , commands.MissingPermissions):
-            commandErrorEmbed_2 = discord.Embed(title="Yetersiz Yetki",description="Diğer komutlara **.yardım** komutu ile ulaşabilirsin.",colour = 0xffd500)
+            commandErrorEmbed = discord.Embed(title="Yetersiz Yetki",description="Diğer komutlara **.yardım** komutu ile ulaşabilirsin.",colour = 0xffd500)
             
-            await ctx.send(embed = commandErrorEmbed_2)
+            await ctx.send(embed = commandErrorEmbed)
 
             logger.info(f"Error | Komut : {ctx.message.content} | MissingPermissions : {ctx.author}")
 
         if isinstance(error, commands.BotMissingPermissions):
-            commandErrorEmbed_3 = discord.Embed(title="Yetersiz Yetki",description=f"{self.client.user.name} bu komutu gerekli izinlere sahip olmadan uygulayamaz.",colour = 0xffd500)
+            commandErrorEmbed = discord.Embed(title="Yetersiz Yetki",description=f"{self.client.user.name} bu komutu gerekli izinlere sahip olmadan uygulayamaz.",colour = 0xffd500)
             
-            await ctx.send(embed = commandErrorEmbed_3)
+            await ctx.send(embed = commandErrorEmbed)
 
             logger.info(f"Error | Komut : {ctx.message.content} | BotMissingPermissions : {ctx.guild.name}")
 

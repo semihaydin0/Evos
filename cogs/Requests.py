@@ -16,6 +16,7 @@ class Requests(commands.Cog):
     def __init__(self,client):
         self.client = client
 
+    @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.command(name="Korona", brief = "Detaylı COVID-19 istatistiklerini görüntüler.",aliases = ['korona','corona','Corona'])
     async def corona_command(self,ctx,CountryName = None):
         try : 
@@ -125,6 +126,7 @@ class Requests(commands.Cog):
             
             logger.error(f"Requests | COVID-19 | Error: {e}")
 
+    @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.command(name="Kur", brief = "Canlı Döviz Kurunu ve Kripto Paraları görüntüler.",aliases = ['döviz','Döviz','kur'])
     async def currency_command(self,ctx):        
         try :

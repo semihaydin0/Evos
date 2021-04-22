@@ -14,18 +14,19 @@ class Users(commands.Cog):
         self.client = client
 
     @commands.guild_only()
+    @commands.cooldown(1, 25, commands.BucketType.user)
     @commands.command(name="Profil", brief = "Kullanıcının profil bilgilerini görüntüler.",aliases = ['profil','Profile','profile'])
     async def profile_command(self,ctx,member : discord.Member = None):
         if member is None :
             member = ctx.author
-        
+
         profileImg = Image.open("./images/info-background.jpg")
         draw = ImageDraw.Draw(profileImg)
         defaultSize = 80
-        
+
         if  len(str(member)) > 25 or len(str(ctx.author)) > 25 or len(str(member.top_role)) > 25 :
             defaultSize -= max(len(str(member)),len(str(ctx.author)),len(str(member.top_role)))-5
-        
+
         defaultFont = ImageFont.truetype("./assets/fonts/Oxanium-Regular.ttf", defaultSize)
         headerFont = ImageFont.truetype("./assets/fonts/SansitaSwashed-VariableFont_wght.ttf", 150)
         
@@ -67,19 +68,21 @@ class Users(commands.Cog):
         
         logger.info(f"Users | Profil | Tarafından : {ctx.author}")
     
+    @commands.cooldown(1, 25, commands.BucketType.user)
     @commands.command(name="Avatar",brief = "Kullanıcının avatarını görüntüler.",aliases = ['avatar'])
     async def avatar_command(self,ctx,member : discord.Member=None):
-        if member is None : 
+        if member is None :
             member = ctx.message.author
         avatarEmbed = discord.Embed(colour=member.color)
         avatarEmbed.set_author(name = member)
         avatarEmbed.set_image(url = f'{member.avatar_url}')
-        
+
         await ctx.send(embed=avatarEmbed)
-        
+
         logger.info(f"Users | Avatar | Tarafından : {ctx.author}")
 
     @commands.guild_only()
+    @commands.cooldown(1, 25, commands.BucketType.user)
     @commands.command(name="Sunucu", brief = "Server bilgilerini görüntüler.",aliases = ['sunucu','server','Server'])
     async def server_command(self,ctx):
         serverImg = Image.open("./images/info-background.jpg")
