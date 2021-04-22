@@ -6,9 +6,13 @@ import discord
 from discord.ext import commands
 from cpuinfo import get_cpu_info
 from uptime import uptime
+import speedtest
+import TenGiphPy
 import platform
+import asyncio
 import psutil
 import math
+import time
 from logging_files.general_log import logger
 from Evos import get_version_number
 
@@ -22,13 +26,20 @@ def get_size(bytes, suffix="B"):
 class General(commands.Cog):
     def __init__(self,client):
         self.client = client
-
-    @commands.command(name ="Ping",brief ="Evos'un gecikme değerini gösterir.",aliases = ['ping','Latency','latency'])
+    
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.command(name ="Ping",brief ="Evos'un gecikme değerlerini gösterir.",aliases = ['ping','Latency','latency'])
     async def ping_command(self,ctx):
-        pingEmbed = discord.Embed(title = f'Ping: {round(self.client.latency * 1000)} ms',color=0xd8f500)
-        pingEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
+        before = time.monotonic()
+        pingEmbed = discord.Embed(title="Ölçülüyor...",color=0x32a832)
+        msg = await ctx.send(embed=pingEmbed)
+        ping = (time.monotonic() - before) * 1000
+        pingEmbed_2 = discord.Embed(title = f'Gecikmeler',color=0xd8f500)
+        pingEmbed_2.add_field(name="API Gecikmesi",value=f"{round(self.client.latency * 1000)} ms",inline=False)
+        pingEmbed_2.add_field(name="Mesaj Gecikmesi",value=f"{round(ping)} ms")
+        pingEmbed_2.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
 
-        await ctx.send(embed=pingEmbed)
+        await msg.edit(embed=pingEmbed_2)
 
         logger.info(f"General | Ping | Tarafından: {ctx.author}")
 
@@ -140,6 +151,7 @@ class General(commands.Cog):
         
         logger.info(f"General | Help | Tarafından: {ctx.author}")
 
+    @commands.cooldown(1, 60, commands.BucketType.guild)
     @commands.command(name="Evosinfo",brief="Evos'un istatistiklerini gösterir.",aliases=["evosinfo"])
     async def info_command(self,ctx):
         svmem = psutil.virtual_memory()
@@ -158,6 +170,74 @@ class General(commands.Cog):
         await ctx.send(file=file,embed=statsEmbed)
 
         logger.info(f"General | Evosinfo | Tarafından: {ctx.author}")
+
+    @commands.cooldown(1, 600, commands.BucketType.guild)
+    @commands.command(name="Speedtest",brief="Evos'un internet hızını gösterir.",aliases=["speedtest","Hıztesti","hıztesti"])
+    async def speedtest_command(self,ctx):
+        speedtestEmbed=discord.Embed(title="Hız Testi Ölçümü",color=0xd8f500)
+        speedtestEmbed.add_field(name="İndirme",value=":yellow_circle:",inline=False)
+        speedtestEmbed.add_field(name="Yükleme",value=":red_circle:")
+        speedtestEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
+            
+        message = await ctx.send(embed=speedtestEmbed)
+        
+        try:
+            st = speedtest.Speedtest()
+            st.get_best_server()
+            l = asyncio.get_event_loop()
+
+            d = await self.client.loop.run_in_executor(None, st.download)
+
+            speedtestEmbed_2=discord.Embed(title="Hız Testi",color=0xd8f500)
+            speedtestEmbed_2.add_field(name="İndirme",value=":green_circle:",inline=False)
+            speedtestEmbed_2.add_field(name="Yükleme",value=":yellow_circle:")
+            speedtestEmbed_2.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
+            
+            await message.edit(embed=speedtestEmbed_2)
+
+            u = await self.client.loop.run_in_executor(None, st.upload)
+
+            speedtestEmbed_3=discord.Embed(title="Hız Testi Sonuçları",color=0xd8f500)
+            speedtestEmbed_3.add_field(name="Ping",value=f"**{round(st.results.ping, 2)}** ms",inline=False)
+            speedtestEmbed_3.add_field(name="İndirme",value=f"**{round(d/1024/1024, 2)}** Mbps",inline=False)
+            speedtestEmbed_3.add_field(name="Yükleme",value=f"**{round(u/1024/1024, 2)}** Mbps")
+            speedtestEmbed_3.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
+
+            await message.edit(embed=speedtestEmbed_3)
+
+            logger.info(f"General | Speedtest | Tarafından: {ctx.author}")
+        except Exception as e:
+            speedtestEmbed_4 = discord.Embed(title="Hata",description =f"{e}",colour = 0xffd500)
+            await ctx.send(embed=speedtestEmbed_4)
+
+            logger.error(f"Requests | Speedtest | Error: {e}")
+    
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(name="Gif",brief="Gif",aliases=["gif"])
+    async def gif_command(self,ctx, *,tag: str):
+        try:
+            apiKey = "YOURAPITOKENGOESHERE"
+            g = TenGiphPy.Giphy(token=apiKey)
+
+            randomGif = g.random(tag=tag)
+
+            url = randomGif['data']['images']['downsized_large']['url']
+            size = randomGif['data']['images']['downsized_large']['size']
+            width = randomGif['data']['images']['downsized_large']['width']
+            height = randomGif['data']['images']['downsized_large']['height']
+
+            gifEmbed=discord.Embed(title=f"'{tag}'",description=f"Boyut: **{get_size(int(size))}**\nBoyutlar: **{width}x{height}**",color=0xd8f500)
+            gifEmbed.set_image(url=url)
+            gifEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
+        
+            await ctx.send(embed=gifEmbed)
+
+            logger.info(f"General | Gif | Tarafından: {ctx.author}")
+        except Exception as e:
+            gifEmbed_2 = discord.Embed(title="Hata",description =f"{e}",colour = 0xffd500)
+            await ctx.send(embed=gifEmbed_2)
+
+            logger.error(f"Requests | Gif | Error: {e}")
 
 def setup(client):
     client.add_cog(General(client))
