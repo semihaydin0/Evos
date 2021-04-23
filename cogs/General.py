@@ -27,14 +27,14 @@ class General(commands.Cog):
     def __init__(self,client):
         self.client = client
     
-    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.guild)
     @commands.command(name ="Ping",brief ="Evos'un gecikme değerlerini gösterir.",aliases = ['ping','Latency','latency'])
     async def ping_command(self,ctx):
         before = time.monotonic()
-        pingEmbed = discord.Embed(title="Ölçülüyor...",color=0x32a832)
+        pingEmbed = discord.Embed(title="Ölçülüyor...",color=0x36393F)
         msg = await ctx.send(embed=pingEmbed)
         ping = (time.monotonic() - before) * 1000
-        pingEmbed_2 = discord.Embed(title = f'Gecikmeler',color=0xd8f500)
+        pingEmbed_2 = discord.Embed(title = "Gecikme Süreleri",color=0x36393F)
         pingEmbed_2.add_field(name="API Gecikmesi",value=f"{round(self.client.latency * 1000)} ms",inline=False)
         pingEmbed_2.add_field(name="Mesaj Gecikmesi",value=f"{round(ping)} ms")
         pingEmbed_2.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
@@ -44,6 +44,7 @@ class General(commands.Cog):
         logger.info(f"General | Ping | Tarafından: {ctx.author}")
 
     @commands.guild_only()
+    @commands.cooldown(1, 30, commands.BucketType.guild)
     @commands.command(name ="Davet",brief ="Kanal davet linki oluşturur.",aliases=['davet','Invite','invite'])
     async def invite_command(self,ctx,time: int = 0,amount: int = 0):
         link = await ctx.channel.create_invite(max_age = time*3600,max_uses = amount)
@@ -66,9 +67,9 @@ class General(commands.Cog):
 
     @commands.command(name ="Evos",brief ="Evos'un davet linkini gönderir.",aliases=["evos"])
     async def evos_invite_command(self,ctx):
-        evosEmbed=discord.Embed(title =f"{self.client.user.name} | Türkçe Discord Botu",color=0xd8f500,timestamp=ctx.message.created_at)
+        evosEmbed=discord.Embed(title =f"{self.client.user.name} | Türkçe Discord Botu",color=0x36393F,timestamp=ctx.message.created_at)
         evosEmbed.add_field(name="Davet Linki",value=f"[Buradan](https://discord.com/api/oauth2/authorize?client_id={self.client.user.id}&permissions=8&scope=bot) sunucuna ekleyebilirsin.",inline=False)
-        evosEmbed.add_field(name="Geliştirici misin ?",value="[Buradan](https://github.com/semihaydin0/Evos) kaynak kodlarını inceleyebilirsin.",inline=False)
+        evosEmbed.add_field(name="Geliştirici misin ?",value="[Buradan](https://github.com/semihaydin0/Evos) kaynak kodlarını inceleyebilirsin.")
 
         file = discord.File("images/evos.png", filename="evos.png")
         evosEmbed.set_thumbnail(url="attachment://evos.png")
@@ -81,7 +82,7 @@ class General(commands.Cog):
     @commands.command(name="Hesapla",brief="İki sayı ile dört işlem yapar.",aliases = ['hesapla','Math','math'])
     async def math_command(self,ctx,num1: float,op: str,num2: float):
         result = 0.0
-        
+
         if op == "+":
             result = num1 + num2
 
@@ -95,13 +96,14 @@ class General(commands.Cog):
             result = num1 / num2
 
         else :
-            mathEmbed_2 = discord.Embed(title="Hata",description="Hatalı operatör girişi.**(+,-,*,/)**",color=0xd8f500) 
+            mathEmbed_2 = discord.Embed(title="Hata",description="Hatalı operatör girişi.\nDesteklenen Operatörler: **+ - * /**",color=0xd92929)
+
             await ctx.send(embed=mathEmbed_2)
             return
-        
+
         mathEmbed = discord.Embed(title="Sonuç",description=f"{num1}{op}{num2} işleminin sonucu = **{result}**",color=0xd8f500)
         mathEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
-        
+
         await ctx.send(embed=mathEmbed)
 
         logger.info(f"General | Math | Tarafından: {ctx.author}")
@@ -171,10 +173,10 @@ class General(commands.Cog):
 
         logger.info(f"General | Evosinfo | Tarafından: {ctx.author}")
 
-    @commands.cooldown(1, 600, commands.BucketType.guild)
-    @commands.command(name="Speedtest",brief="Evos'un internet hızını gösterir.",aliases=["speedtest","Hıztesti","hıztesti"])
+    @commands.cooldown(1, 300, commands.BucketType.guild)
+    @commands.command(name="Speedtest",brief="Evos'un bulunduğu sanal sunucunun internet hızını gösterir.",aliases=["speedtest","Hıztesti","hıztesti"])
     async def speedtest_command(self,ctx):
-        speedtestEmbed=discord.Embed(title="Hız Testi Ölçümü",color=0xd8f500)
+        speedtestEmbed=discord.Embed(title="Hız Testi Ölçümü",color=0x36393F)
         speedtestEmbed.add_field(name="İndirme",value=":yellow_circle:",inline=False)
         speedtestEmbed.add_field(name="Yükleme",value=":red_circle:")
         speedtestEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
@@ -184,11 +186,11 @@ class General(commands.Cog):
         try:
             st = speedtest.Speedtest()
             st.get_best_server()
-            l = asyncio.get_event_loop()
+            asyncio.get_event_loop()
 
             d = await self.client.loop.run_in_executor(None, st.download)
 
-            speedtestEmbed_2=discord.Embed(title="Hız Testi",color=0xd8f500)
+            speedtestEmbed_2=discord.Embed(title="Hız Testi Ölçümü",color=0x36393F)
             speedtestEmbed_2.add_field(name="İndirme",value=":green_circle:",inline=False)
             speedtestEmbed_2.add_field(name="Yükleme",value=":yellow_circle:")
             speedtestEmbed_2.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
@@ -197,7 +199,7 @@ class General(commands.Cog):
 
             u = await self.client.loop.run_in_executor(None, st.upload)
 
-            speedtestEmbed_3=discord.Embed(title="Hız Testi Sonuçları",color=0xd8f500)
+            speedtestEmbed_3=discord.Embed(title="Hız Testi Sonuçları",color=0x36393F)
             speedtestEmbed_3.add_field(name="Ping",value=f"**{round(st.results.ping, 2)}** ms",inline=False)
             speedtestEmbed_3.add_field(name="İndirme",value=f"**{round(d/1024/1024, 2)}** Mbps",inline=False)
             speedtestEmbed_3.add_field(name="Yükleme",value=f"**{round(u/1024/1024, 2)}** Mbps")
@@ -207,37 +209,31 @@ class General(commands.Cog):
 
             logger.info(f"General | Speedtest | Tarafından: {ctx.author}")
         except Exception as e:
-            speedtestEmbed_4 = discord.Embed(title="Hata",description =f"{e}",colour = 0xffd500)
+            speedtestEmbed_4 = discord.Embed(title="Hata",description =f"{e}",colour = 0xd92929)
             await ctx.send(embed=speedtestEmbed_4)
 
-            logger.error(f"Requests | Speedtest | Error: {e}")
+            logger.error(f"General | Speedtest | Error: {e}")
     
     @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.command(name="Gif",brief="Gif",aliases=["gif"])
+    @commands.command(name="Gif",brief="Girmiş olduğunuz tag'a göre rastgele gif seçer.",aliases=["gif"])
     async def gif_command(self,ctx, *,tag: str):
         try:
             apiKey = "YOURAPITOKENGOESHERE"
-            g = TenGiphPy.Giphy(token=apiKey)
+            t = TenGiphPy.Tenor(token=apiKey)
+            randomGif = t.random(tag=tag)
 
-            randomGif = g.random(tag=tag)
-
-            url = randomGif['data']['images']['downsized_large']['url']
-            size = randomGif['data']['images']['downsized_large']['size']
-            width = randomGif['data']['images']['downsized_large']['width']
-            height = randomGif['data']['images']['downsized_large']['height']
-
-            gifEmbed=discord.Embed(title=f"'{tag}'",description=f"Boyut: **{get_size(int(size))}**\nBoyutlar: **{width}x{height}**",color=0xd8f500)
-            gifEmbed.set_image(url=url)
+            gifEmbed=discord.Embed(title=f"'{tag}'",color=0x36393F)
+            gifEmbed.set_image(url=randomGif)
             gifEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
         
             await ctx.send(embed=gifEmbed)
 
             logger.info(f"General | Gif | Tarafından: {ctx.author}")
         except Exception as e:
-            gifEmbed_2 = discord.Embed(title="Hata",description =f"{e}",colour = 0xffd500)
+            gifEmbed_2 = discord.Embed(title="Hata",description =f"{e}",colour = 0xd92929)
             await ctx.send(embed=gifEmbed_2)
 
-            logger.error(f"Requests | Gif | Error: {e}")
+            logger.error(f"General | Gif | Error: {e}")
 
 def setup(client):
     client.add_cog(General(client))
