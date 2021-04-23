@@ -26,7 +26,7 @@ def get_size(bytes, suffix="B"):
 class General(commands.Cog):
     def __init__(self,client):
         self.client = client
-    
+
     @commands.cooldown(1, 10, commands.BucketType.guild)
     @commands.command(name ="Ping",brief ="Evos'un gecikme değerlerini gösterir.",aliases = ['ping','Latency','latency'])
     async def ping_command(self,ctx):

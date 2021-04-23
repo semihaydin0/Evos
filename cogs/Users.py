@@ -14,7 +14,7 @@ class Users(commands.Cog):
         self.client = client
 
     @commands.guild_only()
-    @commands.cooldown(1, 25, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="Profil", brief = "Kullanıcının profil bilgilerini görüntüler.",aliases = ['profil','Profile','profile'])
     async def profile_command(self,ctx,member : discord.Member = None):
         if member is None :
@@ -29,7 +29,7 @@ class Users(commands.Cog):
 
         defaultFont = ImageFont.truetype("./assets/fonts/Oxanium-Regular.ttf", defaultSize)
         headerFont = ImageFont.truetype("./assets/fonts/SansitaSwashed-VariableFont_wght.ttf", 150)
-        
+
         draw.text((500, 15), "Profil Bilgileri", (255, 255, 255), font=headerFont)
         draw.text((50, 264), f"Kullanıcı Adı: {member}", (255, 255, 255), font=defaultFont)
         draw.text((50, 364), "Kayıt Tarihi: {}".format(member.created_at.strftime("%#d/%m/%Y")), (255, 255, 255), font=defaultFont)
@@ -37,19 +37,19 @@ class Users(commands.Cog):
         draw.text((50, 564), f"En Yüksek Rolü: {member.top_role}", (255, 255, 255), font=defaultFont)
         draw.text((50, 664), f"ID: {member.id}", (255, 255, 255), font=defaultFont)
         draw.text((190, 868), f"Tarafından: {ctx.author}", (255, 255, 255), font=defaultFont)
-        
+
         author_avatar_asset = ctx.author.avatar_url_as(format='jpg', size=128)
         member_avatar_asset = member.avatar_url_as(format='jpg', size=512)
-        
+
         author_buffer_avatar = io.BytesIO(await author_avatar_asset.read())
         member_buffer_avatar = io.BytesIO(await member_avatar_asset.read())
-        
+
         author_image = Image.open(author_buffer_avatar)
         author_image = author_image.resize((128, 128))
-        
+
         member_image = Image.open(member_buffer_avatar)
         member_image = member_image.resize((512, 512))
-        
+
         circle_image = Image.new('L', (128, 128))
         circle_draw = ImageDraw.Draw(circle_image)
         circle_draw.ellipse((0, 0, 128, 128), fill=255)
@@ -57,32 +57,33 @@ class Users(commands.Cog):
         circle_image_2 = Image.new('L', (512, 512))
         circle_draw_2 = ImageDraw.Draw(circle_image_2)
         circle_draw_2.ellipse((0, 0, 512, 512), fill=255)
-        
+
         profileImg.paste(author_image, (50, 835), circle_image)
         profileImg.paste(member_image, (1360, 245), circle_image_2)
         profileImg.save("profile.png")
 
         await ctx.send(file=discord.File("profile.png"))
-        
+
         os.remove("profile.png")
-        
+
         logger.info(f"Users | Profil | Tarafından : {ctx.author}")
-    
-    @commands.cooldown(1, 25, commands.BucketType.user)
-    @commands.command(name="Avatar",brief = "Kullanıcının avatarını görüntüler.",aliases = ['avatar'])
+
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.command(name="Avatar",brief = "Kullanıcının avatarını görüntüler.",aliases = ['avatar','Pp','pp'])
     async def avatar_command(self,ctx,member : discord.Member=None):
         if member is None :
             member = ctx.message.author
-        avatarEmbed = discord.Embed(colour=member.color)
+        avatarEmbed = discord.Embed(color=0x36393F)
         avatarEmbed.set_author(name = member)
-        avatarEmbed.set_image(url = f'{member.avatar_url}')
+        avatarEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
+        avatarEmbed.set_image(url = f"{member.avatar_url}")
 
         await ctx.send(embed=avatarEmbed)
 
         logger.info(f"Users | Avatar | Tarafından : {ctx.author}")
 
     @commands.guild_only()
-    @commands.cooldown(1, 25, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name="Sunucu", brief = "Server bilgilerini görüntüler.",aliases = ['sunucu','server','Server'])
     async def server_command(self,ctx):
         serverImg = Image.open("./images/info-background.jpg")
