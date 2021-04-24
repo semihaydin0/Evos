@@ -19,7 +19,7 @@ class Requests(commands.Cog):
     @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.command(name="Korona", brief = "Detaylı COVID-19 istatistiklerini görüntüler.",aliases = ['korona','corona','Corona'])
     async def corona_command(self,ctx,CountryName = None):
-        try : 
+        try :
             if CountryName is None :
                 CountryName = "dünya"
 
@@ -27,10 +27,10 @@ class Requests(commands.Cog):
             translation = translator.translate(CountryName)
             Country = translation.text.title()
             DataUrl = f"https://coronavirus-19-api.herokuapp.com/countries/{Country}"
-            
+
             if Country == "World" :
                 CountryFlag = "https://i.ibb.co/fVJyrgP/world.png"
-            
+
             else :
                 CountryFlag = f"https://www.countries-ofthe-world.com/flags-normal/flag-of-{Country}.png"
 
@@ -51,29 +51,29 @@ class Requests(commands.Cog):
             totalTests = humanize.intword(json_stats["totalTests"])
 
             if totalCases == "0":
-                totalCases = "Veri girişi yok"  
-            
+                totalCases = "Veri girişi yok"
+
             if todayCases == "0":
                 todayCases = "Veri girişi yok"
-            
+
             if totalDeaths == "0":
                 totalDeaths = "Veri girişi yok"
-            
+
             if todayDeaths == "0":
                 todayDeaths = "Veri girişi yok"
-            
+
             if recovered == "0":
                 recovered = "Veri girişi yok"
-            
+
             if active == "0":
                 active = "Veri girişi yok"
-            
+
             if critical == "0":
                 critical = "Veri girişi yok"
-            
+
             if casesPerOneMillion == "0":
                 casesPerOneMillion = "Veri girişi yok"
-            
+
             if totalTests == "0":
                 totalTests = "Veri girişi yok"
 
@@ -93,13 +93,13 @@ class Requests(commands.Cog):
             labels = ['İyileşen', 'Ölen','Aktif']
             quantity = [Recover/Cases, Deaths/Cases,(Cases-Deaths-Recover)/Cases]
             explodeValue = 0.2
-            
+
             if max(quantity) >= 0.9 :
                 explodeValue = 0.4
-            
+
             elif max(quantity) >= 0.8 :
                 explodeValue = 0.3
-            
+
             colors = ['green', 'orangered','coral']
             explode = (explodeValue, explodeValue, explodeValue)
             coronaplt.clf()
@@ -123,12 +123,12 @@ class Requests(commands.Cog):
         except Exception as e:
             coronaStatsEmbed_2 = discord.Embed(title="Hata",description ="Bilinmeyen ülke adı ya da veri sunucusu yanıt vermiyor.",colour = 0xffd500)
             await ctx.send(embed=coronaStatsEmbed_2)
-            
+
             logger.error(f"Requests | COVID-19 | Error: {e}")
 
     @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.command(name="Kur", brief = "Canlı Döviz Kurunu ve Kripto Paraları görüntüler.",aliases = ['döviz','Döviz','kur'])
-    async def currency_command(self,ctx):        
+    async def currency_command(self,ctx):
         try :
             Currency = requests.get('http://bigpara.hurriyet.com.tr/doviz/')
             BSoup = BeautifulSoup(Currency.content,'html.parser')
@@ -144,10 +144,10 @@ class Requests(commands.Cog):
 
             if USDPer.startswith('-') == False:
                 USDPer = f"+{USDPer}"
-            
+
             if EURPer.startswith('-') == False:
                 EURPer = f"+{EURPer}"
-            
+
             if GBPPer.startswith('-') == False:
                 GBPPer = f"+{GBPPer}"
 
@@ -158,11 +158,11 @@ class Requests(commands.Cog):
             CryptoBTC = requests.get('https://bitcoin.tlkur.com/')
             BSoup = BeautifulSoup(CryptoBTC.content,'html.parser')
             BTCCur = BSoup.find("span",{"id" :"BTCTL_rate"})
-            
+
             CryptoETH = requests.get('https://ethereum.tlkur.com/')
             BSoup = BeautifulSoup(CryptoETH.content,'html.parser')
             ETHCur = BSoup.find("span",{"id" :"ETHTL_rate"})
-            
+
             CryptoXRP = requests.get('https://ripple.tlkur.com/')
             BSoup = BeautifulSoup(CryptoXRP.content,'html.parser')
             XRPCur = BSoup.find("span",{"id" :"XRPTL_rate"})
@@ -182,15 +182,15 @@ class Requests(commands.Cog):
             currencyEmbed.add_field(name="Ethereum",value = f'1 Ξ = **{ETH}** ₺\n1 ₺ = **{round(1/float(ETH),6)}** Ξ')
             currencyEmbed.add_field(name="Ripple",value = f'1 X = **{XRP}** ₺\n1 ₺ = **{round(1/float(XRP),2)}** X')
             currencyEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
-            
+
             await ctx.send(file=file,embed=currencyEmbed)
-            
+
             logger.info(f"Requests | Kur | Tarafından: {ctx.author}")
         except Exception as e:
             currencyEmbed_2 = discord.Embed(title="Hata",description =f"{e}",colour = 0xffd500)
             await ctx.send(embed=currencyEmbed_2)
 
             logger.error(f"Requests | Kur | Error: {e}")
-        
+
 def setup(client):
     client.add_cog(Requests(client))

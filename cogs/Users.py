@@ -89,7 +89,7 @@ class Users(commands.Cog):
         serverImg = Image.open("./images/info-background.jpg")
         draw = ImageDraw.Draw(serverImg)
         defaultSize = 70
-        
+
         if  len(str(ctx.guild.owner)) > 25 :
             defaultSize -= len(str(ctx.guild.owner)) - 10
 
@@ -105,7 +105,7 @@ class Users(commands.Cog):
         draw.text((1475, 475), f"Rol Sayısı\n{len(ctx.guild.roles)}", (255, 255, 255), font=defaultFont)
         draw.text((50, 810), f"Takviye Seviyesi\n{ctx.guild.premium_tier}", (255, 255, 255), font=defaultFont)
         draw.text((775, 810), f"Takviye Sayısı\n{ctx.guild.premium_subscription_count}", (255, 255, 255), font=defaultFont)
-        
+
         guild_avatar_asset = ctx.guild.icon_url_as(format='jpg', size=512)
         guild_buffer_avatar = io.BytesIO(await guild_avatar_asset.read())
 

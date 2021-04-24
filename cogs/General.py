@@ -48,15 +48,15 @@ class General(commands.Cog):
     @commands.command(name ="Davet",brief ="Kanal davet linki oluşturur.",aliases=['davet','Invite','invite'])
     async def invite_command(self,ctx,time: int = 0,amount: int = 0):
         link = await ctx.channel.create_invite(max_age = time*3600,max_uses = amount)
-        
+
         if time == 0:
             time = "Süresiz"
         else:
             time = str(time)+" saat"
-        
+
         if amount == 0:
             amount = "Limitsiz"
-        
+
         inviteEmbed=discord.Embed(description =f"Davet Linki: {link}\nBu davetin **geçerlilik** süresi: {time}\nBu davetin **maksimum kullanım** sayısı: {amount}",color=0xd8f500,timestamp=ctx.message.created_at)
         inviteEmbed.set_author(name=ctx.message.guild.name,icon_url=ctx.message.guild.icon_url)
         inviteEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
@@ -113,33 +113,33 @@ class General(commands.Cog):
         helpEmbed=discord.Embed(title="🤖 Komutlar",description="Komutlar için gerekli argümanlara **help** komutuyla ulaşabilirsin.", color=0xd8f500,timestamp=ctx.message.created_at)
         file = discord.File("images/evos.png", filename="evos.png")
         helpEmbed.set_thumbnail(url="attachment://evos.png")
-        
+
         cogs = [c for c in self.client.cogs.keys()]
         cogs.remove('Admin')
         cogs.remove('Error')
         cogs.remove('Events')
         totalPages = math.ceil(len(cogs) / 4)
-        
+
         cog = int(cog)
-            
+
         if cog > totalPages or cog < 1:
             helpEmbed_2 = discord.Embed(title="Hata",description="Hatalı sayfa numarası.",colour=0xd8f500)
-                
+
             await ctx.send(embed=helpEmbed_2)
             return
         helpEmbed.set_footer(text=f"{cog}.Sayfa | Toplam Sayfa: {totalPages} | PHOENIX#7103 tarafından 💖 ile geliştirildi!")
         neededCogs = []
-            
+
         for i in range(4):
             x = i + (int(cog) - 1) * 4
             try:
                 neededCogs.append(cogs[x])
             except IndexError:
                 pass
-            
+
         for cog in neededCogs:
             commandList = ""
-                
+
             for command in self.client.get_cog(cog).walk_commands():
                 if command.hidden:
                     continue
@@ -148,9 +148,9 @@ class General(commands.Cog):
                 commandList += f"**{command.name}** - *{command.brief}*\n"
             commandList += "\n"
             helpEmbed.add_field(name=cog, value=commandList, inline=False)
-        
+
         await ctx.send(file=file,embed=helpEmbed)
-        
+
         logger.info(f"General | Help | Tarafından: {ctx.author}")
 
     @commands.cooldown(1, 60, commands.BucketType.guild)
@@ -161,11 +161,11 @@ class General(commands.Cog):
         hours = int(uptime()/3600-day*24)
         minute = int(uptime()/60)-day*24*60-hours*60
         second = int(uptime())-day*24*3600-hours*3600-minute*60
-        
+
         statsEmbed=discord.Embed(title=f"📃 {self.client.user.name} Hakkında",color=0xd8f500,timestamp=ctx.message.created_at)
         statsEmbed.add_field(name="Teknik Bilgiler",value=f"{self.client.user.name} Versiyonu: **v{get_version_number()}**\nPython Versiyonu: **{platform.python_version()}**\nDiscord.py Versiyonu: **{discord.__version__}**\nÇalışma Zamanı: **{day} Gün, {hours} Saat, {minute} Dakika, {second} Saniye**\nCPU(İşlemci): **{get_cpu_info()['brand_raw']}**\nFiziksel Çekirdekler: **{psutil.cpu_count(logical=False)}**\nToplam Çekirdek: **{psutil.cpu_count(logical=True)}**\nKullanımdaki İşlemci Yüzdesi: **%{psutil.cpu_percent(interval=0)}**\nOS(İşletim Sistemi): **{platform.platform()}**\nKullanılan Bellek: **{get_size(svmem.used)}**\nKullanılabilir Bellek: **{get_size(svmem.available)}**\nToplam Bellek: **{get_size(svmem.total)}**\nKullanımdaki Bellek Yüzdesi: **%{svmem.percent}**\nSunucu Bölgesi: **Google Cloud - Frankfurt**")
         statsEmbed.set_footer(text="PHOENIX#7103 tarafından 💖 ile geliştirildi!",icon_url=ctx.author.avatar_url)
-        
+
         file = discord.File("images/evos.png", filename="evos.png")
         statsEmbed.set_thumbnail(url="attachment://evos.png")
 
@@ -174,15 +174,15 @@ class General(commands.Cog):
         logger.info(f"General | Evosinfo | Tarafından: {ctx.author}")
 
     @commands.cooldown(1, 300, commands.BucketType.guild)
-    @commands.command(name="Speedtest",brief="Evos'un bulunduğu sanal sunucunun internet hızını gösterir.",aliases=["speedtest","Hıztesti","hıztesti"])
+    @commands.command(name="Speedtest",brief="Evos'un barındığı sunucunun internet hızını gösterir.",aliases=["speedtest","Hıztesti","hıztesti"])
     async def speedtest_command(self,ctx):
         speedtestEmbed=discord.Embed(title="Hız Testi Ölçümü",color=0x36393F)
         speedtestEmbed.add_field(name="İndirme",value=":yellow_circle:",inline=False)
         speedtestEmbed.add_field(name="Yükleme",value=":red_circle:")
         speedtestEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
-            
+
         message = await ctx.send(embed=speedtestEmbed)
-        
+
         try:
             st = speedtest.Speedtest()
             st.get_best_server()
@@ -194,7 +194,7 @@ class General(commands.Cog):
             speedtestEmbed_2.add_field(name="İndirme",value=":green_circle:",inline=False)
             speedtestEmbed_2.add_field(name="Yükleme",value=":yellow_circle:")
             speedtestEmbed_2.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
-            
+
             await message.edit(embed=speedtestEmbed_2)
 
             u = await self.client.loop.run_in_executor(None, st.upload)
@@ -213,19 +213,19 @@ class General(commands.Cog):
             await ctx.send(embed=speedtestEmbed_4)
 
             logger.error(f"General | Speedtest | Error: {e}")
-    
+
     @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.command(name="Gif",brief="Girmiş olduğunuz tag'a göre rastgele gif seçer.",aliases=["gif"])
+    @commands.command(name="Gif",brief="Tenor GIF servisi.",aliases=["gif"])
     async def gif_command(self,ctx, *,tag: str):
         try:
-            apiKey = "YOURAPITOKENGOESHERE"
-            t = TenGiphPy.Tenor(token=apiKey)
+            apiToken = "YOURAPITOKENGOESHERE"
+            t = TenGiphPy.Tenor(token=apiToken)
             randomGif = t.random(tag=tag)
 
-            gifEmbed=discord.Embed(title=f"'{tag}'",color=0x36393F)
+            gifEmbed=discord.Embed(title=f"#{tag}",color=0x36393F)
             gifEmbed.set_image(url=randomGif)
             gifEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
-        
+
             await ctx.send(embed=gifEmbed)
 
             logger.info(f"General | Gif | Tarafından: {ctx.author}")

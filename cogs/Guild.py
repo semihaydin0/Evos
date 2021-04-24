@@ -29,13 +29,13 @@ def check_channel(author,channel):
 def check_autorole(author,channel):
     def inner_check(message):
         return len(message.role_mentions) == 1 and message.author == author and message.channel.id == channel
-    
+
     return inner_check
 
 def check_prefix(author,channel):
     def inner_check(message):
         return len(message.content) <= 3 and message.author == author and message.channel.id == channel
-    
+
     return inner_check
 
 def check_message(author,channel):
@@ -43,7 +43,7 @@ def check_message(author,channel):
         return message.author == author and message.channel.id == channel
 
     return inner_check
-    
+
 class Guild(commands.Cog):
     def __init__(self,client):
         self.client = client
@@ -52,12 +52,12 @@ class Guild(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def member_welcome_command(self,ctx):
         await ctx.send(f"Selam {ctx.author.mention}!\nSeçmek istediğin kanalı belirleyelim.\n`Belirlemek istediğin kanalı etiketlemen yeterli.`")
-        
+
         try:
             channelSelection = await self.client.wait_for('message',check = check_channel(ctx.author,ctx.message.channel.id) ,timeout=30)
         except asyncio.TimeoutError:
             await ctx.send(f":sleeping: {ctx.author.mention} Belirlenen sürede senden herhangi bir yanıt alamadık.")
-        
+
         else :
             db = sqlite3.connect('data/server/Data.db')
             cursor = db.cursor()
@@ -65,13 +65,13 @@ class Guild(commands.Cog):
                 channelID = channelSelection.channel_mentions[0].id
                 cursor.execute("UPDATE ServerData SET WELCOME_CHANNEL_ID=? WHERE SERVER_ID=?",(channelID,ctx.author.guild.id,))
                 db.commit()
-                
+
                 await ctx.send(f"Harika! :partying_face: Artık {channelSelection.channel_mentions[0].mention} kanalında yeni üyeler için bilgilendirme mesajı gönderilecek.")
-                
+
                 logger.info(f"Guild | Wlmessage | Sunucu : {ctx.guild.name} | Tarafından : {ctx.author}")
             except Exception as e:
-                await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")         
-                
+                await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
+
                 logger.error(f"Guild | Wlmessage | Error: {e}")
             finally :
                 cursor.close()
@@ -81,12 +81,12 @@ class Guild(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def member_leave_command(self,ctx):
         await ctx.send(f"Selam {ctx.author.mention}!\nSeçmek istediğin kanalı belirleyelim.\n`Belirlemek istediğin kanalı etiketlemen yeterli.`")
-        
+
         try:
             channelSelection = await self.client.wait_for('message',check = check_channel(ctx.author,ctx.message.channel.id) ,timeout=30)
         except asyncio.TimeoutError:
             await ctx.send(f":sleeping: {ctx.author.mention} Belirlenen sürede senden herhangi bir yanıt alamadık.")
-        
+
         else :
             db = sqlite3.connect('data/server/Data.db')
             cursor = db.cursor()
@@ -94,13 +94,13 @@ class Guild(commands.Cog):
                 channelID = channelSelection.channel_mentions[0].id
                 cursor.execute("UPDATE ServerData SET LEAVE_CHANNEL_ID=? WHERE SERVER_ID=?",(channelID,ctx.author.guild.id,))
                 db.commit()
-                
+
                 await ctx.send(f"Harika! :partying_face: Artık {channelSelection.channel_mentions[0].mention} kanalında ayrılan üyeler için bilgilendirme mesajı gönderilecek.")
-                
+
                 logger.info(f"Guild | Lvmessage | Sunucu : {ctx.guild.name} | Tarafından : {ctx.author}")
             except Exception as e:
                 await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
-                
+
                 logger.error(f"Guild | Lvmessage | Error: {e}")
             finally :
                 cursor.close()
@@ -109,13 +109,13 @@ class Guild(commands.Cog):
     @commands.command(name = "Setautorole",brief = "Yeni gelen üyeler için otomatik rol verir.",aliases = ["setautorole"])
     @commands.has_permissions(administrator=True)
     async def autorole_command(self,ctx):
-        await ctx.send(f"Selam {ctx.author.mention}!\nSeçmek istediğin rolü belirleyelim.\n`Belirlemek istediğin rolü etiketlemen yeterli.`")      
-        
+        await ctx.send(f"Selam {ctx.author.mention}!\nSeçmek istediğin rolü belirleyelim.\n`Belirlemek istediğin rolü etiketlemen yeterli.`")
+
         try:
             roleSelection = await self.client.wait_for('message',check = check_autorole(ctx.author,ctx.message.channel.id) ,timeout=30)
         except asyncio.TimeoutError:
             await ctx.send(f":sleeping: {ctx.author.mention} Belirlenen sürede senden herhangi bir yanıt alamadık.")
-        
+
         else :
             db = sqlite3.connect('data/server/Data.db')
             cursor = db.cursor()
@@ -123,13 +123,13 @@ class Guild(commands.Cog):
                 roleID = roleSelection.role_mentions[0].id
                 cursor.execute("UPDATE ServerData SET AUTOROLE_ID=? WHERE SERVER_ID=?",(roleID,ctx.author.guild.id,))
                 db.commit()
-                
+
                 await ctx.send(f"Harika! :partying_face: Artık yeni gelen üyelere {roleSelection.role_mentions[0].mention} rolü verilecek.\n`Uyarı: Evos'un bu işlevi tam olarak yerine getirebilmesi için roller kısmından Evos'un rolünü {roleSelection.role_mentions[0]} rolünden en az 1 kademe üstüne taşıman gerekli.`")
-                
+
                 logger.info(f"Guild | Autorole | Sunucu : {ctx.guild.name} | Tarafından : {ctx.author}")
             except Exception as e:
                 await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
-                
+
                 logger.error(f"Guild | Autorole | Error: {e}")
             finally :
                 cursor.close()
@@ -138,26 +138,26 @@ class Guild(commands.Cog):
     @commands.command(name = "ChangePrefix",brief = "Evos'un komut ön ekini değiştirir.",aliases = ["changeprefix"])
     @commands.has_permissions(administrator=True)
     async def change_prefix_command(self,ctx):
-        await ctx.send(f"Selam {ctx.author.mention}!\nSeçmek istediğin komut ön ekini belirleyelim.\n`Maksimum 3 karakter olmasını ve son karakterinde işaret bulundurmanızı öneriyoruz.`")     
-        
+        await ctx.send(f"Selam {ctx.author.mention}!\nSeçmek istediğin komut ön ekini belirleyelim.\n`Maksimum 3 karakter olmasını ve son karakterinde işaret bulundurmanızı öneriyoruz.`")
+
         try:
             prefixSelection = await self.client.wait_for('message',check = check_prefix(ctx.author,ctx.message.channel.id) ,timeout=60)
         except asyncio.TimeoutError:
             await ctx.send(f":sleeping: {ctx.author.mention} Belirlenen sürede senden herhangi bir yanıt alamadık.")
-        
+
         else :
             db = sqlite3.connect('data/server/Data.db')
             cursor = db.cursor()
             try :
                 cursor.execute("UPDATE ServerData SET CUSTOM_PREFIX=? WHERE SERVER_ID=?",(str(prefixSelection.content),ctx.author.guild.id,))
                 db.commit()
-                
+
                 await ctx.send(f"Harika! :partying_face: Bu sunucu için komut ön eki **{prefixSelection.content}** olarak ayarlandı.")
-                
+
                 logger.info(f"Guild | Prefix | Sunucu : {ctx.guild.name} | Tarafından : {ctx.author}")
             except Exception as e:
                 await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
-                
+
                 logger.error(f"Guild | ChangePrefix | Error: {e}")
 
     @commands.command(name = "ResetConfig",brief = "Sunucu ayarlarını sıfırlar.",aliases = ["resetconfig"])
@@ -167,20 +167,20 @@ class Guild(commands.Cog):
         cursor = db.cursor()
         db2 = sqlite3.connect('data/server/Config.db')
         cursor2 = db2.cursor()
-        
+
         try :
             cursor.execute("UPDATE ServerData SET CUSTOM_PREFIX = '.',AUTOROLE_ID = NULL,WELCOME_CHANNEL_ID = NULL,LEAVE_CHANNEL_ID = NULL WHERE SERVER_ID = ?",(str(ctx.author.guild.id),))
             db.commit()
             cursor.close()
             db.close()
-            
+
             cursor2.execute("DELETE FROM AutoMessage WHERE SERVER_ID = ?",(str(ctx.author.guild.id),))
             db2.commit()
-            
+
             await ctx.send("Harika! :partying_face: Bu sunucunun tüm ayarları sıfırlandı. Prefix(komut ön eki) varsayılan **.(nokta)** olarak ayarlandı.")
         except Exception as e:
             await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
-                
+
             logger.error(f"Guild | ResetServerConfig | Error: {e}")
         finally :
             cursor2.close()
@@ -189,21 +189,21 @@ class Guild(commands.Cog):
     @commands.command(name = "Automessage",brief = "İstediğiniz kanala otomatik mesaj gönderir.",aliases = ["automessage"])
     @commands.has_permissions(administrator=True)
     async def auto_message_scheduler_command(self,ctx):
-        await ctx.send(f"Selam {ctx.author.mention}!\nÖnce istediğin duyurmak istediğin mesajı belirleyelim.\n`Mesajının maksimum 512 karakter olmasını öneriyoruz.`")     
-        
+        await ctx.send(f"Selam {ctx.author.mention}!\nÖnce istediğin duyurmak istediğin mesajı belirleyelim.\n`Mesajının maksimum 512 karakter olmasını öneriyoruz.`")
+
         try:
             messageSelection = await self.client.wait_for('message',check = check_message(ctx.author,ctx.message.channel.id) ,timeout=300)
         except asyncio.TimeoutError:
             await ctx.send(f":sleeping: {ctx.author.mention} Belirlenen sürede senden herhangi bir yanıt alamadık.")
-        
+
         else :
-            await ctx.send("Harika! :partying_face: Şimdi bu mesajın kaç saatte bir yayınlanmasını gerektiğini belirleyelim.\n`Sadece tam sayı girişi yapman gerekir. Aksi taktirde bu sistem çalışmayacaktır.`")           
-            
+            await ctx.send("Harika! :partying_face: Şimdi bu mesajın kaç saatte bir yayınlanmasını gerektiğini belirleyelim.\n`Sadece tam sayı girişi yapman gerekir. Aksi taktirde bu sistem çalışmayacaktır.`")
+
             try:
                 timeSelection = await self.client.wait_for('message',check = check_message(ctx.author,ctx.message.channel.id) ,timeout=30)
             except asyncio.TimeoutError:
                 await ctx.send(f":sleeping: {ctx.author.mention} Belirlenen sürede senden herhangi bir yanıt alamadık.")
-            
+
             else :
                 db = sqlite3.connect('data/server/Config.db')
                 cursor = db.cursor()
@@ -211,12 +211,12 @@ class Guild(commands.Cog):
                     cursor.execute("INSERT INTO AutoMessage VALUES (?,?,?,?,?)",(str(ctx.message.guild.id),str(ctx.message.channel.id),str(messageSelection.content),int(timeSelection.content),int(timeSelection.content)))
                     db.commit()
 
-                    await ctx.send(f"Harika! :partying_face: Artık bu kanalda her **{timeSelection.content}** saatte bir mesajın yayınlanacak.")             
-                    
+                    await ctx.send(f"Harika! :partying_face: Artık bu kanalda her **{timeSelection.content}** saatte bir mesajın yayınlanacak.")
+
                     logger.info(f"Guild | AutoMessage | Tarafından: {ctx.author}")
                 except Exception as e:
                     await ctx.send(":thinking: Görünüşe göre şu anda sunucu kayıtlarına ulaşamıyoruz.Daha sonra tekrar deneyebilirsin.")
-                
+
                     logger.error(f"Guild | AutoMessage | Error: {e}")
                 finally :
                     cursor.close()
@@ -227,13 +227,13 @@ class Guild(commands.Cog):
     async def logging_command(self, ctx, value: int):
         if value not in (0, 1):
             raise InvalidLoggingValue
-        
+
         db = sqlite3.connect('data/server/Config.db')
         cursor = db.cursor()
 
         if value == 1:
             log_channel = discord.utils.get(ctx.guild.text_channels, name=f"{self.client.user.name}-log".lower())
-            
+
             if log_channel is None:
                 overwrites = {
                     ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
@@ -267,17 +267,17 @@ class Guild(commands.Cog):
                 db.close()
 
             status = 0
-            
+
             for channel in ctx.guild.text_channels:
                 if channel.name == f"{self.client.user.name}-log".lower():
                     await channel.delete()
                     status+=1
-            
+
             if status == 0:
                 raise NoLogChannel
 
             loggingEmbed = discord.Embed(title="Log kanalı silindi.",description="Aynı komut üzerinden tekrar aktifleştirebilirsin.",colour=0xffd500)
-            
+
             await ctx.send(embed=loggingEmbed)
 
             logger.info(f"Guild | Logging-0 | Tarafından: {ctx.author}")
@@ -286,15 +286,15 @@ class Guild(commands.Cog):
     async def logging_command_error(self, ctx, exc):
         if isinstance(exc, InvalidLoggingValue):
             loggingEmbed_2=discord.Embed(title="Geçersiz bir değer girdiniz.",description="Sadece 1 (Açmak) ve 0 (Kapatmak) değerlerini girebilirsiniz.",colour=0xffd500)
-            
+
             await ctx.send(embed=loggingEmbed_2)
         elif isinstance(exc, AlreadyHasALogChannel):
             loggingEmbed_3=discord.Embed(title="Halihazırda bir log kanalı var.",colour=0xffd500)
-            
+
             await ctx.send(embed=loggingEmbed_3)
         elif isinstance(exc, NoLogChannel):
-            loggingEmbed_4=discord.Embed(title=f"Log kanalı bulunamadı.",colour=0xffd500)
-            
+            loggingEmbed_4=discord.Embed(title="Log kanalı bulunamadı.",colour=0xffd500)
+
             await ctx.send(embed=loggingEmbed_4)
 
     @commands.Cog.listener()
@@ -317,7 +317,7 @@ class Guild(commands.Cog):
                     messageEditEmbed.add_field(name="Önce",value=before.content,inline=False)
                     messageEditEmbed.add_field(name="Sonra",value=after.content,inline=False)
                     messageEditEmbed.set_footer(text=f"Üye: {after.author}")
-                
+
                     await channel.send(embed=messageEditEmbed)
             except Exception as e:
 
@@ -368,7 +368,7 @@ class Guild(commands.Cog):
                 channel = discord.utils.get(before.text_channels, id=int(channelID))
 
             if channel is not None:
-                
+
                 if before.name != after.name:
                     updatedNameEmbed = discord.Embed(title="Sunucu Güncellemesi",description="İsim Değişikliği",colour=0xa83832)
                     updatedNameEmbed.set_thumbnail(url=f'{before.icon_url}')
@@ -376,7 +376,7 @@ class Guild(commands.Cog):
                     updatedNameEmbed.add_field(name="Sonra",value=after.name,inline=False)
 
                     await channel.send(embed=updatedNameEmbed)
-                
+
                 if before.region != after.region:
                     updatedRegionEmbed = discord.Embed(title="Sunucu Güncellemesi",description="Bölge Değişikliği",colour=0xa83832)
                     updatedRegionEmbed.set_thumbnail(url=f'{before.icon_url}')
@@ -384,7 +384,7 @@ class Guild(commands.Cog):
                     updatedRegionEmbed.add_field(name="Sonra",value=after.region,inline=False)
 
                     await channel.send(embed=updatedRegionEmbed)
-                
+
                 if before.owner != after.owner:
                     updatedOwnerEmbed = discord.Embed(title="Sunucu Güncellemesi",description="Sahiplik Değişikliği",colour=0xa83832)
                     updatedOwnerEmbed.set_thumbnail(url=f'{before.icon_url}')
@@ -392,7 +392,7 @@ class Guild(commands.Cog):
                     updatedOwnerEmbed.add_field(name="Sonra",value=after.owner,inline=False)
 
                     await channel.send(embed=updatedOwnerEmbed)
-                
+
                 if before.icon_url != after.icon_url:
                     updatedIconEmbed = discord.Embed(title="Sunucu Güncellemesi",description="Simge Değişikliği",colour=0xa83832)
                     updatedIconEmbed.set_image(url=after.icon_url)
@@ -404,7 +404,7 @@ class Guild(commands.Cog):
         finally :
             cursor.close()
             db.close()
-    
+
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         db = sqlite3.connect('data/server/Config.db')
@@ -419,7 +419,7 @@ class Guild(commands.Cog):
                 channel = discord.utils.get(before.guild.text_channels, id=int(channelID))
 
             if channel is not None:
-                
+
                 if before.display_name != after.display_name:
                     updatedNameEmbed = discord.Embed(title="Üye Güncellemesi",description="Kullanıcı Adı Değişikliği",colour=0x32a84a)
                     updatedNameEmbed.set_thumbnail(url=f'{before.avatar_url}')
@@ -428,7 +428,7 @@ class Guild(commands.Cog):
                     updatedNameEmbed.set_footer(text=f"Üye: {before}")
 
                     await channel.send(embed=updatedNameEmbed)
-                
+
                 if before.roles != after.roles:
                     updatedRolesEmbed = discord.Embed(title="Üye Güncellemesi",description="Rol Değişikliği",colour=0x32a84a)
                     updatedRolesEmbed.set_thumbnail(url=f'{before.avatar_url}')
@@ -448,7 +448,7 @@ class Guild(commands.Cog):
     async def on_member_join(self,member):
         db = sqlite3.connect('data/server/Data.db')
         cursor = db.cursor()
-        
+
         try :
             cursor.execute("SELECT AUTOROLE_ID,WELCOME_CHANNEL_ID FROM ServerData WHERE SERVER_ID = ?",(member.guild.id,))
             data = cursor.fetchone()
@@ -456,8 +456,8 @@ class Guild(commands.Cog):
             if data[0] != None :
                 autoRoleID = data[0]
                 autoRole = discord.utils.get(member.guild.roles, id=int(autoRoleID))
-                
-                if autoRole != None :                  
+
+                if autoRole != None :
                     try :
                         await member.add_roles(autoRole)
                     except Exception as e:
@@ -467,7 +467,7 @@ class Guild(commands.Cog):
             if data[1] is not None :
                 channelID = data[1]
                 channel = discord.utils.get(member.guild.text_channels, id=int(channelID))
-                
+
                 if channel != None :
                     welcomeImg = Image.open("./images/info-background.jpg")
                     draw = ImageDraw.Draw(welcomeImg)
@@ -475,10 +475,10 @@ class Guild(commands.Cog):
                     defaultSize = 80
                     if len(member.guild.name)>50 :
                         defaultSize -= len(member.guild.name) - 25
- 
+
                     headerFont = ImageFont.truetype("./assets/fonts/SansitaSwashed-VariableFont_wght.ttf", 150)
                     defaultFont = ImageFont.truetype("./assets/fonts/Oxanium-Regular.ttf", defaultSize)
-                    
+
                     headerMessage = "HOŞGELDİN"
                     countMemberMessage = f"{member.guild.name} | {len(member.guild.members)}.ÜYE"
 
@@ -499,7 +499,7 @@ class Guild(commands.Cog):
 
                     welcomeImg.paste(member_image, (704, 300), circle_image)
                     welcomeImg.save(f"{member.id}.png")
-                    
+
                     await channel.send(f"Hoşgeldin, {member.mention}!",file=discord.File(f"{member.id}.png"))
 
                     os.remove(f"{member.id}.png")
@@ -514,7 +514,7 @@ class Guild(commands.Cog):
     async def on_member_remove(self,member):
         db = sqlite3.connect('data/server/Data.db')
         cursor = db.cursor()
-        
+
         if member.name != self.client.user.name :
 
             try :
@@ -524,7 +524,7 @@ class Guild(commands.Cog):
                 if data[0] != None :
                     channelID = data[0]
                     channel = discord.utils.get(member.guild.text_channels, id=int(channelID))
-                
+
                     if channel != None :
                         leaveImg = Image.open("./images/info-background.jpg")
                         draw = ImageDraw.Draw(leaveImg)
@@ -532,10 +532,10 @@ class Guild(commands.Cog):
                         defaultSize = 80
                         if len(member.guild.name)>50 :
                             defaultSize -= len(member.guild.name) - 25
- 
+
                         headerFont = ImageFont.truetype("./assets/fonts/SansitaSwashed-VariableFont_wght.ttf", 150)
                         defaultFont = ImageFont.truetype("./assets/fonts/Oxanium-Regular.ttf", defaultSize)
-                    
+
                         headerMessage = "GÜLE GÜLE"
                         countMemberMessage = f"{member.guild.name} | {len(member.guild.members)} ÜYE"
 
@@ -556,7 +556,7 @@ class Guild(commands.Cog):
 
                         leaveImg.paste(member_image, (704, 300), circle_image)
                         leaveImg.save(f"{member.id}.png")
-                    
+
                         await channel.send(f"{member.mention}, aramızdan ayrıldı!",file=discord.File(f"{member.id}.png"))
 
                         os.remove(f"{member.id}.png")
@@ -566,17 +566,17 @@ class Guild(commands.Cog):
             finally :
                 cursor.close()
                 db.close()
-  
+
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         db = sqlite3.connect('data/server/Data.db')
         cursor = db.cursor()
-        
+
         try :
             cursor.execute("DELETE FROM ServerData WHERE SERVER_ID = ?",(str(guild.id),))
             cursor.execute("INSERT INTO ServerData VALUES (?,?,?,?,?)",(str(guild.id),'.','NULL','NULL','NULL'))
             db.commit()
-            
+
             infoEmbed = discord.Embed(title = "Evos'u sunucuna eklediğin için teşekkürler!",colour=0xd8f500)
             infoEmbed.add_field(name="Prefix (Özelleştirilebilir)",value="Varsayılan: **.**(Nokta)",inline=False)
             infoEmbed.add_field(name="Komut Listesi",value="Komutları görmek için **.yardım** yazabirsin.",inline=False)
@@ -584,11 +584,12 @@ class Guild(commands.Cog):
             infoEmbed.set_footer(text="PHOENIX#7103 tarafından 💖 ile geliştirildi!",icon_url=guild.icon_url)
             file = discord.File("images/evos.png", filename="evos.png")
             infoEmbed.set_thumbnail(url="attachment://evos.png")
-            
+
             try :
                 await guild.text_channels[0].send(file=file,embed=infoEmbed)
-            except :
-                pass
+            except Exception as e:
+
+                logger.error(f"Guild | OnGuildJoin | Error: {e}")
         except Exception as e:
 
             logger.error(f"Guild | Data | Error: {e}")
