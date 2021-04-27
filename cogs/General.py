@@ -10,9 +10,12 @@ import speedtest
 import TenGiphPy
 import platform
 import asyncio
+import random
 import psutil
 import math
 import time
+from pyfiglet import Figlet
+from pyfiglet import FigletFont
 from logging_files.general_log import logger
 from Evos import get_version_number
 
@@ -27,7 +30,7 @@ class General(commands.Cog):
     def __init__(self,client):
         self.client = client
 
-    @commands.cooldown(1, 10, commands.BucketType.guild)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(name ="Ping",brief ="Evos'un gecikme değerlerini gösterir.",aliases = ['ping','Latency','latency'])
     async def ping_command(self,ctx):
         before = time.monotonic()
@@ -65,7 +68,7 @@ class General(commands.Cog):
 
         logger.info(f"General | Invite | Tarafından: {ctx.author}")
 
-    @commands.command(name ="Evos",brief ="Evos'un davet linkini gönderir.",aliases=["evos"])
+    @commands.command(name ="Evos",brief ="Botun davet linkini gönderir.",aliases=["evos"])
     async def evos_invite_command(self,ctx):
         evosEmbed=discord.Embed(title =f"{self.client.user.name} | Türkçe Discord Botu",color=0x36393F,timestamp=ctx.message.created_at)
         evosEmbed.add_field(name="Davet Linki",value=f"[Buradan](https://discord.com/api/oauth2/authorize?client_id={self.client.user.id}&permissions=8&scope=bot) sunucuna ekleyebilirsin.",inline=False)
@@ -153,7 +156,7 @@ class General(commands.Cog):
 
         logger.info(f"General | Help | Tarafından: {ctx.author}")
 
-    @commands.cooldown(1, 60, commands.BucketType.guild)
+    @commands.cooldown(1, 60, commands.BucketType.user)
     @commands.command(name="Evosinfo",brief="Evos'un istatistiklerini gösterir.",aliases=["evosinfo"])
     async def info_command(self,ctx):
         svmem = psutil.virtual_memory()
@@ -173,6 +176,7 @@ class General(commands.Cog):
 
         logger.info(f"General | Evosinfo | Tarafından: {ctx.author}")
 
+    @commands.guild_only()
     @commands.cooldown(1, 300, commands.BucketType.guild)
     @commands.command(name="Speedtest",brief="Evos'un barındığı sunucunun internet hızını gösterir.",aliases=["speedtest","Hıztesti","hıztesti"])
     async def speedtest_command(self,ctx):
@@ -234,6 +238,41 @@ class General(commands.Cog):
             await ctx.send(embed=gifEmbed_2)
 
             logger.error(f"General | Gif | Error: {e}")
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(name="Ascii",brief="Girmiş olduğunuz metni ascii metnine çevirir.",aliases=["ascii"])
+    async def ascii_command(self,ctx, *,text: str):
+        try:
+            font = 'slant'
+
+            f = Figlet(font=font)
+            out = f.renderText(text)
+            await ctx.send(f"```\n{out}\n```")
+
+            logger.info(f"General | Ascii | Tarafından: {ctx.author}")
+        except Exception as e:
+            asciiEmbed = discord.Embed(title="Hata",description =f"{e}",colour = 0xd92929)
+            await ctx.send(embed=asciiEmbed)
+
+            logger.error(f"General | Ascii | Error: {e}")
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(name="Asciirandom",brief="Girmiş olduğunuz metni ascii metnine çevirir.",aliases=["asciirandom"])
+    async def ascii_random_command(self,ctx, *,text: str):
+        try:
+            fonts = FigletFont.getFonts()
+            font = random.choice(fonts)
+
+            f = Figlet(font=font)
+            out = f.renderText(text)
+            await ctx.send(f"```\n{out}\n```")
+
+            logger.info(f"General | AsciiRandom | Tarafından: {ctx.author}")
+        except Exception as e:
+            asciiRandomEmbed = discord.Embed(title="Hata",description =f"{e}",colour = 0xd92929)
+            await ctx.send(embed=asciiRandomEmbed)
+
+            logger.error(f"General | AsciiRandom | Error: {e}")
 
 def setup(client):
     client.add_cog(General(client))
