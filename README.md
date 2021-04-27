@@ -48,7 +48,7 @@ python3.8 Evos.py
 *   [SQLite](https://github.com/sqlite/sqlite)
 *   [Lavalink](https://github.com/Frederikam/Lavalink)
 *   [Requests](https://github.com/psf/requests)
-*   [Googletrans](https://github.com/ssut/py-googletrans)
+*   [GoogleTrans](https://github.com/ssut/py-googletrans)
 *   [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
 *   [Matplotlib](https://github.com/matplotlib/matplotlib)
 *   [Pillow](https://github.com/python-pillow/Pillow)
@@ -56,6 +56,8 @@ python3.8 Evos.py
 *   [Cpuinfo](https://github.com/workhorsy/py-cpuinfo)
 *   [Uptime](https://github.com/Cairnarvon/uptime)
 *   [Psutil](https://github.com/giampaolo/psutil)
+*   [SpeedTest](https://github.com/sivel/speedtest-cli)
+*   [TenGiphPy](https://github.com/realSnosh/TenGiphPy)
 *   [Pyfiglet](https://github.com/pwaller/pyfiglet)
 
 ## Invite
