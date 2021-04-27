@@ -17,28 +17,33 @@ class Error(commands.Cog):
             logger.info(f"Error | CommandNotFound : {ctx.message.content} | Tarafından : {ctx.author}")
 
         if isinstance(error , commands.MissingRequiredArgument):
-            commandErrorEmbed = discord.Embed(title="Eksik Argüman Girişi",description="Gerekli argümanlara **.help** komutu ile ulaşabilirsin.",colour = 0xffd500)
+            commandErrorEmbed = discord.Embed(title="Eksik Argüman Girişi",description="Gerekli argümanlara **.help** komutu ile ulaşabilirsin.",colour = 0xd92929)
 
             await ctx.send(embed = commandErrorEmbed)
 
             logger.info(f"Error | Komut : {ctx.message.content} | MissingRequiredArgument : {ctx.author}")
 
         if isinstance(error, CommandOnCooldown):
-            commandErrorEmbed = discord.Embed(title="Cooldown Uyarısı",description=f"Bu komuta {error.retry_after:,.2f} saniye sonra erişebilirsin.",colour = 0xffd500)
+            type="kullanıcı"
+
+            if str(error.cooldown.type).split(".")[-1]=="guild":
+                type="sunucu"
+
+            commandErrorEmbed = discord.Embed(title="Cooldown Uyarısı",description=f"Bu komut üzerinde **{type}** sınırlaması vardır.\n**{error.retry_after:,.2f}** saniye sonra erişebilirsin.",colour = 0xd92929)
 
             await ctx.send(embed = commandErrorEmbed)
 
             logger.info(f"Error | Komut : {ctx.message.content} | CommandOnCooldown : {ctx.author}")
 
         if isinstance(error , commands.MissingPermissions):
-            commandErrorEmbed = discord.Embed(title="Yetersiz Yetki",description="Diğer komutlara **.yardım** komutu ile ulaşabilirsin.",colour = 0xffd500)
+            commandErrorEmbed = discord.Embed(title="Yetersiz Yetki",description="Diğer komutlara **yardım** komutu ile ulaşabilirsin.",colour = 0xd92929)
 
             await ctx.send(embed = commandErrorEmbed)
 
             logger.info(f"Error | Komut : {ctx.message.content} | MissingPermissions : {ctx.author}")
 
         if isinstance(error, commands.BotMissingPermissions):
-            commandErrorEmbed = discord.Embed(title="Yetersiz Yetki",description=f"{self.client.user.name} bu komutu gerekli izinlere sahip olmadan uygulayamaz.",colour = 0xffd500)
+            commandErrorEmbed = discord.Embed(title="Yetersiz Yetki",description=f"{self.client.user.name} bu komutu gerekli izinlere sahip olmadan uygulayamaz.",colour = 0xd92929)
 
             await ctx.send(embed = commandErrorEmbed)
 

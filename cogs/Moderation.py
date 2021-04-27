@@ -26,7 +26,7 @@ class Moderation(commands.Cog):
 
             logger.info(f"Moderation | Purge | Tarafından: {ctx.author}")
         else:
-            purgeEmbed_2=discord.Embed(title="Hata",description="Tek seferde 100'den fazla mesaj silemezsiniz.",colour=0xffd500)
+            purgeEmbed_2=discord.Embed(title="Hata",description="Tek seferde 100'den fazla mesaj silemezsiniz.",colour=0xd92929)
 
             await ctx.send(embed = purgeEmbed_2)
 
@@ -51,7 +51,7 @@ class Moderation(commands.Cog):
 
             logger.info(f"Moderation | Kick | Tarafından: {ctx.author}")
         else :
-            kickEmbed_2=discord.Embed(title="Hata",description="Hatalı argüman kullanımı.",colour=0xffd500)
+            kickEmbed_2=discord.Embed(title="Hata",description="Hatalı argüman kullanımı.",colour=0xd92929)
 
             await ctx.send(embed = kickEmbed_2)
 
@@ -76,7 +76,7 @@ class Moderation(commands.Cog):
 
             logger.info(f"Moderation | Ban | Tarafından: {ctx.author}")
         else :
-            banEmbed_2=discord.Embed(title="Hata",description="Hatalı argüman kullanımı.",colour=0xffd500)
+            banEmbed_2=discord.Embed(title="Hata",description="Hatalı argüman kullanımı.",colour=0xd92929)
 
             await ctx.send(embed = banEmbed_2)
 
@@ -112,11 +112,11 @@ class Moderation(commands.Cog):
                     logger.info(f"Moderation | Unban | Tarafından: {ctx.author}")
 
             if status == False :
-                unbanEmbed_2=discord.Embed(title="Hata",description="Belirtilen kullanıcı yasaklananlar listesinde bulunamadı.",colour=0xffd500)
+                unbanEmbed_2=discord.Embed(title="Hata",description="Belirtilen kullanıcı yasaklananlar listesinde bulunamadı.",colour=0xd92929)
 
                 await ctx.send(embed=unbanEmbed_2)
         else :
-            unbanEmbed_3=discord.Embed(title="Hata",description="Üyenin tam adını giriniz.",colour=0xffd500)
+            unbanEmbed_3=discord.Embed(title="Hata",description="Üyenin tam adını giriniz.",colour=0xd92929)
 
             await ctx.send(embed = unbanEmbed_3)
 
@@ -130,7 +130,7 @@ class Moderation(commands.Cog):
         if member != ctx.author :
 
             if role in member.roles :
-                muteEmbed=discord.Embed(title="Hata",description="Belirtilen kullanıcı zaten susturulmuş.",colour=0xffd500)
+                muteEmbed=discord.Embed(title="Hata",description="Belirtilen kullanıcı zaten susturulmuş.",colour=0xd92929)
 
                 await ctx.send(embed=muteEmbed)
 
@@ -176,11 +176,11 @@ class Moderation(commands.Cog):
 
                         await ctx.send(embed=muteEmbed_3)
                 except Exception:
-                    muteEmbed_4=discord.Embed(title="Hata",description=f"Bu işlem için Muted rolünün kademesi {self.client.user.name} rolünden en az 1 kademe altında olması gerekir.",colour=0xffd500)
+                    muteEmbed_4=discord.Embed(title="Hata",description=f"Bu işlem için Muted rolünün kademesi {self.client.user.name} rolünden en az 1 kademe altında olması gerekir.",colour=0xd92929)
 
                     await ctx.send(embed = muteEmbed_4)
         else :
-            muteEmbed_5=discord.Embed(title="Hata",description="Hatalı argüman kullanımı.",colour=0xffd500)
+            muteEmbed_5=discord.Embed(title="Hata",description="Hatalı argüman kullanımı.",colour=0xd92929)
 
             await ctx.send(embed=muteEmbed_5)
 
@@ -195,7 +195,6 @@ class Moderation(commands.Cog):
 
             if role in member.roles:
 
-                try :
                     db = sqlite3.connect('data/server/Mute.db')
                     cursor = db.cursor()
 
@@ -211,7 +210,13 @@ class Moderation(commands.Cog):
                         cursor.close()
                         db.close()
 
-                    await member.remove_roles(role)
+                    try :
+                        await member.remove_roles(role)
+                    except Exception:
+                        unmuteEmbed_2=discord.Embed(title="Hata",description=f"Bu işlem için Muted rolünün kademesi {self.client.user.name} rolünden en az 1 kademe altında olması gerekir.",colour=0xd92929)
+
+                        await ctx.send(embed = unmuteEmbed_2)
+                        return
 
                     unmuteEmbed=discord.Embed(title=f"{member} adlı kullanıcının susturulma cezası kaldırıldı!",colour=0xffd500,timestamp=ctx.message.created_at)
                     unmuteEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
@@ -219,16 +224,12 @@ class Moderation(commands.Cog):
                     await ctx.send(embed=unmuteEmbed)
 
                     logger.info(f"Moderation | Unmute | Tarafından: {ctx.author}")
-                except :
-                    unmuteEmbed_2=discord.Embed(title="Hata",description=f"Bu işlem için Muted rolünün kademesi {self.client.user.name} rolünden en az 1 kademe altında olması gerekir.",colour=0xffd500)
-
-                    await ctx.send(embed = unmuteEmbed_2)
             else :
-                unmuteEmbed_3=discord.Embed(title="Hata",description=f"{member} adlı kullanıcının susturma cezası bulunamadı.",colour=0xffd500)
+                unmuteEmbed_3=discord.Embed(title="Hata",description=f"{member} adlı kullanıcının susturma cezası bulunamadı.",colour=0xd92929)
 
                 await ctx.send(embed=unmuteEmbed_3)
         else :
-            unmuteEmbed_4=discord.Embed(title="Hata",description="Daha önceden kimse susturulmamış ya da rol silinmiş olabilir.",colour=0xffd500)
+            unmuteEmbed_4=discord.Embed(title="Hata",description="Daha önceden kimse susturulmamış ya da rol silinmiş olabilir.",colour=0xd92929)
 
             await ctx.send(embed=unmuteEmbed_4)
 
@@ -247,7 +248,7 @@ class Moderation(commands.Cog):
 
             logger.info(f"Moderation | Rename | Tarafından: {ctx.author}")
         else :
-            renameEmbed_2=discord.Embed(title="Hata",description="Hatalı argüman kullanımı.",colour=0xffd500)
+            renameEmbed_2=discord.Embed(title="Hata",description="Hatalı argüman kullanımı.",colour=0xd92929)
 
             await ctx.send(embed=renameEmbed_2)
 

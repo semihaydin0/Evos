@@ -10,6 +10,7 @@ import asyncio
 import io
 import os
 from logging_files.guild_log import logger
+from Evos import get_version_number
 
 class InvalidLoggingValue(commands.CommandError):
     pass
@@ -577,11 +578,11 @@ class Guild(commands.Cog):
             cursor.execute("INSERT INTO ServerData VALUES (?,?,?,?,?)",(str(guild.id),'.','NULL','NULL','NULL'))
             db.commit()
 
-            infoEmbed = discord.Embed(title = "Evos'u sunucuna eklediğin için teşekkürler!",colour=0xd8f500)
-            infoEmbed.add_field(name="Prefix (Özelleştirilebilir)",value="Varsayılan: **.**(Nokta)",inline=False)
-            infoEmbed.add_field(name="Komut Listesi",value="Komutları görmek için **.yardım** yazabirsin.",inline=False)
+            infoEmbed = discord.Embed(title = f"{self.client.user.name} burada! :hand_splayed:",colour=0x36393F)
+            infoEmbed.add_field(name="Prefix",value="Varsayılan: **.** (Özelleştirilebilir)",inline=False)
+            infoEmbed.add_field(name="Komut Listesi",value="Komut listesi için **yardım** komutunu kullanabilirsin.",inline=False)
             infoEmbed.add_field(name="Geliştirici misin ?",value="[Buradan](https://github.com/semihaydin0/Evos) kaynak kodlarını inceleyebilirsin.",inline=False)
-            infoEmbed.set_footer(text="PHOENIX#7103 tarafından 💖 ile geliştirildi!",icon_url=guild.icon_url)
+            infoEmbed.set_footer(text=f"Mevcut Sürüm: v{get_version_number()} | PHOENIX#7103 tarafından 💖 ile geliştirildi!",icon_url=guild.icon_url)
             file = discord.File("images/evos.png", filename="evos.png")
             infoEmbed.set_thumbnail(url="attachment://evos.png")
 
