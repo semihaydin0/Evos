@@ -7,6 +7,8 @@ from discord.ext import commands
 import matplotlib.pyplot as coronaplt
 from googletrans import Translator
 from bs4 import BeautifulSoup
+import cryptocompare
+import TenGiphPy
 import requests
 import humanize
 import os
@@ -121,13 +123,13 @@ class Requests(commands.Cog):
 
             logger.info(f"Requests | COVID-19 | Tarafından: {ctx.author}")
         except Exception as e:
-            coronaStatsEmbed_2 = discord.Embed(title="Hata",description ="Bilinmeyen ülke adı ya da veri sunucusu yanıt vermiyor.",colour = 0xffd500)
+            coronaStatsEmbed_2 = discord.Embed(title="Hata",description ="Bilinmeyen ülke adı ya da veri sunucusu yanıt vermiyor.",colour = 0xd92929)
             await ctx.send(embed=coronaStatsEmbed_2)
 
             logger.error(f"Requests | COVID-19 | Error: {e}")
 
     @commands.cooldown(1, 30, commands.BucketType.user)
-    @commands.command(name="Kur", brief = "Canlı Döviz Kurunu ve Kripto Paraları görüntüler.",aliases = ['döviz','Döviz','kur'])
+    @commands.command(name="Kur", brief = "Canlı döviz kurunu görüntüler.",aliases = ['döviz','Döviz','kur'])
     async def currency_command(self,ctx):
         try :
             Currency = requests.get('http://bigpara.hurriyet.com.tr/doviz/')
@@ -155,42 +157,83 @@ class Requests(commands.Cog):
             exEUR=round(1/float(EUR),4)
             exGBP=round(1/float(GBP),4)
 
-            CryptoBTC = requests.get('https://bitcoin.tlkur.com/')
-            BSoup = BeautifulSoup(CryptoBTC.content,'html.parser')
-            BTCCur = BSoup.find("span",{"id" :"BTCTL_rate"})
-
-            CryptoETH = requests.get('https://ethereum.tlkur.com/')
-            BSoup = BeautifulSoup(CryptoETH.content,'html.parser')
-            ETHCur = BSoup.find("span",{"id" :"ETHTL_rate"})
-
-            CryptoXRP = requests.get('https://ripple.tlkur.com/')
-            BSoup = BeautifulSoup(CryptoXRP.content,'html.parser')
-            XRPCur = BSoup.find("span",{"id" :"XRPTL_rate"})
-
-            BTC = round(float(BTCCur.text),2)
-            ETH = round(float(ETHCur.text),2)
-            XRP = round(float(XRPCur.text),2)
-
             file = discord.File("images/dollar.png", filename="dollar.png")
 
-            currencyEmbed = discord.Embed(title="Canlı Döviz Kuru ve Kripto Paralar",colour = 0xffd500,timestamp = ctx.message.created_at)
+            currencyEmbed = discord.Embed(title="Canlı Döviz Kuru",colour = 0x36393F,timestamp = ctx.message.created_at)
             currencyEmbed.set_thumbnail(url="attachment://dollar.png")
             currencyEmbed.add_field(name=f":flag_us:    {USDPer}",value = f'1 $ = **{USD}** ₺\n1 ₺ = **{exUSD}** $')
             currencyEmbed.add_field(name=f":flag_eu:    {EURPer}",value = f'1 € = **{EUR}** ₺\n1 ₺ = **{exEUR}** €')
             currencyEmbed.add_field(name=f":flag_gb:    {GBPPer}",value = f'1 £ = **{GBP}** ₺\n1 ₺ = **{exGBP}** £')
-            currencyEmbed.add_field(name="Bitcoin",value = f'1 ₿ = **{BTC}** ₺\n1 ₺ = **{round(1/float(BTC),7)}** ₿')
-            currencyEmbed.add_field(name="Ethereum",value = f'1 Ξ = **{ETH}** ₺\n1 ₺ = **{round(1/float(ETH),6)}** Ξ')
-            currencyEmbed.add_field(name="Ripple",value = f'1 X = **{XRP}** ₺\n1 ₺ = **{round(1/float(XRP),2)}** X')
             currencyEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
 
             await ctx.send(file=file,embed=currencyEmbed)
 
             logger.info(f"Requests | Kur | Tarafından: {ctx.author}")
         except Exception as e:
-            currencyEmbed_2 = discord.Embed(title="Hata",description =f"{e}",colour = 0xffd500)
+            currencyEmbed_2 = discord.Embed(title="Hata",description =f"{e}",colour = 0xd92929)
             await ctx.send(embed=currencyEmbed_2)
 
             logger.error(f"Requests | Kur | Error: {e}")
+
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    @commands.command(name="Kripto", brief = "Canlı kripto çitflerinin bilgilerini görüntüler.",aliases = ['kripto','Coin','coin'])
+    async def crypto_command(self,ctx,fromSymbol:str,toSymbol:str):
+        try:
+            data = cryptocompare.get_price(fromSymbol, currency=toSymbol, full=True)
+        except Exception as e:
+            cryptoEmbed = discord.Embed(title="Hata",description ="Bilinmeyen indeks ya da veri sunucusu yanıt vermiyor.",colour = 0xd92929)
+            await ctx.send(embed=cryptoEmbed)
+
+            logger.error(f"Requests | Kripto | Error: {e}")
+            return
+
+        fs = fromSymbol.upper()
+        ts = toSymbol.upper()
+        humanize.i18n.activate("tr_TR")
+
+        price = data['RAW'][fs][ts]['PRICE']
+        changepct24hour = data['RAW'][fs][ts]['CHANGEPCT24HOUR']
+        changeday = data['RAW'][fs][ts]['CHANGEDAY']
+        low24hour = data['RAW'][fs][ts]['LOW24HOUR']
+        high24hour = data['RAW'][fs][ts]['HIGH24HOUR']
+        marketcap = data['RAW'][fs][ts]['MKTCAP']
+
+        file = discord.File("images/cclogo.png", filename="cclogo.png")
+
+        cryptoEmbed_2 = discord.Embed(title=f"{fs}/{ts}",description="Veriler **CryptoCompare** tarafından sağlanmaktadır.",colour=0x36393F, timestamp=ctx.message.created_at)
+        cryptoEmbed_2.set_thumbnail(url="attachment://cclogo.png")
+        cryptoEmbed_2.add_field(name="Fiyat",value=f"**{round(price,5)}** {ts}")
+        cryptoEmbed_2.add_field(name="24H Değişim Yüzdesi",value=f"**{round(changepct24hour,2)}**%")
+        cryptoEmbed_2.add_field(name="24H Değişim Değeri",value=f"**{round(changeday,5)}** {ts}")
+        cryptoEmbed_2.add_field(name="24H En Düşük",value=f"**{round(low24hour,5)}** {ts}")
+        cryptoEmbed_2.add_field(name="24H En Yüksek",value=f"**{round(high24hour,5)}** {ts}")
+        cryptoEmbed_2.add_field(name="Market Cap",value=f"**{humanize.intword(marketcap)}** {ts}")
+        cryptoEmbed_2.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
+
+        await ctx.send(file=file,embed=cryptoEmbed_2)
+
+        logger.info(f"Requests | Kripto | Tarafından: {ctx.author}")
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(name="Gif",brief="Tenor GIF servisi.",aliases=["gif"])
+    async def gif_command(self,ctx, *,tag: str):
+        try:
+            apiToken = "YOURAPITOKENGOESHERE"
+            t = TenGiphPy.Tenor(token=apiToken)
+            randomGif = t.random(tag=tag)
+
+            gifEmbed=discord.Embed(title=f"#{tag}",color=0x36393F)
+            gifEmbed.set_image(url=randomGif)
+            gifEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
+
+            await ctx.send(embed=gifEmbed)
+
+            logger.info(f"Requests | Gif | Tarafından: {ctx.author}")
+        except Exception as e:
+            gifEmbed_2 = discord.Embed(title="Hata",description =f"{e}",colour = 0xd92929)
+            await ctx.send(embed=gifEmbed_2)
+
+            logger.error(f"Requests | Gif | Error: {e}")
 
 def setup(client):
     client.add_cog(Requests(client))

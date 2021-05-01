@@ -7,7 +7,6 @@ from discord.ext import commands
 from cpuinfo import get_cpu_info
 from uptime import uptime
 import speedtest
-import TenGiphPy
 import platform
 import asyncio
 import random
@@ -217,27 +216,6 @@ class General(commands.Cog):
             await ctx.send(embed=speedtestEmbed_4)
 
             logger.error(f"General | Speedtest | Error: {e}")
-
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.command(name="Gif",brief="Tenor GIF servisi.",aliases=["gif"])
-    async def gif_command(self,ctx, *,tag: str):
-        try:
-            apiToken = "YOURAPITOKENGOESHERE"
-            t = TenGiphPy.Tenor(token=apiToken)
-            randomGif = t.random(tag=tag)
-
-            gifEmbed=discord.Embed(title=f"#{tag}",color=0x36393F)
-            gifEmbed.set_image(url=randomGif)
-            gifEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
-
-            await ctx.send(embed=gifEmbed)
-
-            logger.info(f"General | Gif | Tarafından: {ctx.author}")
-        except Exception as e:
-            gifEmbed_2 = discord.Embed(title="Hata",description =f"{e}",colour = 0xd92929)
-            await ctx.send(embed=gifEmbed_2)
-
-            logger.error(f"General | Gif | Error: {e}")
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(name="Ascii",brief="Girmiş olduğunuz metni ascii metnine çevirir.",aliases=["ascii"])
