@@ -11,6 +11,7 @@ from logging_files.admin_log import logger
 
 class Admin(commands.Cog):
     def __init__(self,client):
+        """Admin Cog."""
         self.client = client
 
     @commands.is_owner()

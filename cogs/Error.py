@@ -8,6 +8,7 @@ from discord.ext.commands.errors import CommandOnCooldown
 from logging_files.error_log import logger
 
 class Error(commands.Cog):
+    """Error Cog."""
     def __init__(self,client):
         self.client = client
 
@@ -17,19 +18,19 @@ class Error(commands.Cog):
             logger.info(f"Error | CommandNotFound : {ctx.message.content} | Tarafından : {ctx.author}")
 
         if isinstance(error , commands.MissingRequiredArgument):
-            commandErrorEmbed = discord.Embed(title="Eksik Argüman Girişi",description="Gerekli argümanlara **.help** komutu ile ulaşabilirsin.",colour = 0xd92929)
+            commandErrorEmbed = discord.Embed(title="Eksik Argüman Girişi",description="Gerekli argümanlara **help** komutu ile ulaşabilirsin.",colour = 0xd92929)
 
             await ctx.send(embed = commandErrorEmbed)
 
             logger.info(f"Error | Komut : {ctx.message.content} | MissingRequiredArgument : {ctx.author}")
 
         if isinstance(error, CommandOnCooldown):
-            type="kullanıcı"
+            _type="kullanıcı"
 
             if str(error.cooldown.type).split(".")[-1]=="guild":
-                type="sunucu"
+                _type="sunucu"
 
-            commandErrorEmbed = discord.Embed(title="Cooldown Uyarısı",description=f"Bu komut üzerinde **{type}** sınırlaması vardır.\n**{error.retry_after:,.2f}** saniye sonra erişebilirsin.",colour = 0xd92929)
+            commandErrorEmbed = discord.Embed(title="Cooldown Uyarısı",description=f"Bu komut üzerinde **{_type}** sınırlaması vardır.\n**{error.retry_after:,.2f}** saniye sonra erişebilirsin.",colour = 0xd92929)
 
             await ctx.send(embed = commandErrorEmbed)
 
