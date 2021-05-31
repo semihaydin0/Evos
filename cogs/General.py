@@ -18,12 +18,12 @@ from pyfiglet import FigletFont
 from logging_files.general_log import logger
 from Evos import get_version_number
 
-def get_size(bytes, suffix="B"):
+def get_size(bts, suffix="B"):
     factor = 1024
     for unit in ["", "K", "M", "G", "T", "P"]:
-        if bytes < factor:
-            return f"{bytes:.2f}{unit}{suffix}"
-        bytes /= factor
+        if bts < factor:
+            return f"{bts:.2f}{unit}{suffix}"
+        bts /= factor
 
 class General(commands.Cog):
     def __init__(self,client):

@@ -8,7 +8,6 @@ from discord.ext.commands.errors import CommandOnCooldown
 from logging_files.error_log import logger
 
 class Error(commands.Cog):
-    """Error Cog."""
     def __init__(self,client):
         self.client = client
 
