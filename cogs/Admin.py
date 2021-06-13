@@ -7,6 +7,7 @@ from discord.ext import commands
 import os
 import sys
 import subprocess
+import wget
 from logging_files.admin_log import logger
 
 class Admin(commands.Cog):
@@ -156,16 +157,73 @@ class Admin(commands.Cog):
             logger.error(f"Admin | ChangeUsername | Error: {e}")
 
     @commands.is_owner()
-    @commands.command(name="Activity",aliases=['activity'],hidden=True)
-    async def activity_command(self, ctx, *,name: str):
+    @commands.command(name="ChangeAvatar",aliases=['changeavatar'],hidden=True)
+    async def change_avatar_command(self, ctx, url: str):
         try:
-            await self.client.change_presence(status=discord.Status.online ,
-                activity=discord.Game(name))
+            avatar_filename = wget.download(url)
+            fp = open(avatar_filename, 'rb')
+            pfp = fp.read()
+            await self.client.user.edit(avatar=pfp)
+
+            changeAvatarEmbed=discord.Embed(title="Avatar değişikliği başarılı.",colour=0xffd500)
+
+            await ctx.send(embed = changeAvatarEmbed)
+            os.remove(avatar_filename)
+
+            logger.info(f"Admin | ChangeAvatar | Tarafından: {ctx.author}")
+        except Exception as e:
+            changeAvatarEmbed_2=discord.Embed(title="Hata",description =f"{e}",colour=0xffd500)
+            await ctx.send(embed = changeAvatarEmbed_2)
+            os.remove(avatar_filename)
+
+            logger.error(f"Admin | ChangeAvatar | Error: {e}")
+
+    @commands.is_owner()
+    @commands.command(name="LeaveServer",aliases=['leaveserver'],hidden=True)
+    async def change_avatar_command(self, ctx, serverID: str):
+        try:
+            if serverID == '1' :
+                await ctx.guild.leave()
+            else:
+                guild = self.client.get_guild(int(serverID))
+                if guild:
+                    await guild.leave()
+
+                    leaveServerEmbed=discord.Embed(title=f"{guild.name} adlı sunucudan ayrılma başarılı.",colour=0xffd500)
+
+                    await ctx.send(embed = leaveServerEmbed)
+                else :
+                    leaveServerEmbed_2=discord.Embed(title=f"{self.client.user.name} bu ID'ye sahip bir sunucuda bulunmuyor.",colour=0xffd500)
+
+                    await ctx.send(embed = leaveServerEmbed_2)
+            logger.info(f"Admin | LeaveServer | Tarafından: {ctx.author}")
+        except Exception as e:
+            leaveServerEmbed_3=discord.Embed(title="Hata",description =f"{e}",colour=0xffd500)
+            await ctx.send(embed = leaveServerEmbed_3)
+
+            logger.error(f"Admin | LeaveServer | Error: {e}")
+
+    @commands.is_owner()
+    @commands.command(name="Activity",aliases=['activity'],hidden=True)
+    async def activity_command(self, ctx, acType: str, *, acName: str):
+        acType = acType.lower()
+        if acType == 'playing':
+            type = discord.ActivityType.playing
+        elif acType == 'watching':
+            type = discord.ActivityType.watching
+        elif acType == 'listening':
+            type = discord.ActivityType.listening
+
+        try:
+            if acType == 'streaming' :
+                await self.client.change_presence(activity=discord.Streaming(name='Canlı', url=acName))
+            else :
+                await self.client.change_presence(activity=discord.Activity(type=type, name=acName))
             activityEmbed=discord.Embed(title="Aktivite değişikliği başarılı.",colour=0xffd500)
 
             await ctx.send(embed=activityEmbed)
 
-            logger.info(f"Admin | Activity: {name} | Tarafından: {ctx.author}")
+            logger.info(f"Admin | Activity: {acName}({acType}) | Tarafından: {ctx.author}")
         except Exception as e:
             activityEmbed_2=discord.Embed(title="Hata",description =f"{e}",colour=0xffd500)
             await ctx.send(embed = activityEmbed_2)
@@ -173,21 +231,21 @@ class Admin(commands.Cog):
             logger.error(f"Admin | Activity | Error: {e}")
 
     @commands.is_owner()
-    @commands.command(name="Reboot",aliases=['reboot'],hidden=True)
-    async def reboot_command(self,ctx):
-        rebootEmbed=discord.Embed(title=f"{self.client.user.name} yeniden başlatılıyor.",colour=0xffd500)
+    @commands.command(name="Restart",aliases=['restart'],hidden=True)
+    async def restart_command(self,ctx):
+        restartEmbed=discord.Embed(title=f"{self.client.user.name} yeniden başlatılıyor.",colour=0xffd500)
 
-        message = await ctx.send(embed = rebootEmbed)
+        message = await ctx.send(embed = restartEmbed)
         try :
             await self.client.logout()
             subprocess.call([sys.executable, "Evos.py"])
 
-            logger.info(f"Admin | Reboot | Tarafından: {ctx.author}")
+            logger.info(f"Admin | Restart | Tarafından: {ctx.author}")
         except Exception as e:
-            rebootEmbed_2=discord.Embed(title=f"{self.client.user.name} yeniden başlatılırken bir hata meydana geldi.",colour=0xffd500)
-            await message.edit(embed = rebootEmbed_2)
+            restartEmbed_2=discord.Embed(title=f"{self.client.user.name} yeniden başlatılırken bir hata meydana geldi.",colour=0xffd500)
+            await message.edit(embed = restartEmbed_2)
 
-            logger.error(f"Admin | Reboot | Error: {e}")
+            logger.error(f"Admin | Restart | Error: {e}")
 
     @commands.is_owner()
     @commands.command(name="Off",aliases=['off'],hidden=True)
