@@ -179,23 +179,23 @@ class General(commands.Cog):
     @commands.cooldown(1, 300, commands.BucketType.guild)
     @commands.command(name="Speedtest",brief="Evos'un barındığı sunucunun internet hızını gösterir.",aliases=["speedtest","Hıztesti","hıztesti"])
     async def speedtest_command(self,ctx):
-        speedtestEmbed=discord.Embed(title="Hız Testi Ölçümü",color=0x36393F)
-        speedtestEmbed.add_field(name="İndirme",value=":yellow_circle:",inline=False)
-        speedtestEmbed.add_field(name="Yükleme",value=":red_circle:")
-        speedtestEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
-
-        message = await ctx.send(embed=speedtestEmbed)
-
         try:
             st = speedtest.Speedtest()
             st.get_best_server()
             asyncio.get_event_loop()
 
+            speedtestEmbed=discord.Embed(title="Hız Testi Ölçümü",color=0x36393F)
+            speedtestEmbed.add_field(name="İndirme (Ölçülüyor)",value=":yellow_circle:",inline=False)
+            speedtestEmbed.add_field(name="Yükleme",value=":red_circle:")
+            speedtestEmbed.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
+
+            message = await ctx.send(embed=speedtestEmbed)
+
             d = await self.client.loop.run_in_executor(None, st.download)
 
             speedtestEmbed_2=discord.Embed(title="Hız Testi Ölçümü",color=0x36393F)
-            speedtestEmbed_2.add_field(name="İndirme",value=":green_circle:",inline=False)
-            speedtestEmbed_2.add_field(name="Yükleme",value=":yellow_circle:")
+            speedtestEmbed_2.add_field(name="İndirme (Tamamlandı)",value=":green_circle:",inline=False)
+            speedtestEmbed_2.add_field(name="Yükleme (Ölçülüyor)",value=":yellow_circle:")
             speedtestEmbed_2.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
 
             await message.edit(embed=speedtestEmbed_2)
@@ -203,9 +203,9 @@ class General(commands.Cog):
             u = await self.client.loop.run_in_executor(None, st.upload)
 
             speedtestEmbed_3=discord.Embed(title="Hız Testi Sonuçları",color=0x36393F)
-            speedtestEmbed_3.add_field(name="Ping",value=f"**{round(st.results.ping, 2)}** ms",inline=False)
             speedtestEmbed_3.add_field(name="İndirme",value=f"**{round(d/1024/1024, 2)}** Mbps",inline=False)
             speedtestEmbed_3.add_field(name="Yükleme",value=f"**{round(u/1024/1024, 2)}** Mbps")
+            speedtestEmbed_3.add_field(name="Ping",value=f"**{round(st.results.ping, 2)}** ms",inline=False)
             speedtestEmbed_3.set_footer(text=f"Tarafından: {ctx.author}",icon_url=ctx.author.avatar_url)
 
             await message.edit(embed=speedtestEmbed_3)
