@@ -6,8 +6,8 @@ import discord
 from discord.ext import commands
 import os
 import sys
-import subprocess
 import wget
+import subprocess
 from logging_files.admin_log import logger
 
 class Admin(commands.Cog):
@@ -180,7 +180,7 @@ class Admin(commands.Cog):
 
     @commands.is_owner()
     @commands.command(name="LeaveServer",aliases=['leaveserver'],hidden=True)
-    async def change_avatar_command(self, ctx, serverID: str):
+    async def leave_server_command(self, ctx, serverID: str):
         try:
             if serverID == '1' :
                 await ctx.guild.leave()
@@ -208,17 +208,17 @@ class Admin(commands.Cog):
     async def activity_command(self, ctx, acType: str, *, acName: str):
         acType = acType.lower()
         if acType == 'playing':
-            type = discord.ActivityType.playing
+            type_ = discord.ActivityType.playing
         elif acType == 'watching':
-            type = discord.ActivityType.watching
+            type_ = discord.ActivityType.watching
         elif acType == 'listening':
-            type = discord.ActivityType.listening
+            type_ = discord.ActivityType.listening
 
         try:
             if acType == 'streaming' :
                 await self.client.change_presence(activity=discord.Streaming(name='Canlı', url=acName))
             else :
-                await self.client.change_presence(activity=discord.Activity(type=type, name=acName))
+                await self.client.change_presence(activity=discord.Activity(type=type_, name=acName))
             activityEmbed=discord.Embed(title="Aktivite değişikliği başarılı.",colour=0xffd500)
 
             await ctx.send(embed=activityEmbed)
