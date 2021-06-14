@@ -115,6 +115,7 @@ class General(commands.Cog):
         helpEmbed=discord.Embed(title="🤖 Komutlar",description="Komutlar için gerekli argümanlara **help** komutuyla ulaşabilirsin.", color=0xd8f500,timestamp=ctx.message.created_at)
         file = discord.File("images/evos.png", filename="evos.png")
         helpEmbed.set_thumbnail(url="attachment://evos.png")
+        tempC = cog
 
         cogs = [c for c in self.client.cogs.keys()]
         cogs.remove('Admin')
@@ -129,7 +130,7 @@ class General(commands.Cog):
 
             await ctx.send(embed=helpEmbed_2)
             return
-        helpEmbed.set_footer(text=f"{cog}.Sayfa | Toplam Sayfa: {totalPages} | PHOENIX#7103 tarafından 💖 ile geliştirildi!")
+
         neededCogs = []
 
         for i in range(4):
@@ -139,6 +140,7 @@ class General(commands.Cog):
             except IndexError:
                 pass
 
+        commandCount = 0
         for cog in neededCogs:
             commandList = ""
 
@@ -148,9 +150,11 @@ class General(commands.Cog):
                 elif command.parent != None:
                     continue
                 commandList += f"**{command.name}** - *{command.brief}*\n"
+                commandCount += 1
             commandList += "\n"
             helpEmbed.add_field(name=cog, value=commandList, inline=False)
 
+        helpEmbed.set_footer(text=f"{tempC}.Sayfa | Toplam Sayfa: {totalPages} | Bu Sayfadaki Toplam Komut Sayısı: {commandCount}")
         await ctx.send(file=file,embed=helpEmbed)
 
         logger.info(f"General | Help | Tarafından: {ctx.author}")
