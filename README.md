@@ -12,7 +12,7 @@
 
 ## Sample Commands
 
-![Example](./images/exampleCommands.png)
+![Example](./images/examplecommands.png)
 
 ## Installation
   1. Clone the repository.
@@ -21,7 +21,7 @@ git clone https://github.com/semihaydin0/Evos
 ```
   2. Load project dependencies
 ```
-pip3 install -U -r requirements.txt
+pip3.9 install -U -r requirements.txt
 ```
   3. Edit the [token](https://github.com/semihaydin0/Evos/blob/main/data/Token.json) file.
 ```
@@ -29,7 +29,7 @@ pip3 install -U -r requirements.txt
 ```
   4. Run the project.(Read important information before running the project.)
 ```
-python3.8 Evos.py
+python3.9 Evos.py
 ```
 
 ## Important
@@ -59,6 +59,7 @@ python3.8 Evos.py
 *   [SpeedTest](https://github.com/sivel/speedtest-cli)
 *   [TenGiphPy](https://github.com/realSnosh/TenGiphPy)
 *   [Pyfiglet](https://github.com/pwaller/pyfiglet)
+*   [CryptoCompare](https://github.com/lagerfeuer/cryptocompare)
 
 ## Invite
 
