@@ -58,7 +58,7 @@ for filename in os.listdir('cogs'):
         except Exception as e:
             logger.error(f"{client.user.name} | LoadModule | File: {filename[:-3]} | Error: {e}")
             print(f"\t{filename[:-3]} yüklenemedi.")
-print(f"\t-------------------------\n\tToplam Eklenti: \t{modules}\n\tYüklenen Eklenti: \t{loaded}\n\tYüklenemeyen Eklenti: \t{modules-loaded}\n\t-------------------------")
+print(f"\t--------------------------\n\tToplam Eklenti: \t{modules}\n\tYüklenen Eklenti: \t{loaded}\n\tYüklenemeyen Eklenti: \t{modules-loaded}\n\t--------------------------")
 print("Modül yükleme işlemi tamamlandı.")
 
 client.run(get_token(), reconnect=True)
