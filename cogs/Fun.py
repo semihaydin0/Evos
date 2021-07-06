@@ -24,7 +24,7 @@ class Fun(commands.Cog):
             blurpifyEmbed = discord.Embed(title="Hata",description ="API bağlantı hatası.",colour = 0xd92929)
             await ctx.send(embed=blurpifyEmbed)
 
-            logger.error(f"Fun | Blurpify | Error: API bağlantısı hatası.")
+            logger.error("Fun | Blurpify | Error: API bağlantısı hatası.")
             return
 
         blurpifyEmbed_2 = discord.Embed(color=0x36393F)
@@ -49,7 +49,7 @@ class Fun(commands.Cog):
             captchaEmbed = discord.Embed(title="Hata",description ="API bağlantı hatası.",colour = 0xd92929)
             await ctx.send(embed=captchaEmbed)
 
-            logger.error(f"Fun | Captcha | Error: API bağlantısı hatası.")
+            logger.error("Fun | Captcha | Error: API bağlantısı hatası.")
             return
 
         captchaEmbed_2 = discord.Embed(color=0x36393F)
@@ -72,7 +72,7 @@ class Fun(commands.Cog):
             changeMyMindEmbed = discord.Embed(title="Hata",description ="API bağlantı hatası.",colour = 0xd92929)
             await ctx.send(embed=changeMyMindEmbed)
 
-            logger.error(f"Fun | ChangeMyMind | Error: API bağlantısı hatası.")
+            logger.error("Fun | ChangeMyMind | Error: API bağlantısı hatası.")
             return
 
         changeMyMindEmbed_2 = discord.Embed(color=0x36393F)
@@ -96,7 +96,7 @@ class Fun(commands.Cog):
             deepfryEmbed = discord.Embed(title="Hata",description ="API bağlantı hatası.",colour = 0xd92929)
             await ctx.send(embed=deepfryEmbed)
 
-            logger.error(f"Fun | Deepfry | Error: API bağlantısı hatası.")
+            logger.error("Fun | Deepfry | Error: API bağlantısı hatası.")
             return
 
         deepfryEmbed_2 = discord.Embed(color=0x36393F)
@@ -119,7 +119,7 @@ class Fun(commands.Cog):
             kannagenEmbed = discord.Embed(title="Hata",description ="API bağlantı hatası.",colour = 0xd92929)
             await ctx.send(embed=kannagenEmbed)
 
-            logger.error(f"Fun | Kannagen | Error: API bağlantısı hatası.")
+            logger.error("Fun | Kannagen | Error: API bağlantısı hatası.")
             return
 
         kannagenEmbed_2 = discord.Embed(color=0x36393F)
@@ -143,7 +143,7 @@ class Fun(commands.Cog):
             phoneEmbed = discord.Embed(title="Hata",description ="API bağlantı hatası.",colour = 0xd92929)
             await ctx.send(embed=phoneEmbed)
 
-            logger.error(f"Fun | Phone | Error: API bağlantısı hatası.")
+            logger.error("Fun | Phone | Error: API bağlantısı hatası.")
             return
 
         phoneEmbed_2 = discord.Embed(color=0x36393F)
@@ -167,7 +167,7 @@ class Fun(commands.Cog):
             trashEmbed = discord.Embed(title="Hata",description ="API bağlantı hatası.",colour = 0xd92929)
             await ctx.send(embed=trashEmbed)
 
-            logger.error(f"Fun | Trash | Error: API bağlantısı hatası.")
+            logger.error("Fun | Trash | Error: API bağlantısı hatası.")
             return
 
         trashEmbed_2 = discord.Embed(color=0x36393F)
@@ -190,7 +190,7 @@ class Fun(commands.Cog):
             trumpTweetEmbed = discord.Embed(title="Hata",description ="API bağlantı hatası.",colour = 0xd92929)
             await ctx.send(embed=trumpTweetEmbed)
 
-            logger.error(f"Fun | TrumpTweet | Error: API bağlantısı hatası.")
+            logger.error("Fun | TrumpTweet | Error: API bağlantısı hatası.")
             return
 
         trumpTweetEmbed_2 = discord.Embed(color=0x36393F)
@@ -214,7 +214,7 @@ class Fun(commands.Cog):
             tweetEmbed = discord.Embed(title="Hata",description ="API bağlantı hatası.",colour = 0xd92929)
             await ctx.send(embed=tweetEmbed)
 
-            logger.error(f"Fun | Tweet | Error: API bağlantısı hatası.")
+            logger.error("Fun | Tweet | Error: API bağlantısı hatası.")
             return
 
         tweetEmbed_2 = discord.Embed(color=0x36393F)
