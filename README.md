@@ -2,7 +2,7 @@
 *** Semih Aydın 2021
 -->
 
-![Codacy Badge](https://app.codacy.com/project/badge/Grade/4c254313de2d4ca0a5d6d5813b981117)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/98bd08aaea7845a48425f776feb649ed)](https://www.codacy.com/gh/semihaydin0/Evos/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=semihaydin0/Evos&amp;utm_campaign=Badge_Grade)
 ![Last Commit](https://img.shields.io/github/last-commit/semihaydin0/Evos)
 ![Total Lines](https://img.shields.io/tokei/lines/github/semihaydin0/Evos)
 ![Release](https://img.shields.io/github/v/release/semihaydin0/Evos)
