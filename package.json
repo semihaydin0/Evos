@@ -1,0 +1,11 @@
+{
+    "version" : "1.2.5",
+    "description": "Evos v1.2.5",
+    "license": "MIT",
+    "repository": "github:semihaydin0/Evos",
+    "author": {
+        "name": "Semih Aydın",
+        "email": "semihaydn034@gmail.com",
+        "url": "https://semihaydin.live"
+    }
+}
