@@ -27,7 +27,11 @@ pip3.9 install -U -r requirements.txt
 ```
 {"token" : "INSERTYOURTOKENHERE"}
 ```
-  4. Run the project.(Read important information before running the project.)
+  4. Enter the Tenor API key required for the [gif command](https://github.com/semihaydin0/Evos/blob/main/cogs/Requests.py#L217-L236) to work. If you don't have a Tenor API key, you can get it [here](https://tenor.com/gifapi/documentation).
+```
+apiToken = "YOURAPITOKENGOESHERE"
+```
+  5. Run the project.(Read important information before running the project.)
 ```
 python3.9 Evos.py
 ```
@@ -53,6 +57,8 @@ python3.9 Evos.py
 *   [Matplotlib](https://github.com/matplotlib/matplotlib)
 *   [Pillow](https://github.com/python-pillow/Pillow)
 *   [Humanize](https://github.com/jmoiron/humanize)
+*   [Wget](https://pypi.org/project/wget/)
+*   [Aiohttp](https://github.com/aio-libs/aiohttp)
 *   [Cpuinfo](https://github.com/workhorsy/py-cpuinfo)
 *   [Uptime](https://github.com/Cairnarvon/uptime)
 *   [Psutil](https://github.com/giampaolo/psutil)
