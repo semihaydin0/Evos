@@ -5,7 +5,6 @@
 import discord
 from discord.ext import commands
 from enum import Enum
-import datetime as dt
 import typing as t
 import wavelink
 import aiohttp
@@ -321,7 +320,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         stopEmbed=discord.Embed(title="Oynatıcı durduruldu ve liste temizlendi.",colour=0xffd500)
         file = discord.File("images/evosMusic.png", filename="evosMusic.png")
 
-        stopEmbed.set_image(url=f"attachment://evosMusic.png")
+        stopEmbed.set_image(url="attachment://evosMusic.png")
         stopEmbed.set_footer(text=f"Tarafından: {ctx.author}", icon_url=ctx.author.avatar_url)
 
         await ctx.send(file=file,embed=stopEmbed)
@@ -496,6 +495,8 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 lyricsEmbed.set_author(name=data["author"])
                 await ctx.send(embed=lyricsEmbed)
 
+        logger.info(f"Music | Lyrics | Tarafından: {ctx.author}")
+
     @lyrics_command.error
     async def lyrics_command_error(self, ctx, exc):
         if isinstance(exc, NoLyricsFound):
@@ -518,6 +519,8 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         skiptoEmbed = discord.Embed(title=f"{index}. sıraya atlandı.",colour=0xffd500)
 
         await ctx.send(embed=skiptoEmbed)
+
+        logger.info(f"Music | Skipto | Tarafından: {ctx.author}")
 
     @skipto_command.error
     async def skipto_command_error(self, ctx, exc):
