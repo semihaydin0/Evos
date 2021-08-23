@@ -34,7 +34,7 @@ def get_token():
     return token
 
 def get_version_number():
-    with open("data/package.json", "r") as packageJsonFile:
+    with open("package.json", "r") as packageJsonFile:
         data = json.load(packageJsonFile)
         versionNumber = data["version"]
     return versionNumber
